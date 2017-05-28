@@ -19,6 +19,8 @@ java -jar NAME.jar
 ```
 
 ### Contributing
+[How to commit and push](https://docs.google.com/document/d/1KCgO_vruejmSxdvUqu2XfoC39zno_lhD3_o7mPA-Vtc/edit)
+
 Asset naming conventions:
 * All folders are lowercase without spaces (ex: greatName)
 * All assets are lowercase without spaces (ex: greatName.type)
