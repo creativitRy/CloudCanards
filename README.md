@@ -18,7 +18,7 @@ You can run the jar file with this command:
 java -jar NAME.jar
 ```
 
-### Contribute
+### Contributing
 Asset naming conventions:
 * All folders are lowercase without spaces (ex: greatName)
 * All assets are lowercase without spaces (ex: greatName.type)
