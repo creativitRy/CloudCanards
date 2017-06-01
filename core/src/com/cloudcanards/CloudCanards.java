@@ -3,7 +3,7 @@ package com.cloudcanards;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
-import com.cloudcanards.io.ResourceManager;
+import com.cloudcanards.io.loading.ResourceManager;
 
 /**
  * CloudCanards
@@ -21,6 +21,9 @@ public class CloudCanards extends Game
 	
 	private ResourceManager resourceManager;
 	
+	/**
+	 * Don't put anything here. Put it in create() instead
+	 */
 	public CloudCanards()
 	{
 		instance = this;
@@ -30,6 +33,11 @@ public class CloudCanards extends Game
 	public void create()
 	{
 		resourceManager = new ResourceManager();
+	}
+	
+	public ResourceManager getResourceManager()
+	{
+		return resourceManager;
 	}
 	
 	@Override

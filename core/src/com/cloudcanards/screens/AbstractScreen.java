@@ -1,6 +1,9 @@
 package com.cloudcanards.screens;
 
+import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Screen;
+import com.cloudcanards.CloudCanards;
+import com.cloudcanards.io.loading.ResourceManager;
 
 /**
  * AbstractScreen
@@ -12,8 +15,10 @@ public abstract class AbstractScreen implements Screen
 	public static final float SCREEN_WIDTH = 1600;
 	public static final float SCREEN_HEIGHT = 900;
 	
+	public abstract void load(ResourceManager resourceManager);
+	
 	/**
-	 * Called when the screen should render itself.
+	 * Called when the screen should render itself. GL stuff are cleared already.
 	 * <p>Call the methods <code>viewport.apply()</code> and <code>batch.setProjectionMatrix(camera.combined)</code>
 	 * here
 	 *
@@ -31,4 +36,22 @@ public abstract class AbstractScreen implements Screen
 	 * @param height the new height in pixels
 	 */
 	public abstract void resize(int width, int height);
+	
+	/**
+	 * Called when this screen is no longer the current screen for a {@link Game}.
+	 * Calls dispose()
+	 */
+	@Override
+	public void hide()
+	{
+		dispose();
+	}
+	
+	@Override
+	public void dispose()
+	{
+		dispose(CloudCanards.getInstance().getResourceManager());
+	}
+	
+	public abstract void dispose(ResourceManager manager);
 }
