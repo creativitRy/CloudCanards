@@ -30,6 +30,20 @@ public abstract class AbstractLoadAssetTask extends AbstractTask
 	@Override
 	public boolean isDone()
 	{
-		return resourceManager.getAssetManager().update();
+		if (resourceManager.getAssetManager().update())
+		{
+			postRun();
+			return true;
+		}
+		return false;
+	}
+	
+	/**
+	 * Runs once after isDone returns true.
+	 * Does nothing if not overwritten
+	 */
+	public void postRun()
+	{
+	
 	}
 }

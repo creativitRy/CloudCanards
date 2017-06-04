@@ -4,6 +4,8 @@ import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.graphics.GL20;
 import com.cloudcanards.io.loading.ResourceManager;
+import com.cloudcanards.screens.GameScreen;
+import com.cloudcanards.screens.LoadingScreen;
 
 /**
  * CloudCanards
@@ -33,6 +35,8 @@ public class CloudCanards extends Game
 	public void create()
 	{
 		resourceManager = new ResourceManager();
+		
+		setScreen(new LoadingScreen(new GameScreen()));
 	}
 	
 	public ResourceManager getResourceManager()

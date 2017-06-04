@@ -45,6 +45,17 @@ public class ResourceManager
 	{
 		while (!multithreadAddFixer.isEmpty())
 		{
+			if (tasks.isEmpty())
+			{
+				//run next task
+				if (multithreadAddFixer.peek().runInNewThread())
+				{
+					new Thread(multithreadAddFixer.peek()::run).start();
+				}
+				else
+					multithreadAddFixer.peek().run();
+			}
+			
 			tasks.add(multithreadAddFixer.pop());
 		}
 		
