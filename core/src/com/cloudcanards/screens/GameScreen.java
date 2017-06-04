@@ -1,5 +1,6 @@
 package com.cloudcanards.screens;
 
+import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.cloudcanards.io.loading.ResourceManager;
 
 /**
@@ -9,6 +10,8 @@ import com.cloudcanards.io.loading.ResourceManager;
  */
 public class GameScreen extends AbstractScreen
 {
+	private TiledMap map;
+	
 	@Override
 	public void load(ResourceManager resourceManager)
 	{
