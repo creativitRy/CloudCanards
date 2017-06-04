@@ -1,9 +1,11 @@
 package com.cloudcanards.screens;
 
-import com.badlogic.gdx.Game;
-import com.badlogic.gdx.Screen;
 import com.cloudcanards.CloudCanards;
 import com.cloudcanards.io.loading.ResourceManager;
+import com.cloudcanards.util.Logger;
+
+import com.badlogic.gdx.Game;
+import com.badlogic.gdx.Screen;
 
 /**
  * AbstractScreen
@@ -14,6 +16,11 @@ public abstract class AbstractScreen implements Screen
 {
 	public static final float SCREEN_WIDTH = 1600;
 	public static final float SCREEN_HEIGHT = 900;
+	
+	public AbstractScreen()
+	{
+		Logger.log("Constructing " + getClass().getSimpleName());
+	}
 	
 	public abstract void load(ResourceManager resourceManager);
 	
@@ -44,6 +51,7 @@ public abstract class AbstractScreen implements Screen
 	@Override
 	public void hide()
 	{
+		Logger.log("Disposing" + getClass().getSimpleName());
 		dispose();
 	}
 	

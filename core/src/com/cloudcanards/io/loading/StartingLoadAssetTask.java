@@ -1,7 +1,8 @@
 package com.cloudcanards.io.loading;
 
-import com.badlogic.gdx.graphics.Texture;
 import com.cloudcanards.assets.Assets;
+
+import com.badlogic.gdx.graphics.Texture;
 
 /**
  * Loads starting assets necessary to start the game

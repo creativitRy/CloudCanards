@@ -12,7 +12,7 @@ public abstract class AbstractLoadAssetTask extends AbstractTask
 		super(resourceManager);
 	}
 	
-	public boolean runInNewThread()
+	public final boolean runInNewThread()
 	{
 		return false;
 	}
@@ -28,10 +28,14 @@ public abstract class AbstractLoadAssetTask extends AbstractTask
 	 * @return true if done
 	 */
 	@Override
-	public boolean isDone()
+	public final boolean isDone()
 	{
+		if (super.isDone())
+			return true;
+		
 		if (resourceManager.getAssetManager().update())
 		{
+			finish();
 			postRun();
 			return true;
 		}

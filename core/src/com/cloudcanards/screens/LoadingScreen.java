@@ -1,5 +1,12 @@
 package com.cloudcanards.screens;
 
+import com.cloudcanards.CloudCanards;
+import com.cloudcanards.assets.Assets;
+import com.cloudcanards.io.loading.AbstractLoadAssetTask;
+import com.cloudcanards.io.loading.ResourceManager;
+import com.cloudcanards.ui.LoadingThrobber;
+import com.cloudcanards.util.Logger;
+
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.Animation;
@@ -11,11 +18,6 @@ import com.badlogic.gdx.scenes.scene2d.ui.Image;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.scenes.scene2d.ui.Table;
 import com.badlogic.gdx.utils.viewport.FitViewport;
-import com.cloudcanards.CloudCanards;
-import com.cloudcanards.assets.Assets;
-import com.cloudcanards.io.loading.AbstractLoadAssetTask;
-import com.cloudcanards.io.loading.ResourceManager;
-import com.cloudcanards.ui.LoadingThrobber;
 
 /**
  * LoadingScreen
@@ -115,6 +117,7 @@ public class LoadingScreen extends AbstractScreen
 			loadingState++;
 			if (loadingState == 1)
 			{
+				Logger.log("loading " + screen.getClass().getSimpleName());
 				screen.load(CloudCanards.getInstance().getResourceManager());
 			}
 			else if (loadingState > 2) // move to next screen one frame after loading everything

@@ -43,25 +43,22 @@ public class ResourceManager
 	 */
 	public boolean update()
 	{
+		//add tasks to the queue
 		while (!multithreadAddFixer.isEmpty())
 		{
 			if (tasks.isEmpty())
 			{
-				//run next task
-				if (multithreadAddFixer.peek().runInNewThread())
-				{
-					new Thread(multithreadAddFixer.peek()::run).start();
-				}
-				else
-					multithreadAddFixer.peek().run();
+				runTask(multithreadAddFixer.peek());
 			}
 			
 			tasks.add(multithreadAddFixer.pop());
 		}
 		
+		//done updating
 		if (tasks.isEmpty())
 			return true;
 		
+		//remove task and run next task
 		if (multithreadRemoveFixer)
 		{
 			tasks.remove();
@@ -69,22 +66,28 @@ public class ResourceManager
 			
 			if (!tasks.isEmpty())
 			{
-				//run next task
-				if (tasks.peek().runInNewThread())
-				{
-					new Thread(tasks.peek()::run).start();
-				}
-				else
-					tasks.peek().run();
+				runTask(tasks.peek());
 			}
 		}
 		
+		//set task to be removed and run postrun
 		if (!tasks.isEmpty() && tasks.peek().isDone())
 		{
 			multithreadRemoveFixer = true;
 		}
 		
+		//still updating
 		return false;
+	}
+	
+	private void runTask(AbstractTask task)
+	{
+		if (task.runInNewThread())
+		{
+			new Thread(task::run).start();
+		}
+		else
+			task.run();
 	}
 	
 	/**

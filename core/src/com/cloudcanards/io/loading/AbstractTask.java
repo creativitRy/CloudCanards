@@ -8,10 +8,12 @@ package com.cloudcanards.io.loading;
 public abstract class AbstractTask
 {
 	protected ResourceManager resourceManager;
+	private boolean done;
 	
 	public AbstractTask(ResourceManager resourceManager)
 	{
 		this.resourceManager = resourceManager;
+		done = false;
 	}
 	
 	/**
@@ -25,9 +27,14 @@ public abstract class AbstractTask
 	}
 	
 	/**
-	 * This will run in a new thread
+	 * This will run in a new thread. Call finish() after finished
 	 */
 	public abstract void run();
+	
+	protected void finish()
+	{
+		done = true;
+	}
 	
 	/**
 	 * Use Gdx.app.postRunnable from run() to post notice that this task is over
@@ -35,5 +42,9 @@ public abstract class AbstractTask
 	 * @return true if done
 	 * @see <a href="https://github.com/libgdx/libgdx/wiki/Threading">https://github.com/libgdx/libgdx/wiki/Threading</a>
 	 */
-	public abstract boolean isDone();
+	public boolean isDone()
+	{
+		return done;
+	}
+	
 }
