@@ -55,7 +55,7 @@ public class LoadingScreen extends AbstractScreen
 	@Override
 	public void load(ResourceManager resourceManager)
 	{
-		resourceManager.addTasks(new AbstractLoadAssetTask(resourceManager)
+		resourceManager.addTask(new AbstractLoadAssetTask(resourceManager)
 		{
 			@Override
 			public void run()
@@ -74,7 +74,7 @@ public class LoadingScreen extends AbstractScreen
 		});
 		
 		//probably background image
-		resourceManager.addTasks(new AbstractLoadAssetTask(resourceManager)
+		resourceManager.addTask(new AbstractLoadAssetTask(resourceManager)
 		{
 			@Override
 			public void run()

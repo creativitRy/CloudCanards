@@ -24,7 +24,7 @@ public class MapCollisionBuilderTask extends AbstractTask
 	private MapLayer collisionLayer;
 	private World world;
 	
-	public Array<Body> collisions;
+	private Array<Body> collisions;
 	
 	/**
 	 * @param collisionLayer tiled object layer to extract the collision data from

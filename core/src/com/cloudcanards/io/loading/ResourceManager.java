@@ -33,7 +33,7 @@ public class ResourceManager
 	}
 	
 	
-	public void addTasks(AbstractTask task)
+	public void addTask(AbstractTask task)
 	{
 		multithreadAddFixer.add(task);
 	}
@@ -51,7 +51,7 @@ public class ResourceManager
 				runTask(multithreadAddFixer.peek());
 			}
 			
-			tasks.add(multithreadAddFixer.pop());
+			tasks.add(multithreadAddFixer.remove());
 		}
 		
 		//done updating
