@@ -149,9 +149,9 @@ public class LoadingScreen extends AbstractScreen
 	}
 	
 	@Override
-	public void dispose(ResourceManager manager)
+	public void dispose(ResourceManager resourceManager)
 	{
-		manager.getAssetManager().unload(Assets.DIR + Assets.THROBBER);
-		manager.getAssetManager().unload(Assets.DIR + "test.png");
+		resourceManager.getAssetManager().unload(Assets.DIR + Assets.THROBBER);
+		resourceManager.getAssetManager().unload(Assets.DIR + "test.png");
 	}
 }

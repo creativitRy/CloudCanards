@@ -1,6 +1,8 @@
 package com.cloudcanards.screens;
 
 import com.cloudcanards.CloudCanards;
+import com.cloudcanards.io.loading.Disposable;
+import com.cloudcanards.io.loading.Loadable;
 import com.cloudcanards.io.loading.ResourceManager;
 import com.cloudcanards.util.Logger;
 
@@ -12,7 +14,7 @@ import com.badlogic.gdx.Screen;
  *
  * @author creativitRy
  */
-public abstract class AbstractScreen implements Screen
+public abstract class AbstractScreen implements Screen, Loadable, Disposable
 {
 	public static final float SCREEN_WIDTH = 1600;
 	public static final float SCREEN_HEIGHT = 900;
@@ -61,5 +63,5 @@ public abstract class AbstractScreen implements Screen
 		dispose(CloudCanards.getInstance().getResourceManager());
 	}
 	
-	public abstract void dispose(ResourceManager manager);
+	public abstract void dispose(ResourceManager resourceManager);
 }

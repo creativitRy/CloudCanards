@@ -24,6 +24,9 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 public class GameScreen extends AbstractScreen
 {
 	public static final Vector2 GRAVITY = new Vector2(0, -10);
+	private static final float TIME_STEP = 1f / 60f;
+	private static final int VELOCITY_ITERATIONS = 6;
+	private static final int POSITION_ITERATIONS = 2;
 	
 	//render
 	private SpriteBatch batch;
@@ -37,6 +40,7 @@ public class GameScreen extends AbstractScreen
 	
 	//box2d
 	private World world;
+	private float physicsTick;
 	//todo
 	private Box2DDebugRenderer box2DDebugRenderer;
 	
@@ -49,6 +53,7 @@ public class GameScreen extends AbstractScreen
 		camera.position.x = 30;
 		camera.position.y = 50;
 		viewport = new FitViewport(48, 27, camera);
+		
 		box2DDebugRenderer = new Box2DDebugRenderer();
 	}
 	
@@ -106,10 +111,37 @@ public class GameScreen extends AbstractScreen
 		viewport.apply();
 		batch.setProjectionMatrix(camera.combined);
 		
+		boolean physics = doPhysicsStep(delta);
+		
 		mapRenderer.setView(camera);
 		mapRenderer.render();
 		
 		box2DDebugRenderer.render(world, camera.combined);
+	}
+	
+	/**
+	 * Updates the physics world while
+	 * making sure dt in the physics simulation is constant
+	 *
+	 * @param deltaTime time between each frame (might not be constant)
+	 * @return new value of physicsStepped indicating whether the world updated or not
+	 */
+	private boolean doPhysicsStep(float deltaTime)
+	{
+		// max frame time to avoid spiral of death (on slow devices)
+		float frameTime = Math.min(deltaTime, 0.25f);
+		physicsTick += frameTime;
+		
+		if (physicsTick < TIME_STEP)
+			return false;
+		
+		while (physicsTick >= TIME_STEP)
+		{
+			world.step(TIME_STEP, VELOCITY_ITERATIONS, POSITION_ITERATIONS);
+			physicsTick -= TIME_STEP;
+		}
+		
+		return true;
 	}
 	
 	@Override
@@ -131,7 +163,7 @@ public class GameScreen extends AbstractScreen
 	}
 	
 	@Override
-	public void dispose(ResourceManager manager)
+	public void dispose(ResourceManager resourceManager)
 	{
 	
 	}

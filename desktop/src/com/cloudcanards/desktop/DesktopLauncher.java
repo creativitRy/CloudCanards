@@ -1,8 +1,9 @@
 package com.cloudcanards.desktop;
 
+import com.cloudcanards.CloudCanards;
+
 import com.badlogic.gdx.backends.lwjgl.LwjglApplication;
 import com.badlogic.gdx.backends.lwjgl.LwjglApplicationConfiguration;
-import com.cloudcanards.CloudCanards;
 
 /**
  * DesktopLauncher
@@ -24,6 +25,6 @@ public class DesktopLauncher
 		config.width = LwjglApplicationConfiguration.getDesktopDisplayMode().width;
 		config.height = LwjglApplicationConfiguration.getDesktopDisplayMode().height;*/
 		
-		new LwjglApplication(new CloudCanards(), config);
+		new LwjglApplication(CloudCanards.getInstance(), config);
 	}
 }

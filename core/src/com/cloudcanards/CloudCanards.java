@@ -1,5 +1,6 @@
 package com.cloudcanards;
 
+import com.cloudcanards.input.InputManager;
 import com.cloudcanards.io.loading.ResourceManager;
 import com.cloudcanards.screens.GameScreen;
 import com.cloudcanards.screens.LoadingScreen;
@@ -18,11 +19,11 @@ import com.badlogic.gdx.physics.box2d.Box2D;
  */
 public class CloudCanards extends Game
 {
-	public static CloudCanards instance;
+	private static final CloudCanards INSTANCE = new CloudCanards();
 	
 	public static CloudCanards getInstance()
 	{
-		return instance;
+		return INSTANCE;
 	}
 	
 	private ResourceManager resourceManager;
@@ -30,16 +31,18 @@ public class CloudCanards extends Game
 	/**
 	 * Don't put anything here. Put it in create() instead
 	 */
-	public CloudCanards()
+	private CloudCanards()
 	{
-		instance = this;
+	
 	}
 	
 	@Override
 	public void create()
 	{
 		resourceManager = new ResourceManager();
-		//todo
+		//todo: move to loading screen after splash screen and load saved inputs
+		InputManager.init();
+		//todo: move to starting game
 		Box2D.init();
 		
 		setScreen(new LoadingScreen(new GameScreen("levels/dev/steampunk.tmx")));
