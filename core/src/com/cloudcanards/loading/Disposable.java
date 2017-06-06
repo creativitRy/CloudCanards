@@ -1,4 +1,4 @@
-package com.cloudcanards.io.loading;
+package com.cloudcanards.loading;
 
 /**
  * Disposeable

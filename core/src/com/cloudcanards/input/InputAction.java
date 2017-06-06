@@ -7,4 +7,5 @@ package com.cloudcanards.input;
  */
 public enum InputAction
 {
+	JUMP
 }

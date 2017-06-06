@@ -2,9 +2,9 @@ package com.cloudcanards.character;
 
 import com.cloudcanards.behavior.Renderable;
 import com.cloudcanards.behavior.Updateable;
-import com.cloudcanards.io.loading.Disposable;
-import com.cloudcanards.io.loading.Loadable;
-import com.cloudcanards.io.loading.ResourceManager;
+import com.cloudcanards.loading.Disposable;
+import com.cloudcanards.loading.Loadable;
+import com.cloudcanards.loading.ResourceManager;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 

@@ -1,9 +1,9 @@
 package com.cloudcanards.screens;
 
 import com.cloudcanards.CloudCanards;
-import com.cloudcanards.io.loading.Disposable;
-import com.cloudcanards.io.loading.Loadable;
-import com.cloudcanards.io.loading.ResourceManager;
+import com.cloudcanards.loading.Disposable;
+import com.cloudcanards.loading.Loadable;
+import com.cloudcanards.loading.ResourceManager;
 import com.cloudcanards.util.Logger;
 
 import com.badlogic.gdx.Game;

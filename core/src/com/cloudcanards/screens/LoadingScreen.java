@@ -2,8 +2,8 @@ package com.cloudcanards.screens;
 
 import com.cloudcanards.CloudCanards;
 import com.cloudcanards.assets.Assets;
-import com.cloudcanards.io.loading.AbstractLoadAssetTask;
-import com.cloudcanards.io.loading.ResourceManager;
+import com.cloudcanards.loading.AbstractLoadAssetTask;
+import com.cloudcanards.loading.ResourceManager;
 import com.cloudcanards.ui.LoadingThrobber;
 import com.cloudcanards.util.Logger;
 

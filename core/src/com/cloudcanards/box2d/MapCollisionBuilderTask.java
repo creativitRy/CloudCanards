@@ -1,7 +1,7 @@
 package com.cloudcanards.box2d;
 
-import com.cloudcanards.io.loading.AbstractTask;
-import com.cloudcanards.io.loading.ResourceManager;
+import com.cloudcanards.loading.AbstractTask;
+import com.cloudcanards.loading.ResourceManager;
 
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;

@@ -2,9 +2,9 @@ package com.cloudcanards.screens;
 
 import com.cloudcanards.assets.Assets;
 import com.cloudcanards.box2d.MapCollisionBuilderTask;
-import com.cloudcanards.io.loading.AbstractLoadAssetTask;
-import com.cloudcanards.io.loading.AbstractTask;
-import com.cloudcanards.io.loading.ResourceManager;
+import com.cloudcanards.loading.AbstractLoadAssetTask;
+import com.cloudcanards.loading.AbstractTask;
+import com.cloudcanards.loading.ResourceManager;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -101,7 +101,6 @@ public class GameScreen extends AbstractScreen
 	@Override
 	public void show()
 	{
-	
 	}
 	
 	@Override

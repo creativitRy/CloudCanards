@@ -1,4 +1,4 @@
-package com.cloudcanards.io.loading;
+package com.cloudcanards.loading;
 
 import com.badlogic.gdx.assets.AssetManager;
 import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;

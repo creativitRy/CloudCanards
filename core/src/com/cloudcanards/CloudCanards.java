@@ -1,7 +1,7 @@
 package com.cloudcanards;
 
 import com.cloudcanards.input.InputManager;
-import com.cloudcanards.io.loading.ResourceManager;
+import com.cloudcanards.loading.ResourceManager;
 import com.cloudcanards.screens.GameScreen;
 import com.cloudcanards.screens.LoadingScreen;
 import com.cloudcanards.util.Logger;
@@ -40,7 +40,7 @@ public class CloudCanards extends Game
 	public void create()
 	{
 		resourceManager = new ResourceManager();
-		//todo: move to loading screen after splash screen and load saved inputs
+		//todo: move to loading screen after splash screen
 		InputManager.init();
 		//todo: move to starting game
 		Box2D.init();

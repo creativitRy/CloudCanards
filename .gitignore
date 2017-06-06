@@ -1,3 +1,7 @@
+## Saved from the game
+core/assets/*
+!core/assets/data/
+
 ## Java
 
 *.class

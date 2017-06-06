@@ -21,7 +21,7 @@ import java.util.Iterator;
  */
 public class InputManager implements InputProcessor, ControllerListener
 {
-	private static final transient InputManager INSTANCE = new InputManager();
+	private static transient InputManager INSTANCE;
 	
 	public static InputManager getInstance()
 	{
@@ -30,7 +30,7 @@ public class InputManager implements InputProcessor, ControllerListener
 	
 	public static void init()
 	{
-		//todo: load default inputs - probably as json with custom serializer for objectmap
+		INSTANCE = InputIO.load();
 	}
 	
 	//maps
@@ -47,21 +47,13 @@ public class InputManager implements InputProcessor, ControllerListener
 	private transient Array<InputListener> removalPendingListeners; //this is an array bc listeners might not have
 	// unique hashes
 	
-	private InputManager()
+	public InputManager()
 	{
 		Controllers.addListener(this);
 		
-		keyMap = new ObjectMap<>();
-		mouseButtonMap = new ObjectMap<>();
-		mouseMoveMap = new ObjectMap<>();
-		mouseScrollMap = new ObjectMap<>();
-		controllerButtonMap = new ObjectMap<>();
-		constrollerAxisMap = new ObjectMap<>();
-		controllerPOVMap = new ObjectMap<>();
-		controllerTriggerMap = new ObjectMap<>();
-		
 		listeners = new Array<>(16);
 		removalPendingListeners = new Array<>(4);
+		
 	}
 	
 	/**
@@ -224,5 +216,86 @@ public class InputManager implements InputProcessor, ControllerListener
 	public boolean accelerometerMoved(Controller controller, int accelerometerCode, Vector3 value)
 	{
 		return false;
+	}
+	
+	//below is only for serialization
+	ObjectMap<Integer, InputAction> getKeyMap()
+	{
+		return keyMap;
+	}
+	
+	void setKeyMap(ObjectMap<Integer, InputAction> keyMap)
+	{
+		this.keyMap = keyMap;
+	}
+	
+	ObjectMap<Integer, InputAction> getMouseButtonMap()
+	{
+		return mouseButtonMap;
+	}
+	
+	void setMouseButtonMap(ObjectMap<Integer, InputAction> mouseButtonMap)
+	{
+		this.mouseButtonMap = mouseButtonMap;
+	}
+	
+	ObjectMap<Integer, InputAction> getMouseMoveMap()
+	{
+		return mouseMoveMap;
+	}
+	
+	void setMouseMoveMap(ObjectMap<Integer, InputAction> mouseMoveMap)
+	{
+		this.mouseMoveMap = mouseMoveMap;
+	}
+	
+	ObjectMap<Integer, InputAction> getMouseScrollMap()
+	{
+		return mouseScrollMap;
+	}
+	
+	void setMouseScrollMap(ObjectMap<Integer, InputAction> mouseScrollMap)
+	{
+		this.mouseScrollMap = mouseScrollMap;
+	}
+	
+	ObjectMap<Integer, InputAction> getControllerButtonMap()
+	{
+		return controllerButtonMap;
+	}
+	
+	void setControllerButtonMap(ObjectMap<Integer, InputAction> controllerButtonMap)
+	{
+		this.controllerButtonMap = controllerButtonMap;
+	}
+	
+	ObjectMap<Integer, InputAction> getConstrollerAxisMap()
+	{
+		return constrollerAxisMap;
+	}
+	
+	void setConstrollerAxisMap(ObjectMap<Integer, InputAction> constrollerAxisMap)
+	{
+		this.constrollerAxisMap = constrollerAxisMap;
+	}
+	
+	ObjectMap<Integer, InputAction> getControllerPOVMap()
+	{
+		return controllerPOVMap;
+	}
+	
+	void setControllerPOVMap(ObjectMap<Integer, InputAction> controllerPOVMap)
+	{
+		this.controllerPOVMap = controllerPOVMap;
+	}
+	
+	ObjectMap<Integer, InputAction> getControllerTriggerMap()
+	{
+		return controllerTriggerMap;
+	}
+	
+	void setControllerTriggerMap(ObjectMap<Integer, InputAction> controllerTriggerMap)
+	{
+		this.controllerTriggerMap = controllerTriggerMap;
 	}
 }
