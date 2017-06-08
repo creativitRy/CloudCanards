@@ -11,11 +11,6 @@ import com.badlogic.gdx.graphics.Texture;
  */
 public class StartingLoadAssetTask extends AbstractLoadAssetTask
 {
-	public StartingLoadAssetTask(ResourceManager resourceManager)
-	{
-		super(resourceManager);
-	}
-	
 	@Override
 	public void run()
 	{

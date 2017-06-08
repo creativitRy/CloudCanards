@@ -1,6 +1,5 @@
 package com.cloudcanards.components;
 
-import com.cloudcanards.behavior.Updateable;
 import com.cloudcanards.character.AbstractCharacter;
 
 /**
@@ -8,9 +7,9 @@ import com.cloudcanards.character.AbstractCharacter;
  *
  * @author creativitRy
  */
-public abstract class AbstractComponent implements Updateable
+public abstract class AbstractComponent
 {
-	private AbstractCharacter character;
+	protected AbstractCharacter character;
 	
 	public AbstractComponent(AbstractCharacter character)
 	{

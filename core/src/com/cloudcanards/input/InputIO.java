@@ -107,7 +107,7 @@ public class InputIO
 			json.writeObjectStart();
 			for (ObjectMap.Entry<Integer, InputAction> entry : (ObjectMap<Integer, InputAction>) object)
 			{
-				json.writeValue(entry.key.toString(), entry.value.ordinal());
+				json.writeValue(entry.key.toString(), entry.value.name());
 			}
 			json.writeObjectEnd();
 		}
@@ -118,7 +118,7 @@ public class InputIO
 			ObjectMap<Integer, InputAction> map = new ObjectMap<>();
 			for (JsonValue value : jsonData)
 			{
-				map.put(Integer.parseInt(value.name()), InputAction.values()[value.asInt()]);
+				map.put(Integer.parseInt(value.name()), InputAction.valueOf(value.asString()));
 			}
 			return map;
 		}

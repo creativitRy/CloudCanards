@@ -2,6 +2,7 @@ package com.cloudcanards.input;
 
 import com.cloudcanards.util.Logger;
 
+import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
@@ -33,6 +34,11 @@ public class InputManager implements InputProcessor, ControllerListener
 		INSTANCE = InputIO.load();
 	}
 	
+	public static void register(InputListener listener)
+	{
+		getInstance().addListener(listener);
+	}
+	
 	//maps
 	private ObjectMap<Integer, InputAction> keyMap;
 	private ObjectMap<Integer, InputAction> mouseButtonMap;
@@ -49,11 +55,11 @@ public class InputManager implements InputProcessor, ControllerListener
 	
 	public InputManager()
 	{
+		Gdx.input.setInputProcessor(this);
 		Controllers.addListener(this);
 		
 		listeners = new Array<>(16);
 		removalPendingListeners = new Array<>(4);
-		
 	}
 	
 	/**
@@ -107,14 +113,20 @@ public class InputManager implements InputProcessor, ControllerListener
 	{
 		if (keyMap.containsKey(keycode))
 		{
-			return notifyListeners(keyMap.get(keycode), InputType.KEYBOARD_KEY);
+			return notifyListeners(keyMap.get(keycode), InputType.KEYBOARD_KEY, true);
 		}
+		
+		Logger.log(keycode);
 		return false;
 	}
 	
 	@Override
 	public boolean keyUp(int keycode)
 	{
+		if (keyMap.containsKey(keycode))
+		{
+			return notifyListeners(keyMap.get(keycode), InputType.KEYBOARD_KEY, false);
+		}
 		return false;
 	}
 	
@@ -127,9 +139,9 @@ public class InputManager implements InputProcessor, ControllerListener
 	@Override
 	public boolean touchDown(int screenX, int screenY, int pointer, int button)
 	{
-		if (keyMap.containsKey(button))
+		if (mouseButtonMap.containsKey(button))
 		{
-			return notifyListeners(keyMap.get(button), InputType.MOUSE_BUTTON, screenX, screenY);
+			return notifyListeners(mouseButtonMap.get(button), InputType.MOUSE_BUTTON, true, screenX, screenY);
 		}
 		return false;
 	}
@@ -137,6 +149,10 @@ public class InputManager implements InputProcessor, ControllerListener
 	@Override
 	public boolean touchUp(int screenX, int screenY, int pointer, int button)
 	{
+		if (mouseButtonMap.containsKey(button))
+		{
+			return notifyListeners(mouseButtonMap.get(button), InputType.MOUSE_BUTTON, false, screenX, screenY);
+		}
 		return false;
 	}
 	
@@ -173,13 +189,23 @@ public class InputManager implements InputProcessor, ControllerListener
 	@Override
 	public boolean buttonDown(Controller controller, int buttonCode)
 	{
-		Logger.logAll(controller, buttonCode);
+		Logger.logAll(controller.getName(), buttonCode);
+		if (controllerButtonMap.containsKey(buttonCode))
+		{
+			//todo - based on controller name
+			buttonCode = buttonCode << 3 & 0b001;
+			return notifyListeners(controllerButtonMap.get(buttonCode), InputType.CONTROLLER_BUTTON, true);
+		}
 		return false;
 	}
 	
 	@Override
 	public boolean buttonUp(Controller controller, int buttonCode)
 	{
+		if (controllerButtonMap.containsKey(buttonCode))
+		{
+			return notifyListeners(controllerButtonMap.get(buttonCode), InputType.CONTROLLER_BUTTON, false);
+		}
 		return false;
 	}
 	

@@ -40,7 +40,7 @@ public class CloudCanards extends Game
 	public void create()
 	{
 		resourceManager = new ResourceManager();
-		//todo: move to loading screen after splash screen
+		//todo: move to loading screen after splash screen - make sure this is called before getInstance()
 		InputManager.init();
 		//todo: move to starting game
 		Box2D.init();

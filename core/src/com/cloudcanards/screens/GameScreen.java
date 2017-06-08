@@ -2,6 +2,7 @@ package com.cloudcanards.screens;
 
 import com.cloudcanards.assets.Assets;
 import com.cloudcanards.box2d.MapCollisionBuilderTask;
+import com.cloudcanards.character.TestChar;
 import com.cloudcanards.loading.AbstractLoadAssetTask;
 import com.cloudcanards.loading.AbstractTask;
 import com.cloudcanards.loading.ResourceManager;
@@ -23,7 +24,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
  */
 public class GameScreen extends AbstractScreen
 {
-	public static final Vector2 GRAVITY = new Vector2(0, -10);
+	public static final Vector2 GRAVITY = new Vector2(0, -30);
 	private static final float TIME_STEP = 1f / 60f;
 	private static final int VELOCITY_ITERATIONS = 6;
 	private static final int POSITION_ITERATIONS = 2;
@@ -43,6 +44,7 @@ public class GameScreen extends AbstractScreen
 	private float physicsTick;
 	//todo
 	private Box2DDebugRenderer box2DDebugRenderer;
+	private TestChar player;
 	
 	public GameScreen(String mapName)
 	{
@@ -61,18 +63,21 @@ public class GameScreen extends AbstractScreen
 	public void load(ResourceManager resourceManager)
 	{
 		//init world
-		resourceManager.addTask(new AbstractTask(resourceManager)
+		resourceManager.addTask(new AbstractTask()
 		{
 			@Override
 			public void run()
 			{
 				world = new World(GRAVITY, true);
+				player = new TestChar(world, new Vector2(20, 70));
+				player.load(resourceManager);
 				finish();
 			}
 		});
 		
+		
 		//load map
-		resourceManager.addTask(new AbstractLoadAssetTask(resourceManager)
+		resourceManager.addTask(new AbstractLoadAssetTask()
 		{
 			@Override
 			public void run()
@@ -91,7 +96,7 @@ public class GameScreen extends AbstractScreen
 				MapLayer collisionLayer = map.getLayers().get("collision");
 				if (collisionLayer != null)
 				{
-					resourceManager.addTask(new MapCollisionBuilderTask(resourceManager, tileSize, collisionLayer,
+					resourceManager.addTask(new MapCollisionBuilderTask(tileSize, collisionLayer,
 						world));
 				}
 			}
@@ -101,6 +106,7 @@ public class GameScreen extends AbstractScreen
 	@Override
 	public void show()
 	{
+	
 	}
 	
 	@Override
@@ -110,10 +116,16 @@ public class GameScreen extends AbstractScreen
 		viewport.apply();
 		batch.setProjectionMatrix(camera.combined);
 		
+		player.update(delta);
+		
 		boolean physics = doPhysicsStep(delta);
 		
 		mapRenderer.setView(camera);
 		mapRenderer.render();
+		
+		batch.begin();
+		player.render(batch, delta);
+		batch.end();
 		
 		box2DDebugRenderer.render(world, camera.combined);
 	}

@@ -1,7 +1,6 @@
 package com.cloudcanards.box2d;
 
 import com.cloudcanards.loading.AbstractTask;
-import com.cloudcanards.loading.ResourceManager;
 
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.MapObject;
@@ -31,9 +30,8 @@ public class MapCollisionBuilderTask extends AbstractTask
 	 * @param tileSize       the size of one tile in pixels (if your tiles are 16x16, this is set to 16f)
 	 * @param world          box2d world to create bodies with
 	 */
-	public MapCollisionBuilderTask(ResourceManager resourceManager, float tileSize, MapLayer collisionLayer, World world)
+	public MapCollisionBuilderTask(float tileSize, MapLayer collisionLayer, World world)
 	{
-		super(resourceManager);
 		this.tileSize = tileSize;
 		this.collisionLayer = collisionLayer;
 		this.world = world;
@@ -122,12 +120,9 @@ public class MapCollisionBuilderTask extends AbstractTask
 	{
 		Rectangle rectangle = rectangleObject.getRectangle();
 		PolygonShape polygon = new PolygonShape();
-		Vector2 size = new Vector2((rectangle.x + rectangle.width * 0.5f) / tileSize,
-			(rectangle.y + rectangle.height * 0.5f) / tileSize);
-		polygon.setAsBox(rectangle.width * 0.5f / tileSize,
-			rectangle.height * 0.5f / tileSize,
-			size,
-			0.0f);
+		Vector2 size = new Vector2((rectangle.x + rectangle.width / 2f) / tileSize, (rectangle.y + rectangle.height
+			/ 2f) / tileSize);
+		polygon.setAsBox(rectangle.width / 2f / tileSize, rectangle.height / 2f / tileSize, size, 0.0f);
 		return polygon;
 	}
 	

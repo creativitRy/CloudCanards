@@ -7,11 +7,6 @@ package com.cloudcanards.loading;
  */
 public abstract class AbstractLoadAssetTask extends AbstractTask
 {
-	public AbstractLoadAssetTask(ResourceManager resourceManager)
-	{
-		super(resourceManager);
-	}
-	
 	public final boolean runInNewThread()
 	{
 		return false;
@@ -40,6 +35,12 @@ public abstract class AbstractLoadAssetTask extends AbstractTask
 			return true;
 		}
 		return false;
+	}
+	
+	@Override
+	protected final void finish()
+	{
+		super.finish();
 	}
 	
 	/**

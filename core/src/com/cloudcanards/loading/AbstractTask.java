@@ -1,5 +1,7 @@
 package com.cloudcanards.loading;
 
+import com.cloudcanards.CloudCanards;
+
 /**
  * Does stuff
  *
@@ -10,9 +12,9 @@ public abstract class AbstractTask
 	protected ResourceManager resourceManager;
 	private boolean done;
 	
-	public AbstractTask(ResourceManager resourceManager)
+	public AbstractTask()
 	{
-		this.resourceManager = resourceManager;
+		this.resourceManager = CloudCanards.getInstance().getResourceManager();
 		done = false;
 	}
 	

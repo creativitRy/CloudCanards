@@ -7,5 +7,10 @@ package com.cloudcanards.input;
  */
 public enum InputAction
 {
-	JUMP
+	JUMP,
+	WALK,
+	SPRINT,
+	MOVE,
+	MOVE_LEFT,
+	MOVE_RIGHT
 }
