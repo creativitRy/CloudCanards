@@ -1,8 +1,10 @@
 package com.cloudcanards.character;
 
 import com.cloudcanards.assets.Assets;
+import com.cloudcanards.components.CameraFocusComponent;
 import com.cloudcanards.components.DefaultRenderComponent;
 import com.cloudcanards.components.InputComponent;
+import com.cloudcanards.screens.GameScreen;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
@@ -20,5 +22,8 @@ public class TestChar extends AbstractCharacter
 		
 		addComponent(new DefaultRenderComponent(this));
 		addComponent(new InputComponent(this, true));
+		final CameraFocusComponent component = new CameraFocusComponent(this);
+		GameScreen.getInstance().setCameraFocus(component);
+		addComponent(component);
 	}
 }

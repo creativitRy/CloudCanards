@@ -2,7 +2,9 @@ package com.cloudcanards.screens;
 
 import com.cloudcanards.assets.Assets;
 import com.cloudcanards.box2d.MapCollisionBuilderTask;
+import com.cloudcanards.camera.CameraFocus;
 import com.cloudcanards.character.TestChar;
+import com.cloudcanards.components.CameraFocusComponent;
 import com.cloudcanards.loading.AbstractLoadAssetTask;
 import com.cloudcanards.loading.AbstractTask;
 import com.cloudcanards.loading.ResourceManager;
@@ -24,6 +26,14 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
  */
 public class GameScreen extends AbstractScreen
 {
+	private static GameScreen INSTANCE;
+	private CameraFocusComponent cameraFocus;
+	
+	public static GameScreen getInstance()
+	{
+		return INSTANCE;
+	}
+	
 	public static final Vector2 GRAVITY = new Vector2(0, -30);
 	private static final float TIME_STEP = 1f / 60f;
 	private static final int VELOCITY_ITERATIONS = 6;
@@ -32,6 +42,7 @@ public class GameScreen extends AbstractScreen
 	//render
 	private SpriteBatch batch;
 	private OrthographicCamera camera;
+	private CameraFocus focus;
 	private FitViewport viewport;
 	
 	//map
@@ -48,6 +59,7 @@ public class GameScreen extends AbstractScreen
 	
 	public GameScreen(String mapName)
 	{
+		INSTANCE = this;
 		this.mapName = mapName;
 		
 		batch = new SpriteBatch();
@@ -109,9 +121,16 @@ public class GameScreen extends AbstractScreen
 	
 	}
 	
+	public void setCameraFocus(CameraFocusComponent cameraFocus)
+	{
+		this.cameraFocus = cameraFocus;
+	}
+	
 	@Override
 	public void render(float delta)
 	{
+		if (cameraFocus != null)
+			cameraFocus.setPosition(camera);
 		camera.update();
 		viewport.apply();
 		batch.setProjectionMatrix(camera.combined);

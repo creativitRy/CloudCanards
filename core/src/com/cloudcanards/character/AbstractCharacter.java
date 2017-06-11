@@ -31,7 +31,8 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 	
 	//movement
 	private CharacterState state;
-	private MovementSpeed speed;
+	private MovementType movementType;
+	private float movementSpeed;
 	private boolean faceRight;
 	/**
 	 * -1 is left, 0 is not moving, 1 is right
@@ -58,9 +59,17 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 		faceRight = true;
 		
 		state = CharacterState.FALL;
-		speed = MovementSpeed.RUN;
+		run();
 	}
 	
+	/**
+	 * Default shape is a capsule
+	 *
+	 * @param position
+	 * @param halfHeight
+	 * @param radius
+	 * @return
+	 */
 	protected Body initPhysicsBody(Vector2 position, float halfHeight, float radius)
 	{
 		if (halfHeight < radius) throw new IllegalArgumentException("half height < radius");
@@ -182,19 +191,35 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 		return state;
 	}
 	
+	public MovementType getMovementType()
+	{
+		return movementType;
+	}
+	
 	public void walk()
 	{
-		speed = MovementSpeed.WALK;
+		movementType = MovementType.WALK;
+		updateSpeed();
 	}
 	
 	public void run()
 	{
-		speed = MovementSpeed.RUN;
+		movementType = MovementType.RUN;
+		updateSpeed();
 	}
 	
 	public void sprint()
 	{
-		speed = MovementSpeed.SPRINT;
+		movementType = MovementType.SPRINT;
+		updateSpeed();
+	}
+	
+	/**
+	 * Override this to change the speed to move when walking, running, sprinting
+	 */
+	protected void updateSpeed()
+	{
+		movementSpeed = movementType.getDefaultSpeed();
 	}
 	
 	public int getMovementDir()
@@ -216,12 +241,29 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 		return faceRight;
 	}
 	
+	public void jump()
+	{
+		body.setLinearVelocity(body.getLinearVelocity().x, 0);
+		Vector2 pos = body.getWorldCenter();
+		body.applyLinearImpulse(0, 15, pos.x, pos.y, true);
+	}
+	
 	@Override
 	public void update(float delta)
 	{
 		if (movementDir != 0)
 		{
-			body.applyLinearImpulse(new Vector2(movementDir * 4, 0), body.getPosition(), true);
+			Vector2 pos = body.getWorldCenter();
+			Vector2 vel = body.getLinearVelocity();
+			
+			if (Math.abs(vel.x) <= movementSpeed)
+			{
+				float desiredVel = movementDir * movementSpeed;
+				float velChange = desiredVel - vel.x;
+				float impulse = body.getMass() * velChange;
+				body.applyLinearImpulse(impulse, 0, pos.x, pos.y, true);
+			}
+			
 		}
 		
 		for (Updateable component : updateableComponents)

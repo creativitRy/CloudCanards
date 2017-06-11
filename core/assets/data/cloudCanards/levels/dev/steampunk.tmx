@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<map version="1.0.0" orientation="orthogonal" renderorder="right-down" width="100" height="100" tilewidth="16" tileheight="16" nextobjectid="50">
+<map version="1.0.0" orientation="orthogonal" renderorder="right-down" width="100" height="100" tilewidth="16" tileheight="16" nextobjectid="57">
  <tileset firstgid="1" name="Steampunk Blocks" tilewidth="16" tileheight="16" tilecount="96" columns="12">
   <image source="Steampunk Blocks.png" width="192" height="128"/>
   <terraintypes>
@@ -548,6 +548,11 @@
     <property name="restitution" type="float" value="1.3"/>
    </properties>
    <polygon points="0,0 112,-64 112,16 48,80 -16,96 -64,112 -16,16"/>
+  </object>
+  <object id="50" x="944" y="896" width="224" height="16"/>
+  <object id="53" x="1216" y="848" width="304" height="16"/>
+  <object id="56" x="1168" y="896">
+   <polygon points="0,0 48,-48 48,16 0,16"/>
   </object>
  </objectgroup>
 </map>

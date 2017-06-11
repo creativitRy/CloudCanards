@@ -79,7 +79,10 @@ public class InputComponent extends AbstractComponent implements InputListener
 				setMovement();
 				return true;
 			
-			
+			case JUMP:
+				if (args[0] instanceof Boolean && ((Boolean) args[0]))
+					character.jump();
+				return true;
 		}
 		
 		return false;
