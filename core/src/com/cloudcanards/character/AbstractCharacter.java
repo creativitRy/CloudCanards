@@ -7,6 +7,7 @@ import com.cloudcanards.loading.AbstractLoadAssetTask;
 import com.cloudcanards.loading.Disposable;
 import com.cloudcanards.loading.Loadable;
 import com.cloudcanards.loading.ResourceManager;
+import com.cloudcanards.util.CCMathUtils;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -260,7 +261,8 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 			{
 				float desiredVel = movementDir * movementSpeed;
 				float velChange = desiredVel - vel.x;
-				float impulse = body.getMass() * velChange;
+				float impulse = body.getMass() * CCMathUtils.lerp(vel.x, velChange, delta, 0.25f);
+				
 				body.applyLinearImpulse(impulse, 0, pos.x, pos.y, true);
 			}
 			

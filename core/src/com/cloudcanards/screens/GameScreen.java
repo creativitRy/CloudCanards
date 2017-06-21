@@ -5,7 +5,6 @@ import com.cloudcanards.box2d.MapCollisionBuilderTask;
 import com.cloudcanards.box2d.WorldContactListener;
 import com.cloudcanards.camera.CameraFocus;
 import com.cloudcanards.character.TestChar;
-import com.cloudcanards.components.CameraFocusComponent;
 import com.cloudcanards.loading.AbstractLoadAssetTask;
 import com.cloudcanards.loading.AbstractTask;
 import com.cloudcanards.loading.ResourceManager;
@@ -28,7 +27,6 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 public class GameScreen extends AbstractScreen
 {
 	private static GameScreen INSTANCE;
-	private CameraFocusComponent cameraFocus;
 	
 	public static GameScreen getInstance()
 	{
@@ -123,24 +121,27 @@ public class GameScreen extends AbstractScreen
 	
 	}
 	
-	public void setCameraFocus(CameraFocusComponent cameraFocus)
+	public void setCameraFocus(CameraFocus cameraFocus)
 	{
-		this.cameraFocus = cameraFocus;
+		this.focus = cameraFocus;
 	}
 	
 	@Override
 	public void render(float delta)
 	{
-		if (cameraFocus != null)
-			cameraFocus.setPosition(camera);
-		camera.update();
-		viewport.apply();
-		batch.setProjectionMatrix(camera.combined);
-		
+		//update
 		player.update(delta);
 		
 		boolean physics = doPhysicsStep(delta);
 		
+		//set camera
+		if (focus != null)
+			focus.setPosition(camera);
+		camera.update();
+		viewport.apply();
+		batch.setProjectionMatrix(camera.combined);
+		
+		//render
 		mapRenderer.setView(camera);
 		mapRenderer.render();
 		

@@ -20,6 +20,7 @@ public class DesktopLauncher
 		
 		config.width = 1600;
 		config.height = 900;
+		config.samples = 4; //antialiasing
 		//Sets the window to borderless window
 		/*System.setProperty("org.lwjgl.opengl.Window.undecorated", "true");
 		config.width = LwjglApplicationConfiguration.getDesktopDisplayMode().width;
