@@ -2,6 +2,7 @@ package com.cloudcanards.screens;
 
 import com.cloudcanards.assets.Assets;
 import com.cloudcanards.box2d.MapCollisionBuilderTask;
+import com.cloudcanards.box2d.WorldContactListener;
 import com.cloudcanards.camera.CameraFocus;
 import com.cloudcanards.character.TestChar;
 import com.cloudcanards.components.CameraFocusComponent;
@@ -81,6 +82,7 @@ public class GameScreen extends AbstractScreen
 			public void run()
 			{
 				world = new World(GRAVITY, true);
+				world.setContactListener(new WorldContactListener());
 				player = new TestChar(world, new Vector2(20, 70));
 				player.load(resourceManager);
 				finish();

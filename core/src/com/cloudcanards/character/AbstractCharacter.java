@@ -256,7 +256,7 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 			Vector2 pos = body.getWorldCenter();
 			Vector2 vel = body.getLinearVelocity();
 			
-			if (Math.abs(vel.x) <= movementSpeed)
+			if ((vel.x >= -movementSpeed && movementDir < 0) || (vel.x <= movementSpeed && movementDir > 0))
 			{
 				float desiredVel = movementDir * movementSpeed;
 				float velChange = desiredVel - vel.x;
