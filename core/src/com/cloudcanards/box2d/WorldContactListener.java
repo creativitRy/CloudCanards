@@ -15,15 +15,18 @@ public class WorldContactListener implements ContactListener
 		Fixture fixtureA = contact.getFixtureA();
 		Fixture fixtureB = contact.getFixtureB();
 		
+		//contact.getFriction() = sqrt(frictionA * frictionB)
+		//I lov c++
+		
 		if (fixtureA.getUserData() instanceof Collidable)
 			((Collidable) fixtureA.getUserData()).onBeginContact();
 		if (fixtureA.getUserData() instanceof AdvancedCollidable)
-			((AdvancedCollidable) fixtureA.getUserData()).onBeginContact(fixtureB.getBody());
+			((AdvancedCollidable) fixtureA.getUserData()).onBeginContact(fixtureB);
 		
 		if (fixtureB.getUserData() instanceof Collidable)
 			((Collidable) fixtureB.getUserData()).onBeginContact();
 		if (fixtureB.getUserData() instanceof AdvancedCollidable)
-			((AdvancedCollidable) fixtureB.getUserData()).onBeginContact(fixtureA.getBody());
+			((AdvancedCollidable) fixtureB.getUserData()).onBeginContact(fixtureA);
 	}
 	
 	@Override
@@ -35,12 +38,12 @@ public class WorldContactListener implements ContactListener
 		if (fixtureA.getUserData() instanceof Collidable)
 			((Collidable) fixtureA.getUserData()).onEndContact();
 		if (fixtureA.getUserData() instanceof AdvancedCollidable)
-			((AdvancedCollidable) fixtureA.getUserData()).onEndContact(fixtureB.getBody());
+			((AdvancedCollidable) fixtureA.getUserData()).onEndContact(fixtureB);
 		
 		if (fixtureB.getUserData() instanceof Collidable)
 			((Collidable) fixtureB.getUserData()).onEndContact();
 		if (fixtureB.getUserData() instanceof AdvancedCollidable)
-			((AdvancedCollidable) fixtureB.getUserData()).onEndContact(fixtureA.getBody());
+			((AdvancedCollidable) fixtureB.getUserData()).onEndContact(fixtureA);
 	}
 	
 	/**

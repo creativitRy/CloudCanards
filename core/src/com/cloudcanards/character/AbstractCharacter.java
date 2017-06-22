@@ -25,6 +25,7 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 	//render
 	private String atlasPath;
 	private TextureAtlas atlas;
+	private boolean faceRight;
 	
 	//physics
 	private Body body;
@@ -32,9 +33,12 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 	
 	//movement
 	private CharacterState state;
+	/**
+	 * -1 if in air, friction of ground if touching ground
+	 */
+	private float groundFriction;
 	private MovementType movementType;
 	private float movementSpeed;
-	private boolean faceRight;
 	/**
 	 * -1 is left, 0 is not moving, 1 is right
 	 */
@@ -55,6 +59,9 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 		this.world = world;
 		body = initPhysicsBody(position, height / 2f, diameter / 2f);
 		body.setSleepingAllowed(false);
+		
+		//todo
+		groundFriction = 1;
 		
 		this.atlasPath = atlasPath;
 		faceRight = true;
@@ -95,6 +102,7 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 		bottomCircle.setPosition(new Vector2(0, -(halfHeight - radius)));
 		Fixture bottomFixture = body.createFixture(bottomCircle, 0);
 		bottomFixture.setFriction(1f);
+		bottomFixture.setUserData(new CharacterGroundContact(this, halfHeight));
 		bottomCircle.dispose();
 		
 		//top
@@ -242,6 +250,14 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 		return faceRight;
 	}
 	
+	public boolean canJump()
+	{
+		if (isGrounded())
+			return true;
+		
+		return false;
+	}
+	
 	public void jump()
 	{
 		body.setLinearVelocity(body.getLinearVelocity().x, 0);
@@ -249,29 +265,71 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 		body.applyLinearImpulse(0, 15, pos.x, pos.y, true);
 	}
 	
+	/**
+	 * Set horizontal velocity by lerping from prev velocity
+	 *
+	 * @param velocity
+	 * @param delta    dt
+	 * @param slowness float in range (0,1) where 0.1 is fast and 0.9 is slow
+	 */
+	private void setHorizontalVel(float velocity, float delta, float slowness)
+	{
+		Vector2 vel = body.getLinearVelocity();
+		
+		float desiredVel = CCMathUtils.lerp(vel.x, velocity, delta, slowness);
+		float velChange = desiredVel - vel.x;
+		float impulse = body.getMass() * velChange;
+		
+		Vector2 pos = body.getWorldCenter();
+		body.applyLinearImpulse(impulse, 0, pos.x, pos.y, true);
+	}
+	
 	@Override
 	public void update(float delta)
 	{
+		float slowness = 0.25f;
+		if (!isGrounded())
+			slowness = 0.75f;
+		
+		Vector2 vel = body.getLinearVelocity();
+		
 		if (movementDir != 0)
 		{
-			Vector2 pos = body.getWorldCenter();
-			Vector2 vel = body.getLinearVelocity();
 			
 			if ((vel.x >= -movementSpeed && movementDir < 0) || (vel.x <= movementSpeed && movementDir > 0))
 			{
-				float desiredVel = movementDir * movementSpeed;
-				float velChange = desiredVel - vel.x;
-				float impulse = body.getMass() * CCMathUtils.lerp(vel.x, velChange, delta, 0.25f);
-				
-				body.applyLinearImpulse(impulse, 0, pos.x, pos.y, true);
+				setHorizontalVel(movementDir * movementSpeed, delta, slowness);
 			}
-			
 		}
+		else
+		{
+			setHorizontalVel(0, delta, slowness);
+		}
+		
+		if (vel.y <= 0)
+			body.setGravityScale(2f);
+		else
+			body.setGravityScale(1f);
 		
 		for (Updateable component : updateableComponents)
 		{
 			component.update(delta);
 		}
+	}
+	
+	public boolean isGrounded()
+	{
+		return groundFriction != -1;
+	}
+	
+	public float getGroundFriction()
+	{
+		return groundFriction;
+	}
+	
+	public void setGroundFriction(float friction)
+	{
+		this.groundFriction = friction;
 	}
 	
 	@Override

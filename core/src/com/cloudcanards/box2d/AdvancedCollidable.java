@@ -1,6 +1,6 @@
 package com.cloudcanards.box2d;
 
-import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.Fixture;
 
 /**
  * Checks collisions. Attach to fixture's user data. Can get which body this fixture touched
@@ -12,14 +12,14 @@ public interface AdvancedCollidable
 	/**
 	 * Called when this fixture begins to touch something
 	 *
-	 * @param contactedBody touched body
+	 * @param contactedFixture touched fixture
 	 */
-	void onBeginContact(Body contactedBody);
+	void onBeginContact(Fixture contactedFixture);
 	
 	/**
 	 * Called when this fixture stops touching something
 	 *
-	 * @param contactedBody touched body
+	 * @param contactedFixture touched body
 	 */
-	void onEndContact(Body contactedBody);
+	void onEndContact(Fixture contactedFixture);
 }

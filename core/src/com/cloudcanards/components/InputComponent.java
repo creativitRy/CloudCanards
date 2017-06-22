@@ -81,7 +81,8 @@ public class InputComponent extends AbstractComponent implements InputListener
 			
 			case JUMP:
 				if (args[0] instanceof Boolean && ((Boolean) args[0]))
-					character.jump();
+					if (character.canJump())
+						character.jump();
 				return true;
 		}
 		
