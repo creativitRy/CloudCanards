@@ -19,7 +19,7 @@ public class TestChar extends AbstractCharacter
 {
 	public TestChar(World world, Vector2 position)
 	{
-		super(world, position, 64f / 32, 32f / 32, Assets.DIR + "characters/test/player.atlas");
+		super(world, position, 1.5f, 32f / 32, Assets.DIR + "characters/test/player.atlas");
 		
 		addComponent(new DefaultRenderComponent(this));
 		addComponent(new InputComponent(this, true));

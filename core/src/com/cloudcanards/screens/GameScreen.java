@@ -36,7 +36,7 @@ public class GameScreen extends AbstractScreen
 	}
 	
 	public static final Vector2 GRAVITY = new Vector2(0, -30);
-	private static final float TIME_STEP = 1f / 60f;
+	private static final float TIME_STEP = 1f / 300f;
 	private static final int VELOCITY_ITERATIONS = 6;
 	private static final int POSITION_ITERATIONS = 2;
 	
@@ -108,7 +108,7 @@ public class GameScreen extends AbstractScreen
 				map = resourceManager.getAssetManager().get(Assets.DIR + mapName);
 				
 				float tileSize = map.getProperties().get("tilewidth", 32, Integer.class);
-				mapRenderer = new OrthogonalTiledMapRenderer(map, 1.0f / tileSize, batch);
+				mapRenderer = new OrthogonalTiledMapRenderer(map, 1 / tileSize, batch);
 				
 				MapLayer collisionLayer = map.getLayers().get("collision");
 				if (collisionLayer != null)

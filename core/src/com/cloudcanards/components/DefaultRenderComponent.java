@@ -28,7 +28,7 @@ public class DefaultRenderComponent extends AbstractComponent implements Rendera
 		
 		frame = character.getAtlas().findRegion("idle");
 		
-		batch.draw(frame, pos.x - 0.5f, pos.y - 1f, 0.5f, 1f, 1, 2,
+		batch.draw(frame, pos.x - 0.5f, pos.y, 0.5f, 1f, 1, 2,
 			character.isFaceRight() ? 1 : -1, 1, 0);
 	}
 }

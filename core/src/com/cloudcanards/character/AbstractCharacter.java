@@ -84,35 +84,29 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 		
 		BodyDef def = new BodyDef();
 		def.type = BodyDef.BodyType.DynamicBody;
-		def.position.x = position.x;
-		def.position.y = position.y;
+		def.position.set(position);
 		
 		Body body = world.createBody(def);
 		body.setLinearDamping(0.25f);
 		
 		//middle
 		PolygonShape poly = new PolygonShape();
-		poly.setAsBox(radius, halfHeight - radius);
-		Fixture playerPhysicsFixture = body.createFixture(poly, 1);
-		playerPhysicsFixture.setFriction(0f);
+		//x1, y1, x2, y2, x3, y3, etc
+		//this causes a bug where if you jump while trying to go up a ledge, you jump higher
+		poly.set(new float[]{
+			+radius, 2f * halfHeight, +radius, halfHeight / 2f, 0.75f * +radius, 0,
+			-radius, 2f * halfHeight, -radius, halfHeight / 2f, 0.75f * -radius, 0});
+		//poly.setAsBox(radius, halfHeight, new Vector2(0, halfHeight), 0);
+		Fixture bodyFixture = body.createFixture(poly, 40);
 		poly.dispose();
+		bodyFixture.setFriction(0f);
 		
-		//bottom
-		CircleShape bottomCircle = new CircleShape();
-		bottomCircle.setRadius(radius);
-		bottomCircle.setPosition(new Vector2(0, -(halfHeight - radius)));
-		//		Fixture bottomFixture = body.createFixture(bottomCircle, 0);
-		//		bottomFixture.setFriction(1f);
-		//		bottomFixture.setUserData(new CharacterGroundContact(this, halfHeight));
-		bottomCircle.dispose();
-		
-		//top
-		CircleShape topCircle = new CircleShape();
-		topCircle.setRadius(radius);
-		topCircle.setPosition(new Vector2(0, halfHeight - radius));
-		//		Fixture topFixture = body.createFixture(topCircle, 0);
-		//		topFixture.setFriction(1f);
-		topCircle.dispose();
+		poly = new PolygonShape();
+		poly.setAsBox(radius * 0.75f, 0.1f, new Vector2(0f, -0.05f), 0);
+		Fixture bottomFixture = body.createFixture(poly, 0);
+		poly.dispose();
+		bottomFixture.setSensor(true);
+		bottomFixture.setUserData(new CharacterGroundContact(this, halfHeight));
 		
 		body.setBullet(true);
 		body.setFixedRotation(true);
@@ -263,7 +257,8 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 	{
 		body.setLinearVelocity(body.getLinearVelocity().x, 0);
 		Vector2 pos = body.getWorldCenter();
-		body.applyLinearImpulse(0, 15, pos.x, pos.y, true);
+		//body.setLinearVelocity(body.getLinearVelocity().x, 15);
+		body.applyLinearImpulse(0, 15 * body.getMass(), pos.x, pos.y, true);
 	}
 	
 	public void stopJump()
@@ -345,7 +340,6 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 		{
 			component.render(batch, delta);
 		}
-		
 	}
 	
 	@Override

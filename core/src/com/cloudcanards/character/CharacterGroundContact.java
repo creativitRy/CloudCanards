@@ -15,28 +15,37 @@ public class CharacterGroundContact implements AdvancedCollidable
 	private AbstractCharacter character;
 	private float halfHeight;
 	
+	private float numContacts;
+	
 	public CharacterGroundContact(AbstractCharacter character, float halfHeight)
 	{
 		this.character = character;
 		this.halfHeight = halfHeight;
+		
+		numContacts = 0;
 	}
 	
 	@Override
 	public void onBeginContact(Fixture contactedFixture)
 	{
-		if (!isBeneathCharacter(contactedFixture))
-			return;
+		/*if (!isBeneathCharacter(contactedFixture))
+			return;*/
 		System.out.println("begin");
+		numContacts++;
 		character.setGroundFriction(contactedFixture.getFriction());
 	}
 	
 	@Override
 	public void onEndContact(Fixture contactedFixture)
 	{
-		if (!isBeneathCharacter(contactedFixture))
-			return;
-		System.out.println("end");
-		character.setGroundFriction(-1f);
+		/*if (!isBeneathCharacter(contactedFixture))
+			return;*/
+		numContacts--;
+		if (numContacts == 0)
+		{
+			character.setGroundFriction(-1f);
+			System.out.println("end");
+		}
 	}
 	
 	/**
