@@ -10,9 +10,11 @@ import com.cloudcanards.loading.AbstractTask;
 import com.cloudcanards.loading.ResourceManager;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
+import com.badlogic.gdx.graphics.Texture;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.tiled.TiledMap;
+import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
@@ -94,7 +96,10 @@ public class GameScreen extends AbstractScreen
 			@Override
 			public void run()
 			{
-				resourceManager.getAssetManager().load(Assets.DIR + mapName, TiledMap.class);
+				TmxMapLoader.Parameters params = new TmxMapLoader.Parameters();
+				params.textureMinFilter = Texture.TextureFilter.Linear;
+				params.textureMagFilter = Texture.TextureFilter.Nearest;
+				resourceManager.getAssetManager().load(Assets.DIR + mapName, TiledMap.class, params);
 			}
 			
 			@Override

@@ -88,6 +88,7 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 		def.position.y = position.y;
 		
 		Body body = world.createBody(def);
+		body.setLinearDamping(0.25f);
 		
 		//middle
 		PolygonShape poly = new PolygonShape();
@@ -100,17 +101,17 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 		CircleShape bottomCircle = new CircleShape();
 		bottomCircle.setRadius(radius);
 		bottomCircle.setPosition(new Vector2(0, -(halfHeight - radius)));
-		Fixture bottomFixture = body.createFixture(bottomCircle, 0);
-		bottomFixture.setFriction(1f);
-		bottomFixture.setUserData(new CharacterGroundContact(this, halfHeight));
+		//		Fixture bottomFixture = body.createFixture(bottomCircle, 0);
+		//		bottomFixture.setFriction(1f);
+		//		bottomFixture.setUserData(new CharacterGroundContact(this, halfHeight));
 		bottomCircle.dispose();
 		
 		//top
 		CircleShape topCircle = new CircleShape();
 		topCircle.setRadius(radius);
 		topCircle.setPosition(new Vector2(0, halfHeight - radius));
-		Fixture topFixture = body.createFixture(topCircle, 0);
-		topFixture.setFriction(1f);
+		//		Fixture topFixture = body.createFixture(topCircle, 0);
+		//		topFixture.setFriction(1f);
 		topCircle.dispose();
 		
 		body.setBullet(true);
@@ -265,6 +266,11 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 		body.applyLinearImpulse(0, 15, pos.x, pos.y, true);
 	}
 	
+	public void stopJump()
+	{
+		body.setGravityScale(2f);
+	}
+	
 	/**
 	 * Set horizontal velocity by lerping from prev velocity
 	 *
@@ -306,9 +312,9 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 			setHorizontalVel(0, delta, slowness);
 		}
 		
-		if (vel.y <= 0)
+		if (vel.y <= 0 && body.getGravityScale() == 1f)
 			body.setGravityScale(2f);
-		else
+		else if (vel.y > 0 && body.getGravityScale() == 2f)
 			body.setGravityScale(1f);
 		
 		for (Updateable component : updateableComponents)

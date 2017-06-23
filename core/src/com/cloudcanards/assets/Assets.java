@@ -8,6 +8,7 @@ package com.cloudcanards.assets;
 public class Assets
 {
 	public static final String DIR = "data/cloudCanards/";
+	public static final String ITEM_DIR = "items/";
 	
 	public static final String BADLOGIC = "badlogic.jpg";
 	public static final String THROBBER = "ui/cloudLoad.atlas";
