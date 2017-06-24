@@ -5,6 +5,7 @@ import com.cloudcanards.box2d.MapCollisionBuilderTask;
 import com.cloudcanards.box2d.WorldContactListener;
 import com.cloudcanards.camera.CameraFocus;
 import com.cloudcanards.character.TestChar;
+import com.cloudcanards.graphics.RenderableManager;
 import com.cloudcanards.loading.AbstractLoadAssetTask;
 import com.cloudcanards.loading.AbstractTask;
 import com.cloudcanards.loading.ResourceManager;
@@ -45,6 +46,7 @@ public class GameScreen extends AbstractScreen
 	private OrthographicCamera camera;
 	private CameraFocus focus;
 	private FitViewport viewport;
+	private RenderableManager renderableManager;
 	
 	//map
 	private String mapName;
@@ -68,6 +70,7 @@ public class GameScreen extends AbstractScreen
 		camera.position.x = 30;
 		camera.position.y = 50;
 		viewport = new FitViewport(48, 27, camera);
+		renderableManager = new RenderableManager();
 		
 		box2DDebugRenderer = new Box2DDebugRenderer();
 	}
@@ -85,6 +88,7 @@ public class GameScreen extends AbstractScreen
 				world.setContactListener(new WorldContactListener());
 				player = new TestChar(world, new Vector2(20, 70));
 				player.load(resourceManager);
+				renderableManager.add(player);
 				finish();
 			}
 		});
@@ -131,6 +135,11 @@ public class GameScreen extends AbstractScreen
 		this.focus = cameraFocus;
 	}
 	
+	public RenderableManager getRenderableManager()
+	{
+		return renderableManager;
+	}
+	
 	@Override
 	public void render(float delta)
 	{
@@ -151,7 +160,7 @@ public class GameScreen extends AbstractScreen
 		mapRenderer.render();
 		
 		batch.begin();
-		player.render(batch, delta);
+		renderableManager.render(batch, delta);
 		batch.end();
 		
 		box2DDebugRenderer.render(world, camera.combined);

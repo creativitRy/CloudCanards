@@ -1,6 +1,5 @@
 package com.cloudcanards.components;
 
-import com.cloudcanards.behavior.Renderable;
 import com.cloudcanards.character.AbstractCharacter;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -12,7 +11,7 @@ import com.badlogic.gdx.math.Vector2;
  *
  * @author creativitRy
  */
-public class DefaultRenderComponent extends AbstractComponent implements Renderable
+public class DefaultRenderComponent extends AbstractRenderableComponent
 {
 	public DefaultRenderComponent(AbstractCharacter character)
 	{

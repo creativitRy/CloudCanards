@@ -1,14 +1,15 @@
 package com.cloudcanards.character;
 
-import com.cloudcanards.behavior.Renderable;
 import com.cloudcanards.behavior.Updateable;
 import com.cloudcanards.components.AbstractComponent;
+import com.cloudcanards.graphics.Renderable;
 import com.cloudcanards.grapple.Targetable;
 import com.cloudcanards.loading.AbstractLoadAssetTask;
 import com.cloudcanards.loading.Disposable;
 import com.cloudcanards.loading.Loadable;
 import com.cloudcanards.loading.ResourceManager;
-import com.cloudcanards.util.CCMathUtils;
+import com.cloudcanards.screens.GameScreen;
+import com.cloudcanards.util.MathUtil;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -46,8 +47,8 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 	private int movementDir;
 	
 	//components
-	private Array<Updateable> updateableComponents = new Array<>();
-	private Array<Renderable> renderableComponents = new Array<>();
+	private Array<Updateable> updateableComponents;
+	private Array<AbstractComponent> miscComponents;
 	
 	/**
 	 * @param world
@@ -69,6 +70,9 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 		
 		state = CharacterState.FALL;
 		run();
+		
+		updateableComponents = new Array<>();
+		miscComponents = new Array<>();
 	}
 	
 	/**
@@ -138,7 +142,7 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 			if (component instanceof Loadable)
 				((Loadable) component).load(resourceManager);
 		}
-		for (Renderable component : renderableComponents)
+		for (AbstractComponent component : miscComponents)
 		{
 			if (component instanceof Loadable)
 				((Loadable) component).load(resourceManager);
@@ -149,8 +153,17 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 	{
 		if (component instanceof Updateable)
 			updateableComponents.add((Updateable) component);
-		if (component instanceof Renderable)
-			renderableComponents.add((Renderable) component);
+		else
+		{
+			miscComponents.add(component);
+			if (component instanceof Renderable)
+				registerRenderable((Renderable) component);
+		}
+	}
+	
+	private void registerRenderable(Renderable component)
+	{
+		GameScreen.getInstance().getRenderableManager().add(component);
 	}
 	
 	/**
@@ -161,19 +174,24 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 	 */
 	public boolean removeComponent(AbstractComponent component)
 	{
-		boolean temp = false;
 		if (component instanceof Updateable)
 		{
-			updateableComponents.removeValue((Updateable) component, true);
-			temp = true;
+			return updateableComponents.removeValue((Updateable) component, true);
 		}
-		if (component instanceof Renderable)
+		else
 		{
-			renderableComponents.removeValue((Renderable) component, true);
-			temp = true;
+			boolean temp = miscComponents.removeValue(component, true);
+			if (component instanceof Renderable)
+			{
+				unregisterRenderable(((Renderable) component));
+			}
+			return temp;
 		}
-		
-		return temp;
+	}
+	
+	private void unregisterRenderable(Renderable component)
+	{
+		GameScreen.getInstance().getRenderableManager().remove(component);
 	}
 	
 	public TextureAtlas getAtlas()
@@ -278,7 +296,7 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 	{
 		Vector2 vel = body.getLinearVelocity();
 		
-		float desiredVel = CCMathUtils.lerp(vel.x, velocity, delta, slowness);
+		float desiredVel = MathUtil.lerp(vel.x, velocity, delta, slowness);
 		float velChange = desiredVel - vel.x;
 		float impulse = body.getMass() * velChange;
 		
@@ -337,10 +355,6 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 	@Override
 	public void render(SpriteBatch batch, float delta)
 	{
-		for (Renderable component : renderableComponents)
-		{
-			component.render(batch, delta);
-		}
 	}
 	
 	@Override
@@ -352,7 +366,7 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 			if (component instanceof Disposable)
 				((Disposable) component).dispose(resourceManager);
 		}
-		for (Renderable component : renderableComponents)
+		for (AbstractComponent component : miscComponents)
 		{
 			if (component instanceof Disposable)
 				((Disposable) component).dispose(resourceManager);

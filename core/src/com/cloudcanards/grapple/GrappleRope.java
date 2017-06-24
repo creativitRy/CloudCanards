@@ -1,8 +1,8 @@
 package com.cloudcanards.grapple;
 
-import com.cloudcanards.behavior.Renderable;
 import com.cloudcanards.behavior.Updateable;
 import com.cloudcanards.components.GrappleComponent;
+import com.cloudcanards.graphics.Renderable;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.Vector2;
@@ -45,11 +45,6 @@ public class GrappleRope implements Updateable, Renderable
 		end = grapple.getPosition();
 		
 		moveToState2 = false;
-	}
-	
-	private void constructRopes(World world)
-	{
-	
 	}
 	
 	/**

@@ -7,9 +7,9 @@ import com.badlogic.gdx.math.MathUtils;
  *
  * @author creativitRy
  */
-public class CCMathUtils
+public class MathUtil
 {
-	private CCMathUtils() {}
+	private MathUtil() {}
 	
 	/**
 	 * Smooth transition from a to b using the equation a + x * (b - a) based on dt
