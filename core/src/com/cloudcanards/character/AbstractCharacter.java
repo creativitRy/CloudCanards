@@ -3,6 +3,7 @@ package com.cloudcanards.character;
 import com.cloudcanards.behavior.Renderable;
 import com.cloudcanards.behavior.Updateable;
 import com.cloudcanards.components.AbstractComponent;
+import com.cloudcanards.grapple.Targetable;
 import com.cloudcanards.loading.AbstractLoadAssetTask;
 import com.cloudcanards.loading.Disposable;
 import com.cloudcanards.loading.Loadable;
@@ -20,7 +21,7 @@ import com.badlogic.gdx.utils.Array;
  *
  * @author creativitRy
  */
-public abstract class AbstractCharacter implements Loadable, Updateable, Renderable, Disposable
+public abstract class AbstractCharacter implements Loadable, Updateable, Renderable, Disposable, Targetable
 {
 	//render
 	private String atlasPath;
@@ -356,5 +357,11 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 			if (component instanceof Disposable)
 				((Disposable) component).dispose(resourceManager);
 		}
+	}
+	
+	@Override
+	public Vector2 getPosition()
+	{
+		return body.getWorldCenter();
 	}
 }
