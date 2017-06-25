@@ -27,6 +27,6 @@ public class TestChar extends AbstractCharacter
 		CameraFocusComponent camera = new CameraFocusComponent(this);
 		GameScreen.getInstance().setCameraFocus(new LerpFocus(camera, 0.5f));
 		addComponent(camera);
-		addComponent(new GrappleComponent(this));
+		addComponent(new GrappleComponent(this, world));
 	}
 }

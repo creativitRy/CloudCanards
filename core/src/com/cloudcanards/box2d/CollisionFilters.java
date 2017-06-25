@@ -10,7 +10,11 @@ package com.cloudcanards.box2d;
 public class CollisionFilters
 {
 	public static final short DEFAULT = (1);
+	public static final short CHARACTER = (short) (1 << 1);
 	public static final short ROPE = (short) (1 << 15);
+	
+	public static final short NONE = 0;
+	public static final short ALL = -1;
 	
 	private CollisionFilters() {}
 	
@@ -35,7 +39,7 @@ public class CollisionFilters
 	/**
 	 * include the given bits from the bit field
 	 * <p>
-	 * bitField |= bit
+	 * {@code bitField |= bit}
 	 *
 	 * @param bitField bit field to include bits from
 	 * @param bits     bits to include
@@ -53,7 +57,7 @@ public class CollisionFilters
 	/**
 	 * toggle the given bits from the bit field
 	 * <p>
-	 * bitField ^= bit
+	 * {@code bitField ^= bit}
 	 *
 	 * @param bitField bit field to toggle bits from
 	 * @param bits     bits to toggle
@@ -70,6 +74,8 @@ public class CollisionFilters
 	
 	/**
 	 * toggles all bits in the bit field
+	 * <p>
+	 * {@code ~bitField}
 	 *
 	 * @param bitField bit field to toggle
 	 * @return toggled bit field
@@ -82,7 +88,7 @@ public class CollisionFilters
 	/**
 	 * Checks whether the given bit is set in the bit field
 	 * <p>
-	 * (bitField & bit) != 0
+	 * {@code (bitField & bit) != 0}
 	 *
 	 * @param bitField bit field to check if bit is set
 	 * @param bit      bits to check

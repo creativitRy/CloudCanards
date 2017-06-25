@@ -1,6 +1,7 @@
 package com.cloudcanards.character;
 
 import com.cloudcanards.behavior.Updateable;
+import com.cloudcanards.box2d.CollisionFilters;
 import com.cloudcanards.components.AbstractComponent;
 import com.cloudcanards.graphics.Renderable;
 import com.cloudcanards.grapple.Targetable;
@@ -102,7 +103,11 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 			+radius, 2f * halfHeight, +radius, halfHeight / 2f, 0.75f * +radius, 0,
 			-radius, 2f * halfHeight, -radius, halfHeight / 2f, 0.75f * -radius, 0});
 		//poly.setAsBox(radius, halfHeight, new Vector2(0, halfHeight), 0);
-		Fixture bodyFixture = body.createFixture(poly, 40);
+		FixtureDef bodyFixtureDef = new FixtureDef();
+		bodyFixtureDef.shape = poly;
+		bodyFixtureDef.density = 4f;
+		bodyFixtureDef.filter.categoryBits = CollisionFilters.CHARACTER;
+		Fixture bodyFixture = body.createFixture(bodyFixtureDef);
 		poly.dispose();
 		bodyFixture.setFriction(0f);
 		

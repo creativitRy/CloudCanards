@@ -22,7 +22,7 @@ import com.badlogic.gdx.physics.box2d.joints.RopeJointDef;
 public class GrappleRope implements Updateable, Renderable
 {
 	private static final float DISTANCE_PER_SECOND = 20f;
-	private static final float SEGMENTS_PER_TILE = 1.5f;
+	private static final float SEGMENTS_PER_TILE = 2f;
 	private static final float ROPE_WIDTH = 0.25f;
 	
 	private World world;
@@ -69,11 +69,18 @@ public class GrappleRope implements Updateable, Renderable
 		moveToState2 = true;
 	}
 	
+	/**
+	 * todo: https://github.com/creativitRy/CloudCanards/issues/3
+	 */
 	private void createPhysicsRope(boolean reachedTarget)
 	{
 		final float distance = grapple.getPosition().dst(end);
 		final float angle = (float) Math.atan2(end.y - grapple.getPosition().y, end.x - grapple.getPosition().x);
+		
 		int numSegments = MathUtils.roundPositive(distance * SEGMENTS_PER_TILE);
+		if (numSegments < 1)
+			numSegments = 1;
+		
 		segments = new Body[numSegments];
 		
 		final float dx = (end.x - grapple.getPosition().x) / numSegments / 2f;
@@ -86,12 +93,13 @@ public class GrappleRope implements Updateable, Renderable
 		FixtureDef fixtureDef = new FixtureDef();
 		fixtureDef.shape = new PolygonShape();
 		final float halfWidth = distance / numSegments / 2f;
-		((PolygonShape) fixtureDef.shape).setAsBox(halfWidth, ROPE_WIDTH / 2f);
-		fixtureDef.density = 2;
+		((PolygonShape) fixtureDef.shape).setAsBox(halfWidth - ROPE_WIDTH / 2f, ROPE_WIDTH / 2f);
+		fixtureDef.density = 10f;
 		
 		fixtureDef.filter.categoryBits = CollisionFilters.ROPE;
 		//ropes don't collide with itself
 		//fixtureDef.filter.maskBits = CollisionFilters.toggleAll(CollisionFilters.ROPE);
+		fixtureDef.filter.maskBits = CollisionFilters.toggleAll(CollisionFilters.CHARACTER);
 		
 		RevoluteJointDef jointDef = new RevoluteJointDef();
 		jointDef.localAnchorA.set(halfWidth, 0f);
@@ -200,6 +208,15 @@ public class GrappleRope implements Updateable, Renderable
 		}
 		else if (state == 1) //main
 		{
+			if (segments[0].getPosition().x != target.getPosition().x)
+			{
+				/*float impulse = segments[0].getMass() * segments.length * 2f * Math.signum(target.getPosition().x - segments[0].getPosition().x);
+				
+				Vector2 pos = segments[0].getWorldCenter();
+				segments[0].applyLinearImpulse(impulse, -2, pos.x, pos.y, true);*/
+				//segments[0].setGravityScale(10f);
+			}
+			
 			if (retracting)
 			{
 				//shorten rope
