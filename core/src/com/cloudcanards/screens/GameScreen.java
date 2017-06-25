@@ -6,9 +6,11 @@ import com.cloudcanards.box2d.WorldContactListener;
 import com.cloudcanards.camera.CameraFocus;
 import com.cloudcanards.character.TestChar;
 import com.cloudcanards.graphics.RenderableManager;
+import com.cloudcanards.grapple.Targetable;
 import com.cloudcanards.loading.AbstractLoadAssetTask;
 import com.cloudcanards.loading.AbstractTask;
 import com.cloudcanards.loading.ResourceManager;
+import com.cloudcanards.map.SpecialTilesBuilderTask;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -20,6 +22,7 @@ import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
 /**
@@ -52,6 +55,7 @@ public class GameScreen extends AbstractScreen
 	private String mapName;
 	private TiledMap map;
 	private OrthogonalTiledMapRenderer mapRenderer;
+	private Array<Targetable> grappleTargets;
 	
 	//box2d
 	private World world;
@@ -120,24 +124,21 @@ public class GameScreen extends AbstractScreen
 					resourceManager.addTask(new MapCollisionBuilderTask(tileSize, collisionLayer,
 						world));
 				}
+				
+				MapLayer specialLayer = map.getLayers().get("special");
+				if (specialLayer != null)
+				{
+					resourceManager.addTask(new SpecialTilesBuilderTask(tileSize, specialLayer, world));
+				}
 			}
 		});
+		
 	}
 	
 	@Override
 	public void show()
 	{
 	
-	}
-	
-	public void setCameraFocus(CameraFocus cameraFocus)
-	{
-		this.focus = cameraFocus;
-	}
-	
-	public RenderableManager getRenderableManager()
-	{
-		return renderableManager;
 	}
 	
 	@Override
@@ -213,5 +214,30 @@ public class GameScreen extends AbstractScreen
 	public void dispose(ResourceManager resourceManager)
 	{
 	
+	}
+	
+	public void setCameraFocus(CameraFocus cameraFocus)
+	{
+		this.focus = cameraFocus;
+	}
+	
+	public RenderableManager getRenderableManager()
+	{
+		return renderableManager;
+	}
+	
+	public Array<Targetable> getGrappleTargets()
+	{
+		return grappleTargets;
+	}
+	
+	public void setGrappleTargets(Array<Targetable> grappleTargets)
+	{
+		this.grappleTargets = grappleTargets;
+	}
+	
+	public World getWorld()
+	{
+		return world;
 	}
 }

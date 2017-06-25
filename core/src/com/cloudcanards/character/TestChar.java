@@ -4,6 +4,7 @@ import com.cloudcanards.assets.Assets;
 import com.cloudcanards.camera.LerpFocus;
 import com.cloudcanards.components.CameraFocusComponent;
 import com.cloudcanards.components.DefaultRenderComponent;
+import com.cloudcanards.components.GrappleComponent;
 import com.cloudcanards.components.InputComponent;
 import com.cloudcanards.screens.GameScreen;
 
@@ -26,5 +27,6 @@ public class TestChar extends AbstractCharacter
 		CameraFocusComponent camera = new CameraFocusComponent(this);
 		GameScreen.getInstance().setCameraFocus(new LerpFocus(camera, 0.5f));
 		addComponent(camera);
+		addComponent(new GrappleComponent(this));
 	}
 }

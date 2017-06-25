@@ -199,6 +199,7 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 		return atlas;
 	}
 	
+	@Override
 	public Body getBody()
 	{
 		return body;
@@ -269,7 +270,8 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 		if (isGrounded())
 			return true;
 		
-		return false;
+		//fixme
+		return true;
 	}
 	
 	public void jump()
