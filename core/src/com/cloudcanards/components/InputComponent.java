@@ -20,13 +20,12 @@ public class InputComponent extends AbstractComponent implements InputListener
 	private boolean left;
 	private boolean right;
 	
-	public InputComponent(AbstractCharacter character, boolean registerInputListener)
+	public InputComponent(AbstractCharacter character, boolean enableInput)
 	{
 		super(character);
-		enableInput = true;
+		this.enableInput = enableInput;
 		
-		if (registerInputListener)
-			InputManager.register(this);
+		InputManager.register(this);
 	}
 	
 	@Override
@@ -86,6 +85,7 @@ public class InputComponent extends AbstractComponent implements InputListener
 					else
 						character.stopJump();
 				return true;
+			
 		}
 		
 		return false;

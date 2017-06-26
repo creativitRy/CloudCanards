@@ -12,5 +12,6 @@ public enum InputAction
 	SPRINT,
 	MOVE,
 	MOVE_LEFT,
-	MOVE_RIGHT
+	MOVE_RIGHT,
+	SHOOT
 }

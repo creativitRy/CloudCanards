@@ -5,6 +5,7 @@ import com.cloudcanards.behavior.Updateable;
 import com.cloudcanards.box2d.CollisionFilters;
 import com.cloudcanards.character.AbstractCharacter;
 import com.cloudcanards.grapple.GrappleRope;
+import com.cloudcanards.grapple.Targetable;
 import com.cloudcanards.loading.AbstractLoadAssetTask;
 import com.cloudcanards.loading.Loadable;
 import com.cloudcanards.loading.ResourceManager;
@@ -26,6 +27,7 @@ public class GrappleComponent extends AbstractComponent implements Loadable, Upd
 	private GrappleRope rope;
 	private NinePatch texture;
 	private Body body;
+	private Targetable target;
 	
 	public GrappleComponent(AbstractCharacter character, World world)
 	{
@@ -78,6 +80,30 @@ public class GrappleComponent extends AbstractComponent implements Loadable, Upd
 	
 	private float temp;
 	
+	public boolean shoot(Targetable target)
+	{
+		System.out.println("test");
+		if (target == null)
+			return false;
+		
+		this.target = target;
+		
+		if (rope != null)
+			return false;
+		
+		rope = new GrappleRope(this, target, GameScreen.getInstance().getWorld(), texture);
+		
+		return true;
+	}
+	
+	public boolean retract()
+	{
+		if (rope == null && rope.getState() == 2)
+			return false;
+		
+		return true;
+	}
+	
 	@Override
 	public void update(float delta)
 	{
@@ -88,32 +114,13 @@ public class GrappleComponent extends AbstractComponent implements Loadable, Upd
 			
 			return;
 		}
-		else
+		/*else
 			temp += delta;
 		
 		if (temp > 1)
 		{
-			rope = new GrappleRope(this, GameScreen.getInstance().getGrappleTargets().get(
-				0
-			),
-				GameScreen.getInstance().getWorld(), texture);
-			
-			/*for (int i = 0; i < 20; i++)
-			{
-				int index = (int) (Math.random() * GameScreen.getInstance().getGrappleTargets().size);
-				if (GameScreen.getInstance().getGrappleTargets().get(index).getPosition().dst2(character.getPosition()) < 100)
-				{
-					rope = new GrappleRope(this, GameScreen.getInstance().getGrappleTargets().get(index),
-						GameScreen.getInstance().getWorld(), texture);
-					break;
-				}
-			}*/
-			if (rope == null)
-				rope = new GrappleRope(this, GameScreen.getInstance().getGrappleTargets().get(
-					(int) (Math.random() * GameScreen.getInstance().getGrappleTargets().size)
-				),
-					GameScreen.getInstance().getWorld(), texture);
-		}
+			shoot(GameScreen.getInstance().getGrappleTargets().get(0));
+		}*/
 	}
 	
 	public Vector2 getPosition()

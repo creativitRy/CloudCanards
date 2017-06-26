@@ -118,8 +118,6 @@ public class GrappleRope implements Updateable, Renderable
 			segments[i].createFixture(fixtureDef);
 			segments[i].setTransform(bodyDef.position, angle);
 			
-			System.out.println(segments[i].getPosition());
-			
 			if (i == 0)
 				continue;
 			
@@ -268,5 +266,15 @@ public class GrappleRope implements Updateable, Renderable
 	public boolean isRetracting()
 	{
 		return retracting;
+	}
+	
+	public Targetable getTarget()
+	{
+		return target;
+	}
+	
+	public void setTarget(Targetable target)
+	{
+		this.target = target;
 	}
 }

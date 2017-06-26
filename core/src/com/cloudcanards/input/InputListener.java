@@ -1,7 +1,7 @@
 package com.cloudcanards.input;
 
 /**
- * Call InputManager.getInstance().addListener() to add listener
+ * Call {@code InputManager.addListener()} to add listener
  *
  * @author creativitRy
  */

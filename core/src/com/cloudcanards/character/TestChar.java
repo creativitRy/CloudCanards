@@ -2,10 +2,7 @@ package com.cloudcanards.character;
 
 import com.cloudcanards.assets.Assets;
 import com.cloudcanards.camera.LerpFocus;
-import com.cloudcanards.components.CameraFocusComponent;
-import com.cloudcanards.components.DefaultRenderComponent;
-import com.cloudcanards.components.GrappleComponent;
-import com.cloudcanards.components.InputComponent;
+import com.cloudcanards.components.*;
 import com.cloudcanards.screens.GameScreen;
 
 import com.badlogic.gdx.math.Vector2;
@@ -27,6 +24,8 @@ public class TestChar extends AbstractCharacter
 		CameraFocusComponent camera = new CameraFocusComponent(this);
 		GameScreen.getInstance().setCameraFocus(new LerpFocus(camera, 0.5f));
 		addComponent(camera);
-		addComponent(new GrappleComponent(this, world));
+		GrappleComponent grappleComponent = new GrappleComponent(this, world);
+		addComponent(grappleComponent);
+		addComponent(new MouseGrappleComponent(this, grappleComponent, true));
 	}
 }

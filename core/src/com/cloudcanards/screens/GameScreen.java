@@ -20,6 +20,7 @@ import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 import com.badlogic.gdx.maps.tiled.renderers.OrthogonalTiledMapRenderer;
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.utils.Array;
@@ -239,5 +240,20 @@ public class GameScreen extends AbstractScreen
 	public World getWorld()
 	{
 		return world;
+	}
+	
+	/**
+	 * Unwraps screen space coordinates to world coordinates
+	 *
+	 * @param x
+	 * @param y
+	 * @return null if camera or instance is null, world space otherwise
+	 */
+	public static Vector2 screenToWorldCoords(float x, float y)
+	{
+		if (getInstance() == null || getInstance().camera == null)
+			return null;
+		Vector3 unproject = getInstance().camera.unproject(new Vector3(x, y, 0));
+		return new Vector2(unproject.x, unproject.y);
 	}
 }

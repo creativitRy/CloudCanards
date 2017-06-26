@@ -156,13 +156,14 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 	
 	public void addComponent(AbstractComponent component)
 	{
+		if (component instanceof Renderable)
+			registerRenderable((Renderable) component);
+		
 		if (component instanceof Updateable)
 			updateableComponents.add((Updateable) component);
 		else
 		{
 			miscComponents.add(component);
-			if (component instanceof Renderable)
-				registerRenderable((Renderable) component);
 		}
 	}
 	
