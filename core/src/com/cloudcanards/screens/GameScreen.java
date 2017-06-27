@@ -161,9 +161,7 @@ public class GameScreen extends AbstractScreen
 		mapRenderer.setView(camera);
 		mapRenderer.render();
 		
-		batch.begin();
 		renderableManager.render(batch, delta);
-		batch.end();
 		
 		box2DDebugRenderer.render(world, camera.combined);
 	}

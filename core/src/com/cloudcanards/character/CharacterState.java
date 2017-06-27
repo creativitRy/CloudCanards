@@ -8,9 +8,7 @@ package com.cloudcanards.character;
 public enum CharacterState
 {
 	IDLE,
-	WALK,
 	RUN,
-	SPRINT,
 	JUMP,
 	FALL
 }

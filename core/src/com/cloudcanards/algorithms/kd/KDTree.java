@@ -1,6 +1,10 @@
 package com.cloudcanards.algorithms.kd;
 
 import com.badlogic.gdx.math.Vector2;
+import com.badlogic.gdx.utils.Array;
+
+import java.util.ArrayDeque;
+import java.util.Comparator;
 
 /**
  * Efficient data structure for querying static 2 dimentional coordinates for all points within a box
@@ -15,12 +19,63 @@ public abstract class KDTree<E>
 	private KDNode<E> root;
 	
 	/**
-	 * Constructs an empty kd-tree
+	 * Constructs an empty k-d tree
 	 */
 	public KDTree()
 	{
 		size = 0;
 		root = null;
+	}
+	
+	/**
+	 * Constructs a balanced tree and calls {@link #init}. O((NlogN)^2) ayy lmao
+	 *
+	 * @param elements array of elements to insert. Array will be modified
+	 */
+	public KDTree(Array<E> elements)
+	{
+		super();
+		
+		Comparator<E> horizComp = (o1, o2) ->
+		{
+			if (getPosition(o1).x == getPosition(o2).x)
+				return Float.compare(getPosition(o1).y, getPosition(o2).y);
+			return Float.compare(getPosition(o1).x, getPosition(o2).x);
+		};
+		Comparator<E> vertComp = (o1, o2) ->
+		{
+			if (getPosition(o1).y == getPosition(o2).y)
+				return Float.compare(getPosition(o1).x, getPosition(o2).x);
+			return Float.compare(getPosition(o1).y, getPosition(o2).y);
+		};
+		
+		size = elements.size;
+		build(elements, horizComp, vertComp, DIVIDE_BY_Y_FIRST);
+		
+		init();
+	}
+	
+	private void build(Array<E> elements, Comparator<E> horizComp, Comparator<E> vertComp, boolean currUseY)
+	{
+		if (elements.size == 0)
+			return;
+		if (currUseY)
+			elements.sort(horizComp);
+		else
+			elements.sort(vertComp);
+		
+		int mid = elements.size >>> 1; //divide by 2
+		
+		insert(elements.removeIndex(mid));
+		
+		Array<E> left = new Array<>(elements);
+		Array<E> right = new Array<>();
+		while (left.size > mid)
+		{
+			right.add(left.pop());
+		}
+		build(left, horizComp, vertComp, !currUseY);
+		build(right, horizComp, vertComp, !currUseY);
 	}
 	
 	/**
@@ -46,7 +101,7 @@ public abstract class KDTree<E>
 	private KDNode<E> insert(E element, KDNode<E> node, boolean useY)
 	{
 		if (node == null)
-			return new KDNode<>(element, getPosition(element), null, null, useY);
+			return new KDNode<>(element, getPosition(element));
 			//todo: remove this else if before release
 		else if (element == node.getElement())
 			throw new IllegalArgumentException("Duplicates (based on ==) not allowed");
@@ -55,6 +110,25 @@ public abstract class KDTree<E>
 		else
 			node.setRight(insert(element, node.getRight(), !useY));
 		return node;
+	}
+	
+	/**
+	 * Calculates the bounds of each node. Call before attempting to use {@link #getAllElementsInBox}
+	 */
+	public void init()
+	{
+		init(root,
+			new Rectangle(getPosition(getMinX()).x, getPosition(getMinY()).y, getPosition(getMaxX()).x, getPosition(getMaxY()).y),
+			DIVIDE_BY_Y_FIRST);
+	}
+	
+	private void init(KDNode<E> node, Rectangle bound, boolean currUseY)
+	{
+		if (node == null)
+			return;
+		node.setBounds(bound);
+		init(node.getLeft(), bound.divide(node.getPosition(), true, currUseY), !currUseY);
+		init(node.getRight(), bound.divide(node.getPosition(), false, currUseY), !currUseY);
 	}
 	
 	/**
@@ -130,7 +204,7 @@ public abstract class KDTree<E>
 	 */
 	public E getMaxY()
 	{
-		return getMin(root, true, DIVIDE_BY_Y_FIRST);
+		return getMax(root, true, DIVIDE_BY_Y_FIRST);
 	}
 	
 	/**
@@ -149,13 +223,13 @@ public abstract class KDTree<E>
 		{
 			if (node.getRight() == null)
 				return node.getElement();
-			return getMin(node.getRight(), findY, !currUseY);
+			return getMax(node.getRight(), findY, !currUseY);
 		}
 		else
 		{
-			//return the minimum of find at left, find at right, and current
-			E max = getMin(node.getLeft(), findY, !currUseY);
-			E newMax = getMin(node.getRight(), findY, !currUseY);
+			//return the maximum of find at left, find at right, and current
+			E max = getMax(node.getLeft(), findY, !currUseY);
+			E newMax = getMax(node.getRight(), findY, !currUseY);
 			if (max == null)
 				max = newMax;
 			else if (newMax != null && compare(max, newMax, findY))
@@ -215,6 +289,66 @@ public abstract class KDTree<E>
 	}
 	
 	/**
+	 * Within the rectangle, gets all the elements
+	 *
+	 * @param array array to fill with elements within rectangle. Array is cleared
+	 * @param x1    min x inclusive
+	 * @param y1    min y inclusive
+	 * @param x2    max x inclusive
+	 * @param y2    max y inclusive
+	 */
+	public void getAllElementsInBox(Array<E> array, float x1, float y1, float x2, float y2)
+	{
+		array.clear();
+		getAllElementsInBox(array, root, new Rectangle(x1, y1, x2, y2), DIVIDE_BY_Y_FIRST);
+	}
+	
+	/**
+	 * Within the rectangle, gets all the elements. Call {@link #init} first
+	 *
+	 * @param array    array to fill with elements within rectangle
+	 * @param node     current node being checked
+	 * @param range    x1, y1, x2, y2
+	 * @param currUseY whether the current node is split by y (true) or x (false)
+	 */
+	private void getAllElementsInBox(Array<E> array, KDNode<E> node, Rectangle range, boolean currUseY)
+	{
+		if (node == null)
+			return;
+		
+		//if entire subtree is within range
+		if (range.contains(node.getBounds()))
+			reportTree(array, node);
+		else
+		{
+			if (range.isWithinRange(node.getPosition()))
+			{
+				array.add(node.getElement());
+			}
+			if (range.intersects(node.getBounds()))
+			{
+				getAllElementsInBox(array, node.getLeft(), range, !currUseY);
+				getAllElementsInBox(array, node.getRight(), range, !currUseY);
+			}
+		}
+	}
+	
+	/**
+	 * Puts every node and its children into the array
+	 *
+	 * @param array array to put nodes into
+	 * @param node  current node being checked
+	 */
+	private void reportTree(Array<E> array, KDNode<E> node)
+	{
+		if (node == null)
+			return;
+		array.add(node.getElement());
+		reportTree(array, node.getLeft());
+		reportTree(array, node.getRight());
+	}
+	
+	/**
 	 * When given data, gets its position
 	 *
 	 * @param element element to get position from
@@ -230,5 +364,27 @@ public abstract class KDTree<E>
 	public int size()
 	{
 		return size;
+	}
+	
+	@Override
+	public String toString()
+	{
+		StringBuilder sb = new StringBuilder();
+		
+		ArrayDeque<KDNode<E>> deque = new ArrayDeque<>();
+		deque.add(root);
+		
+		while (!deque.isEmpty())
+		{
+			KDNode<E> node = deque.remove();
+			sb.append(node).append(" ");
+			
+			if (node.getLeft() != null)
+				deque.add(node.getLeft());
+			if (node.getRight() != null)
+				deque.add(node.getRight());
+		}
+		
+		return sb.toString();
 	}
 }

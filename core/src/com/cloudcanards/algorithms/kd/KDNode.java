@@ -12,23 +12,15 @@ class KDNode<E>
 	private KDNode<E> left;
 	private KDNode<E> right;
 	
-	private final boolean vertical;
 	private final Vector2 position;
+	private Rectangle bounds;
 	
 	private final E element;
 	
-	public KDNode(E element, Vector2 position, KDNode left, KDNode right, boolean vertical)
+	public KDNode(E element, Vector2 position)
 	{
 		this.element = element;
 		this.position = position;
-		this.left = left;
-		this.right = right;
-		this.vertical = vertical;
-	}
-	
-	public boolean isVertical()
-	{
-		return vertical;
 	}
 	
 	public Vector2 getPosition()
@@ -59,5 +51,24 @@ class KDNode<E>
 	public void setRight(KDNode<E> right)
 	{
 		this.right = right;
+	}
+	
+	public Rectangle getBounds()
+	{
+		return bounds;
+	}
+	
+	public void setBounds(Rectangle bounds)
+	{
+		this.bounds = bounds;
+	}
+	
+	@Override
+	public String toString()
+	{
+		return "Node{" +
+			element +
+			", bounds=" + bounds +
+			'}';
 	}
 }

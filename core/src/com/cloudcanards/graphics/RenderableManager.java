@@ -100,10 +100,12 @@ public class RenderableManager implements Renderable
 			tempAdd.clear();
 		}
 		
+		batch.begin();
 		for (Renderable renderable : renderables)
 		{
 			renderable.render(batch, delta);
 		}
+		batch.end();
 	}
 	
 	private void addTemp(Renderable renderable)
