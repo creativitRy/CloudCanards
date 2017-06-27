@@ -25,6 +25,7 @@ public abstract class KDTree<E>
 	
 	/**
 	 * Inserts an element to the tree
+	 *
 	 * @param element element to insert
 	 */
 	public void insert(E element)
@@ -113,10 +114,96 @@ public abstract class KDTree<E>
 	}
 	
 	/**
+	 * Gets the element with the largest x coordinate
+	 *
+	 * @return element with the largest x coordinate
+	 */
+	public E getMaxX()
+	{
+		return getMax(root, false, DIVIDE_BY_Y_FIRST);
+	}
+	
+	/**
+	 * Gets the element with the largest y coordinate
+	 *
+	 * @return element with the largest y coordinate
+	 */
+	public E getMaxY()
+	{
+		return getMin(root, true, DIVIDE_BY_Y_FIRST);
+	}
+	
+	/**
+	 * Gets the element with the largest coordinate
+	 *
+	 * @param node     current node to check
+	 * @param findY    compare by y values if true, x values if false
+	 * @param currUseY whether the current node is split by y (true) or x (false)
+	 * @return the maximum of find at left, find at right, and current; or null if node is empty
+	 */
+	private E getMax(KDNode<E> node, boolean findY, boolean currUseY)
+	{
+		if (node == null)
+			return null;
+		if (findY == currUseY)
+		{
+			if (node.getRight() == null)
+				return node.getElement();
+			return getMin(node.getRight(), findY, !currUseY);
+		}
+		else
+		{
+			//return the minimum of find at left, find at right, and current
+			E max = getMin(node.getLeft(), findY, !currUseY);
+			E newMax = getMin(node.getRight(), findY, !currUseY);
+			if (max == null)
+				max = newMax;
+			else if (newMax != null && compare(max, newMax, findY))
+				max = newMax;
+			newMax = node.getElement();
+			if (max == null)
+				max = newMax;
+			else if (newMax != null && compare(max, newMax, findY))
+				max = newMax;
+			return max;
+		}
+	}
+	
+	/**
+	 * Checks whether the tree contains the element
+	 *
+	 * @param element element to find
+	 * @return true if element is found
+	 */
+	public boolean contains(E element)
+	{
+		return element != null && contains(element, root, DIVIDE_BY_Y_FIRST);
+	}
+	
+	/**
+	 * Checks whether the tree contains the element
+	 *
+	 * @param element  element to find
+	 * @param node     current node being checked
+	 * @param currUseY whether the current node is split by y (true) or x (false)
+	 * @return true if element is found
+	 */
+	private boolean contains(E element, KDNode<E> node, boolean currUseY)
+	{
+		if (node == null)
+			return false;
+		if (node.getElement() == element)
+			return true;
+		if (compare(element, node.getElement(), currUseY))
+			return contains(element, node.getLeft(), !currUseY);
+		return contains(element, node.getRight(), !currUseY);
+	}
+	
+	/**
 	 * Checks < based on x if !useY and y if it useY
 	 *
-	 * @param e1       element 1
-	 * @param e2       element 2
+	 * @param e1   element 1
+	 * @param e2   element 2
 	 * @param useY true to use y to compare
 	 * @return element 1 < element 2
 	 */
@@ -130,10 +217,10 @@ public abstract class KDTree<E>
 	/**
 	 * When given data, gets its position
 	 *
-	 * @param value
-	 * @return
+	 * @param element element to get position from
+	 * @return position of element
 	 */
-	public abstract Vector2 getPosition(E value);
+	protected abstract Vector2 getPosition(E element);
 	
 	public boolean isEmpty()
 	{
