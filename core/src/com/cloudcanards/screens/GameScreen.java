@@ -175,9 +175,7 @@ public class GameScreen extends AbstractScreen
 	 */
 	private boolean doPhysicsStep(float deltaTime)
 	{
-		// max frame time to avoid spiral of death (on slow devices)
-		float frameTime = Math.min(deltaTime, 0.25f);
-		physicsTick += frameTime;
+		physicsTick += deltaTime;
 		
 		if (physicsTick < TIME_STEP)
 			return false;

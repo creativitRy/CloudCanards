@@ -20,7 +20,7 @@ import com.badlogic.gdx.physics.box2d.Box2D;
 public class CloudCanards extends Game
 {
 	private static final CloudCanards INSTANCE = new CloudCanards();
-	private static final float MAX_DELTA_TIME = 0.05f; //20 fps or below
+	private static final float MAX_DELTA_TIME = 1f / 20f; //20 fps or below slows down the game instead of skipping frames
 	
 	public static CloudCanards getInstance()
 	{
@@ -67,10 +67,7 @@ public class CloudCanards extends Game
 		//super.render();
 		if (screen != null)
 		{
-			float deltaTime = Gdx.graphics.getDeltaTime();
-			if (deltaTime > MAX_DELTA_TIME)
-				deltaTime = MAX_DELTA_TIME;
-			screen.render(deltaTime);
+			screen.render(Math.min(Gdx.graphics.getDeltaTime(), MAX_DELTA_TIME));
 		}
 	}
 	

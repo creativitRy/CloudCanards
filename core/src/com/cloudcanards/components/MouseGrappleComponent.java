@@ -23,6 +23,7 @@ import com.badlogic.gdx.utils.Timer;
 
 /**
  * MouseGrappleComponent
+ * Todo: extend from abstractinputgrapplecomponent that allows for both control by mouse and controller
  *
  * @author creativitRy
  */
@@ -144,8 +145,9 @@ public class MouseGrappleComponent extends AbstractRenderableComponent implement
 	@Override
 	public void render(SpriteBatch batch, float delta)
 	{
-		batch.draw(targetTexture, character.getPosition().x + unitVector.x - 0.5f,
-			character.getPosition().y + unitVector.y - 0.5f, 1f, 1f);
+		//draw on angle without snapping
+		/*batch.draw(targetTexture, character.getPosition().x + unitVector.x - 0.5f,
+			character.getPosition().y + unitVector.y - 0.5f, 1f, 1f);*/
 		
 		batch.draw(targetTexture, character.getPosition().x + snappedUnitVector.x - 0.5f,
 			character.getPosition().y + snappedUnitVector.y - 0.5f, 1f, 1f);

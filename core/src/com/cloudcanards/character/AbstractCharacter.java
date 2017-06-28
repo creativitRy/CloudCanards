@@ -113,7 +113,10 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 		
 		poly = new PolygonShape();
 		poly.setAsBox(radius * 0.75f, 0.1f, new Vector2(0f, -0.05f), 0);
-		Fixture bottomFixture = body.createFixture(poly, 0);
+		bodyFixtureDef.shape = poly;
+		bodyFixtureDef.density = 0f;
+		bodyFixtureDef.filter.categoryBits = CollisionFilters.CHARACTER;
+		Fixture bottomFixture = body.createFixture(bodyFixtureDef);
 		poly.dispose();
 		bottomFixture.setSensor(true);
 		bottomFixture.setUserData(new CharacterGroundContact(this, halfHeight));
