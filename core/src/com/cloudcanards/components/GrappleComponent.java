@@ -119,7 +119,7 @@ public class GrappleComponent extends AbstractComponent implements Loadable, Upd
 		
 		if (temp > 1)
 		{
-			shoot(GameScreen.getInstance().getGrappleTargets().get(0));
+			shoot(GameScreen.getInstance().getStaticGrappleTargets().get(0));
 		}*/
 	}
 	

@@ -4,7 +4,6 @@ import com.cloudcanards.grapple.StaticTarget;
 import com.cloudcanards.grapple.Targetable;
 import com.cloudcanards.loading.AbstractTask;
 import com.cloudcanards.screens.GameScreen;
-import com.cloudcanards.util.Vector2Comparator;
 
 import com.badlogic.gdx.maps.MapLayer;
 import com.badlogic.gdx.maps.tiled.TiledMapTileLayer;
@@ -54,9 +53,8 @@ public class SpecialTilesBuilderTask extends AbstractTask
 			}
 		}
 		
-		//sort by x coord then y
-		grappleTargets.sort((o1, o2) -> Vector2Comparator.compareStatic(o1.getPosition(), o2.getPosition()));
-		GameScreen.getInstance().setGrappleTargets(grappleTargets);
+		GameScreen.getInstance().getStaticGrappleTargets().addAll(grappleTargets);
+		GameScreen.getInstance().getStaticGrappleTargets().init();
 		
 		finish();
 	}

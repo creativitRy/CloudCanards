@@ -19,7 +19,6 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.utils.Array;
-import com.badlogic.gdx.utils.Timer;
 
 /**
  * MouseGrappleComponent
@@ -30,6 +29,7 @@ import com.badlogic.gdx.utils.Timer;
 public class MouseGrappleComponent extends AbstractRenderableComponent implements Loadable, Updateable, InputListener
 {
 	public static final float MIN_ANGLE = 2f;
+	public static final int MAX_TARGET_DISTANCE = 20; //actual target distance is 50 * sqrt(2)
 	private GrappleComponent grapple;
 	
 	private Texture targetTexture;
@@ -57,15 +57,6 @@ public class MouseGrappleComponent extends AbstractRenderableComponent implement
 		this.snappedUnitVector = new Vector2(1, 0);
 		
 		updateAngle(Gdx.input.getX(), Gdx.input.getY());
-		
-		Timer.schedule(new Timer.Task()
-		{
-			@Override
-			public void run()
-			{
-				updateTargets();
-			}
-		}, 1f);
 	}
 	
 	private void updateAngle(float mouseX, float mouseY)
@@ -104,17 +95,12 @@ public class MouseGrappleComponent extends AbstractRenderableComponent implement
 	
 	public void updateTargets()
 	{
-		Array<Targetable> allTargets = GameScreen.getInstance().getGrappleTargets();
+		//todo: change to camera viewport plus a bit of offset
+		GameScreen.getInstance().getStaticGrappleTargets().getAllElementsInBox(targets,
+			character.getPosition().x - MAX_TARGET_DISTANCE, character.getPosition().y - MAX_TARGET_DISTANCE,
+			character.getPosition().x + MAX_TARGET_DISTANCE, character.getPosition().y + MAX_TARGET_DISTANCE);
 		
-		targets.clear();
-		
-		for (Targetable target : allTargets)
-		{
-			if (target != character && target.getPosition().dst2(character.getPosition()) < 400f)
-				targets.add(target);
-		}
-		
-		System.out.println(targets.size);
+		targets.addAll(GameScreen.getInstance().getDynamicGrappleTargets());
 	}
 	
 	@Override
@@ -139,6 +125,8 @@ public class MouseGrappleComponent extends AbstractRenderableComponent implement
 	@Override
 	public void update(float delta)
 	{
+		if (!character.getBody().getLinearVelocity().equals(Vector2.Zero))
+			updateTargets();
 		updateAngle(Gdx.input.getX() - character.getPosition().x, Gdx.input.getY() - character.getPosition().y);
 	}
 	

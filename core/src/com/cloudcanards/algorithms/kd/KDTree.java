@@ -36,6 +36,18 @@ public abstract class KDTree<E>
 	{
 		super();
 		
+		addAll(elements);
+		
+		init();
+	}
+	
+	/**
+	 * Adds all these elements in hopefully a balanced manner. O((NlogN)^2) ayy lmao
+	 *
+	 * @param elements array of elements to insert. Array will be modified
+	 */
+	public void addAll(Array<E> elements)
+	{
 		Comparator<E> horizComp = (o1, o2) ->
 		{
 			if (getPosition(o1).x == getPosition(o2).x)
@@ -49,10 +61,8 @@ public abstract class KDTree<E>
 			return Float.compare(getPosition(o1).y, getPosition(o2).y);
 		};
 		
-		size = elements.size;
+		size += elements.size;
 		build(elements, horizComp, vertComp, DIVIDE_BY_Y_FIRST);
-		
-		init();
 	}
 	
 	private void build(Array<E> elements, Comparator<E> horizComp, Comparator<E> vertComp, boolean currUseY)

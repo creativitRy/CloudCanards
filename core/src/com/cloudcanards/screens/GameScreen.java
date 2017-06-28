@@ -1,5 +1,6 @@
 package com.cloudcanards.screens;
 
+import com.cloudcanards.algorithms.kd.KDTree;
 import com.cloudcanards.assets.Assets;
 import com.cloudcanards.box2d.MapCollisionBuilderTask;
 import com.cloudcanards.box2d.WorldContactListener;
@@ -56,7 +57,8 @@ public class GameScreen extends AbstractScreen
 	private String mapName;
 	private TiledMap map;
 	private OrthogonalTiledMapRenderer mapRenderer;
-	private Array<Targetable> grappleTargets;
+	private KDTree<Targetable> staticGrappleTargets;
+	private Array<Targetable> dynamicGrappleTargets;
 	
 	//box2d
 	private World world;
@@ -68,7 +70,17 @@ public class GameScreen extends AbstractScreen
 	public GameScreen(String mapName)
 	{
 		INSTANCE = this;
+		
 		this.mapName = mapName;
+		staticGrappleTargets = new KDTree<Targetable>()
+		{
+			@Override
+			protected Vector2 getPosition(Targetable element)
+			{
+				return element.getPosition();
+			}
+		};
+		dynamicGrappleTargets = new Array<>();
 		
 		batch = new SpriteBatch();
 		camera = new OrthographicCamera();
@@ -223,14 +235,19 @@ public class GameScreen extends AbstractScreen
 		return renderableManager;
 	}
 	
-	public Array<Targetable> getGrappleTargets()
+	public KDTree<Targetable> getStaticGrappleTargets()
 	{
-		return grappleTargets;
+		return staticGrappleTargets;
 	}
 	
-	public void setGrappleTargets(Array<Targetable> grappleTargets)
+	public void setStaticGrappleTargets(KDTree<Targetable> staticGrappleTargets)
 	{
-		this.grappleTargets = grappleTargets;
+		this.staticGrappleTargets = staticGrappleTargets;
+	}
+	
+	public Array<Targetable> getDynamicGrappleTargets()
+	{
+		return dynamicGrappleTargets;
 	}
 	
 	public World getWorld()
