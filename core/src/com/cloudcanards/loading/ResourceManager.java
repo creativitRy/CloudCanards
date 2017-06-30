@@ -1,7 +1,6 @@
 package com.cloudcanards.loading;
 
 import com.badlogic.gdx.assets.AssetManager;
-import com.badlogic.gdx.assets.loaders.resolvers.InternalFileHandleResolver;
 import com.badlogic.gdx.maps.tiled.TiledMap;
 import com.badlogic.gdx.maps.tiled.TmxMapLoader;
 
@@ -22,7 +21,7 @@ public class ResourceManager
 	public ResourceManager()
 	{
 		assetManager = new AssetManager();
-		assetManager.setLoader(TiledMap.class, new TmxMapLoader(new InternalFileHandleResolver()));
+		assetManager.setLoader(TiledMap.class, new TmxMapLoader(assetManager.getFileHandleResolver()));
 		tasks = new ArrayDeque<>();
 		multithreadAddFixer = new ArrayDeque<>();
 	}

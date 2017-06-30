@@ -61,7 +61,7 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 	public AbstractCharacter(World world, Vector2 position, float height, float diameter, String atlasPath)
 	{
 		this.world = world;
-		body = initPhysicsBody(position, height / 2f, diameter / 2f);
+		body = createPhysicsBody(position, height / 2f, diameter / 2f);
 		body.setSleepingAllowed(false);
 		
 		//todo
@@ -85,7 +85,7 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 	 * @param radius
 	 * @return
 	 */
-	protected Body initPhysicsBody(Vector2 position, float halfHeight, float radius)
+	protected Body createPhysicsBody(Vector2 position, float halfHeight, float radius)
 	{
 		if (halfHeight < radius) throw new IllegalArgumentException("half height < radius");
 		

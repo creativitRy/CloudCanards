@@ -1,5 +1,6 @@
 package com.cloudcanards;
 
+import com.cloudcanards.assets.Assets;
 import com.cloudcanards.input.InputManager;
 import com.cloudcanards.loading.ResourceManager;
 import com.cloudcanards.screens.GameScreen;
@@ -11,6 +12,8 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.physics.box2d.Box2D;
+import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.utils.Timer;
 
 /**
  * CloudCanards
@@ -21,6 +24,7 @@ public class CloudCanards extends Game
 {
 	private static final CloudCanards INSTANCE = new CloudCanards();
 	private static final float MAX_DELTA_TIME = 1f / 20f; //20 fps or below slows down the game instead of skipping frames
+	private Skin skin;
 	
 	public static CloudCanards getInstance()
 	{
@@ -38,8 +42,25 @@ public class CloudCanards extends Game
 	public void create()
 	{
 		resourceManager = new ResourceManager();
-		//todo: move to loading screen after splash screen - make sure this is called before getInstance()
+		
+		//todo: move to loading screen after starting splash screen - make sure this is called before getInstance()
 		InputManager.init();
+		
+		//todo: move to loading screen after starting splash screen
+		resourceManager.getAssetManager().load(Assets.DIR + Assets.SKIN, Skin.class);
+		Timer.schedule(new Timer.Task()
+		{
+			@Override
+			public void run()
+			{
+				resourceManager.getAssetManager().finishLoading();
+				skin = resourceManager.getAssetManager().get(Assets.DIR + Assets.SKIN);
+			}
+		}, 0.01f);
+		
+		//todo: delete once there aren't any temporary assets
+		Assets.checkTempAssets();
+		
 		//todo: move to starting game
 		Box2D.init();
 		
@@ -75,5 +96,12 @@ public class CloudCanards extends Game
 	public void dispose()
 	{
 		resourceManager.dispose();
+	}
+	
+	public Skin getSkin()
+	{
+		if (skin == null)
+			throw new NullPointerException("Skin is not loaded yet");
+		return skin;
 	}
 }

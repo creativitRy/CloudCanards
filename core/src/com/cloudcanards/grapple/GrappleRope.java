@@ -30,7 +30,7 @@ public class GrappleRope implements Updateable, Renderable
 	
 	private World world;
 	private GrappleComponent grapple;
-	private float maxRopeLength = 100f;
+	private float maxRopeLength = 25f;
 	/**
 	 * 0 = start, 1 = main, 2 = end
 	 */

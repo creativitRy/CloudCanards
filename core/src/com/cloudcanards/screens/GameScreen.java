@@ -24,6 +24,8 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.scenes.scene2d.Stage;
+import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
@@ -67,6 +69,10 @@ public class GameScreen extends AbstractScreen
 	private Box2DDebugRenderer box2DDebugRenderer;
 	private TestChar player;
 	
+	//ui
+	private Stage uiStage;
+	private Stack uiStack;
+	
 	public GameScreen(String mapName)
 	{
 		INSTANCE = this;
@@ -90,6 +96,8 @@ public class GameScreen extends AbstractScreen
 		renderableManager = new RenderableManager();
 		
 		box2DDebugRenderer = new Box2DDebugRenderer();
+		
+		uiStage = new Stage(new FitViewport(SCREEN_WIDTH, SCREEN_HEIGHT));
 	}
 	
 	@Override
@@ -146,12 +154,19 @@ public class GameScreen extends AbstractScreen
 			}
 		});
 		
+		initUi();
+	}
+	
+	private void initUi()
+	{
+		uiStack = new Stack();
+		uiStack.setFillParent(true);
+		uiStage.addActor(uiStack);
 	}
 	
 	@Override
 	public void show()
 	{
-	
 	}
 	
 	@Override
