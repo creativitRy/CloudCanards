@@ -42,6 +42,7 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 	private float groundFriction;
 	private MovementType movementType;
 	private float movementSpeed;
+	private Vector2 platformVelocity; //if char is standing on a moving platform this is not 0,0
 	/**
 	 * -1 is left, 0 is not moving, 1 is right
 	 */
@@ -112,7 +113,7 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 		bodyFixture.setFriction(0f);
 		
 		poly = new PolygonShape();
-		poly.setAsBox(radius * 0.75f, 0.1f, new Vector2(0f, -0.05f), 0);
+		poly.setAsBox(radius * 0.75f, 0.05f, new Vector2(0f, -0.025f), 0);
 		bodyFixtureDef.shape = poly;
 		bodyFixtureDef.density = 0f;
 		bodyFixtureDef.filter.categoryBits = CollisionFilters.CHARACTER;
@@ -121,7 +122,7 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 		bottomFixture.setSensor(true);
 		bottomFixture.setUserData(new CharacterGroundContact(this, halfHeight));
 		
-		body.setBullet(true);
+		//body.setBullet(true);
 		body.setFixedRotation(true);
 		
 		return body;
@@ -337,10 +338,16 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 			setHorizontalVel(0, delta, slowness);
 		}
 		
-		if (vel.y <= 0 && body.getGravityScale() == 1f)
-			body.setGravityScale(2f);
-		else if (vel.y > 0 && body.getGravityScale() == 2f)
+		//todo: don't set custom gravity when swinging on rope
+		if (state == CharacterState.GRAPPLE)
 			body.setGravityScale(1f);
+		else
+		{
+			if (vel.y <= 0 && body.getGravityScale() == 1f)
+				body.setGravityScale(2f);
+			else if (vel.y > 0 && body.getGravityScale() == 2f)
+				body.setGravityScale(1f);
+		}
 		
 		for (Updateable component : updateableComponents)
 		{
@@ -388,5 +395,10 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 	public Vector2 getPosition()
 	{
 		return body.getWorldCenter();
+	}
+	
+	public void setState(CharacterState state)
+	{
+		this.state = state;
 	}
 }

@@ -1,5 +1,7 @@
 package com.cloudcanards.grapple;
 
+import com.cloudcanards.box2d.CollisionFilters;
+
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 
@@ -31,7 +33,7 @@ public class StaticTarget implements Targetable
 		((PolygonShape) fixtureDef.shape).setAsBox(0.5f, 0.5f);
 		fixtureDef.friction = 0;
 		fixtureDef.filter.categoryBits = 0;
-		fixtureDef.filter.maskBits = 0;
+		fixtureDef.filter.maskBits = CollisionFilters.NONE;
 		
 		body.createFixture(fixtureDef);
 		

@@ -10,5 +10,7 @@ public enum CharacterState
 	IDLE,
 	RUN,
 	JUMP,
-	FALL
+	FALL,
+	GRAPPLE,
+	
 }

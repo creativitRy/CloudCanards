@@ -19,6 +19,28 @@ public class CollisionFilters
 	private CollisionFilters() {}
 	
 	/**
+	 * Include only these bits
+	 *
+	 * @param bits bits to include
+	 * @return bit field with the bits included
+	 */
+	public static short whitelist(short... bits)
+	{
+		return include(NONE, bits);
+	}
+	
+	/**
+	 * Include all bits except these bits
+	 *
+	 * @param bits bits to exclude
+	 * @return bit field with the bits excluded
+	 */
+	public static short blacklist(short... bits)
+	{
+		return exclude(ALL, bits);
+	}
+	
+	/**
 	 * Exclude the given bits from the bit field
 	 * <p>
 	 * {@code bitField &= ~bit}

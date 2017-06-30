@@ -4,6 +4,7 @@ import com.cloudcanards.assets.Assets;
 import com.cloudcanards.behavior.Updateable;
 import com.cloudcanards.box2d.CollisionFilters;
 import com.cloudcanards.character.AbstractCharacter;
+import com.cloudcanards.character.CharacterState;
 import com.cloudcanards.grapple.GrappleRope;
 import com.cloudcanards.grapple.Targetable;
 import com.cloudcanards.loading.AbstractLoadAssetTask;
@@ -131,5 +132,10 @@ public class GrappleComponent extends AbstractComponent implements Loadable, Upd
 	public Body getBody()
 	{
 		return body;
+	}
+	
+	public void setGrappling()
+	{
+		character.setState(CharacterState.GRAPPLE);
 	}
 }

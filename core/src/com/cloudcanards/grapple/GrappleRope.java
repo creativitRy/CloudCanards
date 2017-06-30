@@ -2,6 +2,7 @@ package com.cloudcanards.grapple;
 
 import com.cloudcanards.behavior.Updateable;
 import com.cloudcanards.box2d.CollisionFilters;
+import com.cloudcanards.box2d.PreSolvable;
 import com.cloudcanards.components.GrappleComponent;
 import com.cloudcanards.graphics.Renderable;
 import com.cloudcanards.screens.GameScreen;
@@ -11,8 +12,9 @@ import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.physics.box2d.joints.PrismaticJoint;
+import com.badlogic.gdx.physics.box2d.joints.PrismaticJointDef;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
-import com.badlogic.gdx.physics.box2d.joints.RopeJointDef;
 
 /**
  * GrappleRope
@@ -24,9 +26,11 @@ public class GrappleRope implements Updateable, Renderable
 	private static final float DISTANCE_PER_SECOND = 20f;
 	private static final float SEGMENTS_PER_TILE = 2f;
 	private static final float ROPE_WIDTH = 0.25f;
+	public static final float TRIANGLE_HALF_THICKNESS = 0.1f;
 	
 	private World world;
 	private GrappleComponent grapple;
+	private float maxRopeLength = 100f;
 	/**
 	 * 0 = start, 1 = main, 2 = end
 	 */
@@ -70,14 +74,81 @@ public class GrappleRope implements Updateable, Renderable
 	}
 	
 	/**
-	 * todo: https://github.com/creativitRy/CloudCanards/issues/3
+	 *
 	 */
 	private void createPhysicsRope(boolean reachedTarget)
 	{
 		final float distance = grapple.getPosition().dst(end);
-		final float angle = (float) Math.atan2(end.y - grapple.getPosition().y, end.x - grapple.getPosition().x);
+		final float angle = (float) Math.atan2(grapple.getPosition().y - end.y, grapple.getPosition().x - end.x);
 		
-		int numSegments = MathUtils.roundPositive(distance * SEGMENTS_PER_TILE);
+		BodyDef bodyDef = new BodyDef();
+		bodyDef.type = BodyDef.BodyType.DynamicBody;
+		bodyDef.position.set(end);
+		
+		Body rope = world.createBody(bodyDef);
+		rope.setBullet(true);
+		
+		FixtureDef fixtureDef = new FixtureDef();
+		fixtureDef.density = 0.01f;
+		fixtureDef.filter.categoryBits = CollisionFilters.ROPE;
+		fixtureDef.filter.maskBits = CollisionFilters.blacklist(CollisionFilters.ROPE, CollisionFilters.CHARACTER);
+		fixtureDef.friction = 0;
+		fixtureDef.shape = new PolygonShape();
+		((PolygonShape) fixtureDef.shape).set(new float[]{
+			0, -TRIANGLE_HALF_THICKNESS,
+			0, +TRIANGLE_HALF_THICKNESS,
+			maxRopeLength, 0});
+		
+		rope.createFixture(fixtureDef).setUserData((PreSolvable) (contact, oldManifold) ->
+		{
+			contact.setEnabled(false);
+			
+			//only continue if this is the first time this frame that presolve for this rope fixture is called
+			
+			//use contact.getWorldManifold().getPoints()[0]) for contact position
+			//check if that position is between start of rope and player
+			// (by checking if distance from rope start to contact is shorter than distance from rope start to player
+			//if true then move collision point a bit outwards using contact.getWorldManifold().getNormal()
+			//divide rope
+			
+			
+			System.out.println(contact.getWorldManifold().getPoints()[0]);
+		});
+		rope.setTransform(rope.getPosition(), angle);
+		
+		RevoluteJointDef revoluteJointDef = new RevoluteJointDef();
+		revoluteJointDef.bodyA = target.getBody();
+		revoluteJointDef.bodyB = rope;
+		
+		world.createJoint(revoluteJointDef);
+		
+		bodyDef.position.set(grapple.getPosition());
+		
+		Body slider = world.createBody(bodyDef);
+		
+		((PolygonShape) fixtureDef.shape).setAsBox(0.25f, 0.25f);
+		fixtureDef.filter.maskBits = CollisionFilters.NONE;
+		
+		slider.createFixture(fixtureDef);
+		
+		PrismaticJointDef prismaticJointDef = new PrismaticJointDef();
+		prismaticJointDef.bodyA = rope;
+		prismaticJointDef.bodyB = slider;
+		prismaticJointDef.localAxisA.set(1, 0);
+		prismaticJointDef.enableLimit = true;
+		prismaticJointDef.lowerTranslation = 0.1f;
+		prismaticJointDef.upperTranslation = 10f;
+		prismaticJointDef.enableMotor = true;
+		prismaticJointDef.maxMotorForce = 2000f;
+		
+		PrismaticJoint prismaticJoint = (PrismaticJoint) world.createJoint(prismaticJointDef);
+		
+		revoluteJointDef.bodyA = slider;
+		revoluteJointDef.bodyB = grapple.getBody();
+		
+		world.createJoint(revoluteJointDef);
+		
+		/*int numSegments = MathUtils.roundPositive(distance * SEGMENTS_PER_TILE);
 		if (numSegments < 1)
 			numSegments = 1;
 		
@@ -154,7 +225,12 @@ public class GrappleRope implements Updateable, Renderable
 		ropeJointDef.bodyA = jointDef.bodyA;
 		ropeJointDef.localAnchorA.set(-halfWidth, 0f);
 		ropeJointDef.bodyB = jointDef.bodyB;
-		//world.createJoint(ropeJointDef);
+		//world.createJoint(ropeJointDef);*/
+	}
+	
+	private void destroyPhysicsRope()
+	{
+	
 	}
 	
 	@Override
@@ -200,13 +276,14 @@ public class GrappleRope implements Updateable, Renderable
 				
 				//todo: end of state 0 so move to state 1
 				createPhysicsRope(true);
+				grapple.setGrappling();
 				
 				state = 1;
 			}
 		}
 		else if (state == 1) //main
 		{
-			if (segments[0].getPosition().x != target.getPosition().x)
+			//if (segments[0].getPosition().x != target.getPosition().x)
 			{
 				/*float impulse = segments[0].getMass() * segments.length * 2f * Math.signum(target.getPosition().x - segments[0].getPosition().x);
 				
