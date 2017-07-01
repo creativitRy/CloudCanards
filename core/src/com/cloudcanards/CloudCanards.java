@@ -10,9 +10,13 @@ import com.cloudcanards.util.Logger;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
+import com.badlogic.gdx.assets.loaders.SkinLoader;
 import com.badlogic.gdx.graphics.GL20;
+import com.badlogic.gdx.graphics.g2d.BitmapFont;
+import com.badlogic.gdx.graphics.g2d.freetype.FreetypeFontLoader;
 import com.badlogic.gdx.physics.box2d.Box2D;
 import com.badlogic.gdx.scenes.scene2d.ui.Skin;
+import com.badlogic.gdx.utils.ObjectMap;
 import com.badlogic.gdx.utils.Timer;
 
 /**
@@ -47,14 +51,28 @@ public class CloudCanards extends Game
 		InputManager.init();
 		
 		//todo: move to loading screen after starting splash screen
-		resourceManager.getAssetManager().load(Assets.DIR + Assets.SKIN, Skin.class);
+		
 		Timer.schedule(new Timer.Task()
 		{
 			@Override
 			public void run()
 			{
+				FreetypeFontLoader.FreeTypeFontLoaderParameter param = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
+				param.fontFileName = Assets.DIR + Assets.FONT; //this determines the actual path to the font
+				param.fontParameters.size = 40;
+				//the file name below can be any arbitrary string that ends with .ttf (needed when loading same font with different sizes)
+				resourceManager.getAssetManager().load(Assets.DIR + Assets.FONT, BitmapFont.class, param);
+				
+				resourceManager.getAssetManager().finishLoading();
+				
+				ObjectMap<String, Object> fontMap = new ObjectMap<>();
+				fontMap.put("default", resourceManager.getAssetManager().get(Assets.DIR + Assets.FONT));
+				
+				resourceManager.getAssetManager().load(Assets.DIR + Assets.SKIN, Skin.class, new SkinLoader.SkinParameter(fontMap));
+				
 				resourceManager.getAssetManager().finishLoading();
 				skin = resourceManager.getAssetManager().get(Assets.DIR + Assets.SKIN);
+				
 			}
 		}, 0.01f);
 		

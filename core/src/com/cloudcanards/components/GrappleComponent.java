@@ -99,7 +99,7 @@ public class GrappleComponent extends AbstractComponent implements Loadable, Upd
 	
 	public boolean retract()
 	{
-		if (rope == null && rope.getState() == 2)
+		if (rope == null || rope.getState() == 2)
 			return false;
 		
 		return true;

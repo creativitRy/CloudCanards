@@ -12,6 +12,7 @@ import com.cloudcanards.loading.AbstractLoadAssetTask;
 import com.cloudcanards.loading.AbstractTask;
 import com.cloudcanards.loading.ResourceManager;
 import com.cloudcanards.map.SpecialTilesBuilderTask;
+import com.cloudcanards.ui.MainHUD;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -24,6 +25,7 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
 import com.badlogic.gdx.scenes.scene2d.ui.Stack;
 import com.badlogic.gdx.utils.Array;
@@ -154,6 +156,7 @@ public class GameScreen extends AbstractScreen
 			}
 		});
 		
+		//todo
 		initUi();
 	}
 	
@@ -162,6 +165,8 @@ public class GameScreen extends AbstractScreen
 		uiStack = new Stack();
 		uiStack.setFillParent(true);
 		uiStage.addActor(uiStack);
+		
+		uiStack.add(new MainHUD().getTable());
 	}
 	
 	@Override
@@ -191,6 +196,9 @@ public class GameScreen extends AbstractScreen
 		renderableManager.render(batch, delta);
 		
 		box2DDebugRenderer.render(world, camera.combined);
+		
+		uiStage.act(delta);
+		uiStage.draw();
 	}
 	
 	/**
@@ -237,7 +245,7 @@ public class GameScreen extends AbstractScreen
 	@Override
 	public void dispose(ResourceManager resourceManager)
 	{
-	
+		uiStage.dispose();
 	}
 	
 	public void setCameraFocus(CameraFocus cameraFocus)
@@ -283,5 +291,18 @@ public class GameScreen extends AbstractScreen
 			return null;
 		Vector3 unproject = getInstance().camera.unproject(new Vector3(x, y, 0));
 		return new Vector2(unproject.x, unproject.y);
+	}
+	
+	public void addUiActor(Actor actor)
+	{
+		uiStack.add(actor);
+	}
+	
+	/**
+	 * you can also call actor.remove()
+	 */
+	public void removeUiActor(Actor actor)
+	{
+		uiStack.removeActor(actor);
 	}
 }

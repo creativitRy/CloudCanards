@@ -24,6 +24,9 @@ public class Assets
 	public static final String TARGET = "grapple/target.png";
 	@Temporary
 	public static final String SKIN = "ui/vis/uiskin.json";
+	public static final String FONT = "ui/poiretOne.ttf";
+	public static final String TIMER_SHADER = "shaders/Timer.frag";
+	public static final String VERTEX_SHADER = "shaders/VertexShader.vert";
 	
 	/**
 	 * Checks whether temporary assets are being used and logs them

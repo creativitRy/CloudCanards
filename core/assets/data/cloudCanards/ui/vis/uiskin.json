@@ -133,12 +133,12 @@
   com.badlogic.gdx.scenes.scene2d.ui.ProgressBar$ProgressBarStyle: {
 	default-horizontal: {
 	  background: progressbar,
-	  knob: progressbar-filled,
+		//	  knob: progressbar-filled,
 	  knobBefore: progressbar-filled
 	},
 	default-vertical: {
 	  background: progressbar-vertical,
-	  knob: progressbar-filled-vertical,
+		//	  knob: progressbar-filled-vertical,
 	  knobBefore: progressbar-filled-vertical
 	}
   },
