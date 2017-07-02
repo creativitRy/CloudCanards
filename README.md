@@ -4,6 +4,11 @@ The game is built with Java and libgdx
 ### Requirements
 JDK8
 
+### Updating Version Number
+Build number is automatically updated every time you run the game (an hour
+needs to have passed since the last run). The major.minor.patch number should
+be updated manually on core/assets/data/cloudCanards/version.properties
+
 ### Running
 Run the `run` task in `build.gradle` in the desktop folder
 

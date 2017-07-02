@@ -13,23 +13,23 @@ import com.badlogic.gdx.utils.Timer;
  *
  * @author creativitRy
  */
-public class MainHUD
+public class MainHUD extends Table
 {
 	private Table table;
 	
 	public MainHUD()
 	{
-		table = new Table(CloudCanards.getInstance().getSkin());
-		table.setFillParent(true);
+		super(CloudCanards.getInstance().getSkin());
+		setFillParent(true);
 		
-		table.pad(50f);
+		pad(50f);
 		
-		table.add(new Label("Test text", CloudCanards.getInstance().getSkin(), "default", Color.WHITE));
-		//table.setVisible();
-		table.top().left();
-		table.row();
+		add(new Label("Test text", CloudCanards.getInstance().getSkin(), "default", Color.WHITE));
+		//setVisible();
+		top().left();
+		row();
 		ProgressBar progressBar = new ProgressBar(0, 5, 0.5f, false, CloudCanards.getInstance().getSkin());
-		table.add(progressBar);
+		add(progressBar);
 		progressBar.setValue(3f);
 		progressBar.setAnimateDuration(0.1f);
 		Timer.schedule(new Timer.Task()
@@ -40,10 +40,5 @@ public class MainHUD
 				progressBar.setValue(0.5f);
 			}
 		}, 2f);
-	}
-	
-	public Table getTable()
-	{
-		return table;
 	}
 }

@@ -1,46 +1,80 @@
 apply plugin: "java"
 
 sourceCompatibility = 1.8
-sourceSets.main.java.srcDirs = [ "src/" ]
+sourceSets.main.java.srcDirs = ["src/"]
 
 project.ext.mainClassName = "com.cloudcanards.desktop.DesktopLauncher"
 project.ext.assetsDir = new File("../core/assets");
 
 task run(dependsOn: classes, type: JavaExec) {
-    main = project.mainClassName
-    classpath = sourceSets.main.runtimeClasspath
-    standardInput = System.in
-    workingDir = project.assetsDir
-    ignoreExitValue = true
+	incrementBuildNumber()
+	main = project.mainClassName
+	classpath = sourceSets.main.runtimeClasspath
+	standardInput = System.in
+	workingDir = project.assetsDir
+	ignoreExitValue = true
 }
 
 task dist(type: Jar) {
-    from files(sourceSets.main.output.classesDir)
-    from files(sourceSets.main.output.resourcesDir)
-    from {configurations.compile.collect {zipTree(it)}}
-    from files(project.assetsDir);
- 
-    manifest {
-        attributes 'Main-Class': project.mainClassName
-    }
+	baseName = "CloudCanards"
+	from files(sourceSets.main.output.classesDir)
+	from files(sourceSets.main.output.resourcesDir)
+	from { configurations.compile.collect { zipTree(it) } }
+	from files(project.assetsDir);
+	
+	manifest {
+		attributes 'Main-Class': project.mainClassName
+	}
 }
 
 dist.dependsOn classes
 
 eclipse {
-    project {
-        name = appName + "-desktop"
-        linkedResource name: 'assets', type: '2', location: 'PARENT-1-PROJECT_LOC/core/assets'
-    }
+	project {
+		name = appName + "-desktop"
+		linkedResource name: 'assets', type: '2', location: 'PARENT-1-PROJECT_LOC/core/assets'
+	}
 }
 
 task afterEclipseImport(description: "Post processing after project generation", group: "IDE") {
-  doLast {
-    def classpath = new XmlParser().parse(file(".classpath"))
-    new Node(classpath, "classpathentry", [ kind: 'src', path: 'assets' ]);
-    def writer = new FileWriter(file(".classpath"))
-    def printer = new XmlNodePrinter(new PrintWriter(writer))
-    printer.setPreserveWhitespace(true)
-    printer.print(classpath)
-  }
+	doLast {
+		def classpath = new XmlParser().parse(file(".classpath"))
+		new Node(classpath, "classpathentry", [kind: 'src', path: 'assets']);
+		def writer = new FileWriter(file(".classpath"))
+		def printer = new XmlNodePrinter(new PrintWriter(writer))
+		printer.setPreserveWhitespace(true)
+		printer.print(classpath)
+	}
+}
+
+/**
+ * Every time the run task is ran the build number is increased and the date is updated
+ */
+def incrementBuildNumber() {
+	Properties properties = new Properties()
+	File file = new File("../core/assets/data/cloudCanards/version.properties")
+	properties.load(file.newDataInputStream())
+	
+	//only update if at least an hour changed between now and the previous date
+	String date = getDate()
+	String oldDate = properties.getProperty("artifactDate")
+	if (date.substring(0, date.length() - 2) == oldDate.substring(0, oldDate.length() - 2))
+		return
+	
+	Integer nextNum = (((properties.getProperty('artifactBuildNumber')) as BigDecimal) + 1)
+	properties.setProperty("artifactBuildNumber", nextNum.toString())
+	
+	properties.setProperty("artifactDate", date)
+	
+	properties.store(file.newWriter(), null)
+	properties.load(file.newDataInputStream())
+}
+
+/**
+ * Gets the current date in a nicely formatted string
+ * @see <a href="http://docs.oracle.com/javase/8/docs/api/java/text/SimpleDateFormat.html">formatting</a>
+ * @return formatted date
+ */
+def getDate() {
+	return new Date().format('MMMddyyHHmm')
 }

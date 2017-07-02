@@ -61,12 +61,18 @@ public class CloudCanards extends Game
 				param.fontFileName = Assets.DIR + Assets.FONT; //this determines the actual path to the font
 				param.fontParameters.size = 40;
 				//the file name below can be any arbitrary string that ends with .ttf (needed when loading same font with different sizes)
-				resourceManager.getAssetManager().load(Assets.DIR + Assets.FONT, BitmapFont.class, param);
+				resourceManager.getAssetManager().load("normal.ttf", BitmapFont.class, param);
+				
+				param = new FreetypeFontLoader.FreeTypeFontLoaderParameter();
+				param.fontFileName = Assets.DIR + Assets.FONT; //this determines the actual path to the font
+				param.fontParameters.size = 20;
+				resourceManager.getAssetManager().load("small.ttf", BitmapFont.class, param);
 				
 				resourceManager.getAssetManager().finishLoading();
 				
 				ObjectMap<String, Object> fontMap = new ObjectMap<>();
-				fontMap.put("default", resourceManager.getAssetManager().get(Assets.DIR + Assets.FONT));
+				fontMap.put("default", resourceManager.getAssetManager().get("normal.ttf"));
+				fontMap.put("small", resourceManager.getAssetManager().get("small.ttf"));
 				
 				resourceManager.getAssetManager().load(Assets.DIR + Assets.SKIN, Skin.class, new SkinLoader.SkinParameter(fontMap));
 				

@@ -12,7 +12,9 @@ import com.cloudcanards.loading.AbstractLoadAssetTask;
 import com.cloudcanards.loading.AbstractTask;
 import com.cloudcanards.loading.ResourceManager;
 import com.cloudcanards.map.SpecialTilesBuilderTask;
+import com.cloudcanards.ui.FpsCounter;
 import com.cloudcanards.ui.MainHUD;
+import com.cloudcanards.ui.VersionLabel;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -27,7 +29,7 @@ import com.badlogic.gdx.physics.box2d.Box2DDebugRenderer;
 import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.scenes.scene2d.Actor;
 import com.badlogic.gdx.scenes.scene2d.Stage;
-import com.badlogic.gdx.scenes.scene2d.ui.Stack;
+import com.badlogic.gdx.utils.Align;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.viewport.FitViewport;
 
@@ -73,7 +75,6 @@ public class GameScreen extends AbstractScreen
 	
 	//ui
 	private Stage uiStage;
-	private Stack uiStack;
 	
 	public GameScreen(String mapName)
 	{
@@ -162,11 +163,9 @@ public class GameScreen extends AbstractScreen
 	
 	private void initUi()
 	{
-		uiStack = new Stack();
-		uiStack.setFillParent(true);
-		uiStage.addActor(uiStack);
-		
-		uiStack.add(new MainHUD().getTable());
+		uiStage.addActor(new MainHUD());
+		uiStage.addActor(new FpsCounter(Align.topRight));
+		uiStage.addActor(new VersionLabel(Align.bottomRight));
 	}
 	
 	@Override
@@ -295,14 +294,6 @@ public class GameScreen extends AbstractScreen
 	
 	public void addUiActor(Actor actor)
 	{
-		uiStack.add(actor);
-	}
-	
-	/**
-	 * you can also call actor.remove()
-	 */
-	public void removeUiActor(Actor actor)
-	{
-		uiStack.removeActor(actor);
+		uiStage.addActor(actor);
 	}
 }
