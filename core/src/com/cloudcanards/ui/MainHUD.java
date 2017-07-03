@@ -24,7 +24,7 @@ public class MainHUD extends Table
 		
 		pad(50f);
 		
-		add(new Label("Test text", CloudCanards.getInstance().getSkin(), "default", Color.WHITE));
+		add(new Label("Test text", CloudCanards.getInstance().getSkin(), "normal", Color.WHITE));
 		//setVisible();
 		top().left();
 		row();

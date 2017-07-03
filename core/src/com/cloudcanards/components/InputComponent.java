@@ -35,17 +35,25 @@ public class InputComponent extends AbstractComponent implements InputListener
 		{
 			case WALK:
 				if (args[0] instanceof Boolean && ((Boolean) args[0]))
+				{
 					walk = true;
+				}
 				else
+				{
 					walk = false;
+				}
 				setSpeed();
 				return true;
 			
 			case SPRINT:
 				if (args[0] instanceof Boolean && ((Boolean) args[0]))
+				{
 					sprint = true;
+				}
 				else
+				{
 					sprint = false;
+				}
 				setSpeed();
 				return true;
 			
@@ -64,26 +72,40 @@ public class InputComponent extends AbstractComponent implements InputListener
 			
 			case MOVE_LEFT:
 				if (args[0] instanceof Boolean && ((Boolean) args[0]))
+				{
 					left = true;
+				}
 				else
+				{
 					left = false;
+				}
 				setMovement();
 				return true;
 			
 			case MOVE_RIGHT:
 				if (args[0] instanceof Boolean && ((Boolean) args[0]))
+				{
 					right = true;
+				}
 				else
+				{
 					right = false;
+				}
 				setMovement();
 				return true;
 			
 			case JUMP:
 				if (args[0] instanceof Boolean && ((Boolean) args[0]))
+				{
 					if (character.canJump())
+					{
 						character.jump();
+					}
 					else
+					{
 						character.stopJump();
+					}
+				}
 				return true;
 			
 		}
@@ -94,21 +116,33 @@ public class InputComponent extends AbstractComponent implements InputListener
 	private void setMovement()
 	{
 		if (left == right)
+		{
 			character.setMovementDir(0);
+		}
 		else if (left)
+		{
 			character.setMovementDir(-1);
+		}
 		else
+		{
 			character.setMovementDir(1);
+		}
 	}
 	
 	private void setSpeed()
 	{
 		if (walk == sprint)
+		{
 			character.run();
+		}
 		else if (walk)
+		{
 			character.walk();
+		}
 		else
+		{
 			character.sprint();
+		}
 	}
 	
 	

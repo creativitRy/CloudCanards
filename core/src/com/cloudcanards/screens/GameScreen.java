@@ -12,6 +12,7 @@ import com.cloudcanards.loading.AbstractLoadAssetTask;
 import com.cloudcanards.loading.AbstractTask;
 import com.cloudcanards.loading.ResourceManager;
 import com.cloudcanards.map.SpecialTilesBuilderTask;
+import com.cloudcanards.ui.AbstractValueLabel;
 import com.cloudcanards.ui.FpsCounter;
 import com.cloudcanards.ui.MainHUD;
 import com.cloudcanards.ui.VersionLabel;
@@ -166,6 +167,14 @@ public class GameScreen extends AbstractScreen
 		uiStage.addActor(new MainHUD());
 		uiStage.addActor(new FpsCounter(Align.topRight));
 		uiStage.addActor(new VersionLabel(Align.bottomRight));
+		uiStage.addActor(new AbstractValueLabel(Align.bottomLeft)
+		{
+			@Override
+			public String updateText()
+			{
+				return player.getState().name();
+			}
+		});
 	}
 	
 	@Override

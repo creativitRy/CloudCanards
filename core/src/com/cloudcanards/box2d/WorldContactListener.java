@@ -83,6 +83,16 @@ public class WorldContactListener implements ContactListener
 	@Override
 	public void postSolve(Contact contact, ContactImpulse impulse)
 	{
-	
+		Fixture fixtureA = contact.getFixtureA();
+		Fixture fixtureB = contact.getFixtureB();
+		
+		if (fixtureA.getUserData() instanceof PostSolvable)
+		{
+			((PostSolvable) fixtureA.getUserData()).postSolve(contact, impulse);
+		}
+		if (fixtureB.getUserData() instanceof PostSolvable)
+		{
+			((PostSolvable) fixtureB.getUserData()).postSolve(contact, impulse);
+		}
 	}
 }

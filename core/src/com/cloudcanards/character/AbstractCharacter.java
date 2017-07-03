@@ -25,6 +25,8 @@ import com.badlogic.gdx.utils.Array;
  */
 public abstract class AbstractCharacter implements Loadable, Updateable, Renderable, Disposable, Targetable
 {
+	private static final int JUMP_VELOCITY = 15;
+	
 	//render
 	private String atlasPath;
 	private TextureAtlas atlas;
@@ -65,12 +67,14 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 		body.setSleepingAllowed(false);
 		
 		//todo
-		groundFriction = 1;
+		groundFriction = -1;
 		
 		this.atlasPath = atlasPath;
 		faceRight = true;
 		
-		state = CharacterState.FALL;
+		platformVelocity = new Vector2();
+		
+		updateState();
 		run();
 		
 		updateableComponents = new Array<>();
@@ -87,14 +91,16 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 	 */
 	protected Body createPhysicsBody(Vector2 position, float halfHeight, float radius)
 	{
-		if (halfHeight < radius) throw new IllegalArgumentException("half height < radius");
+		if (halfHeight < radius)
+		{
+			throw new IllegalArgumentException("half height < radius");
+		}
 		
 		BodyDef def = new BodyDef();
 		def.type = BodyDef.BodyType.DynamicBody;
 		def.position.set(position);
 		
 		Body body = world.createBody(def);
-		body.setLinearDamping(0.25f);
 		
 		//middle
 		PolygonShape poly = new PolygonShape();
@@ -149,22 +155,30 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 		for (Updateable component : updateableComponents)
 		{
 			if (component instanceof Loadable)
+			{
 				((Loadable) component).load(resourceManager);
+			}
 		}
 		for (AbstractComponent component : miscComponents)
 		{
 			if (component instanceof Loadable)
+			{
 				((Loadable) component).load(resourceManager);
+			}
 		}
 	}
 	
 	public void addComponent(AbstractComponent component)
 	{
 		if (component instanceof Renderable)
+		{
 			registerRenderable((Renderable) component);
+		}
 		
 		if (component instanceof Updateable)
+		{
 			updateableComponents.add((Updateable) component);
+		}
 		else
 		{
 			miscComponents.add(component);
@@ -204,32 +218,6 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 		GameScreen.getInstance().getRenderableManager().remove(component);
 	}
 	
-	public TextureAtlas getAtlas()
-	{
-		return atlas;
-	}
-	
-	@Override
-	public Body getBody()
-	{
-		return body;
-	}
-	
-	public World getWorld()
-	{
-		return world;
-	}
-	
-	public CharacterState getState()
-	{
-		return state;
-	}
-	
-	public MovementType getMovementType()
-	{
-		return movementType;
-	}
-	
 	public void walk()
 	{
 		movementType = MovementType.WALK;
@@ -263,22 +251,32 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 	
 	public void setMovementDir(int movementDir)
 	{
-		if (movementDir == -1)
-			faceRight = false;
-		else if (movementDir == 1)
-			faceRight = true;
+		if (movementDir != 0)
+		{
+			if (movementDir == -1)
+			{
+				faceRight = false;
+			}
+			else if (movementDir == 1)
+			{
+				faceRight = true;
+			}
+		}
+		
 		this.movementDir = movementDir;
-	}
-	
-	public boolean isFaceRight()
-	{
-		return faceRight;
+		
+		if (isGrounded())
+		{
+			updateGroundedState();
+		}
 	}
 	
 	public boolean canJump()
 	{
 		if (isGrounded())
+		{
 			return true;
+		}
 		
 		//fixme
 		return true;
@@ -289,7 +287,8 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 		body.setLinearVelocity(body.getLinearVelocity().x, 0);
 		Vector2 pos = body.getWorldCenter();
 		//body.setLinearVelocity(body.getLinearVelocity().x, 15);
-		body.applyLinearImpulse(0, 15 * body.getMass(), pos.x, pos.y, true);
+		body.applyLinearImpulse(0, JUMP_VELOCITY * body.getMass(), pos.x, pos.y, true);
+		state = CharacterState.JUMP;
 	}
 	
 	public void stopJump()
@@ -316,14 +315,69 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 		body.applyLinearImpulse(impulse, 0, pos.x, pos.y, true);
 	}
 	
+	public void updateState()
+	{
+		if (isGrounded())
+		{
+			updateGroundedState();
+		}
+		else
+		{
+			if (body.getLinearVelocity().y > 0)
+			{
+				state = CharacterState.JUMP;
+			}
+			else
+			{
+				state = CharacterState.FALL;
+			}
+		}
+	}
+	
+	private void updateGroundedState()
+	{
+		if (movementDir == 0)
+		{
+			state = CharacterState.IDLE;
+		}
+		else
+		{
+			state = CharacterState.RUN;
+		}
+	}
+	
 	@Override
 	public void update(float delta)
 	{
+		Vector2 vel = body.getLinearVelocity();
+		
 		float slowness = 0.25f;
 		if (!isGrounded())
+		{
 			slowness = 0.75f;
-		
-		Vector2 vel = body.getLinearVelocity();
+			
+			if (state != CharacterState.GRAPPLE)
+			{
+				if (state == CharacterState.JUMP)
+				{
+					if (vel.y <= 0)
+					{
+						state = CharacterState.FALL;
+					}
+				}
+				else
+				{
+					state = CharacterState.FALL;
+				}
+			}
+		}
+		else
+		{
+			if (state == CharacterState.FALL)
+			{
+				updateGroundedState();
+			}
+		}
 		
 		if (movementDir != 0)
 		{
@@ -340,19 +394,91 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 		
 		//todo: don't set custom gravity when swinging on rope
 		if (state == CharacterState.GRAPPLE)
+		{
 			body.setGravityScale(1f);
+		}
 		else
 		{
-			if (vel.y <= 0 && body.getGravityScale() == 1f)
-				body.setGravityScale(2f);
-			else if (vel.y > 0 && body.getGravityScale() == 2f)
-				body.setGravityScale(1f);
+			if (vel.y <= 0)
+			{
+				if (body.getGravityScale() == 1f)
+				{
+					body.setGravityScale(2f);
+				}
+			}
+			else if (vel.y > 0)
+			{
+				if (body.getGravityScale() == 2f)
+				{
+					body.setGravityScale(1f);
+				}
+			}
+		}
+		
+		if (state == CharacterState.IDLE)
+		{
+			body.setLinearDamping(9999f);
+		}
+		else
+		{
+			body.setLinearDamping(0.25f);
 		}
 		
 		for (Updateable component : updateableComponents)
 		{
 			component.update(delta);
 		}
+	}
+	
+	@Override
+	public void render(SpriteBatch batch, float delta)
+	{
+	}
+	
+	@Override
+	public void dispose(ResourceManager resourceManager)
+	{
+		resourceManager.getAssetManager().unload(atlasPath);
+		for (Updateable component : updateableComponents)
+		{
+			if (component instanceof Disposable)
+			{
+				((Disposable) component).dispose(resourceManager);
+			}
+		}
+		for (AbstractComponent component : miscComponents)
+		{
+			if (component instanceof Disposable)
+			{
+				((Disposable) component).dispose(resourceManager);
+			}
+		}
+	}
+	
+	public TextureAtlas getAtlas()
+	{
+		return atlas;
+	}
+	
+	@Override
+	public Body getBody()
+	{
+		return body;
+	}
+	
+	public World getWorld()
+	{
+		return world;
+	}
+	
+	public CharacterState getState()
+	{
+		return state;
+	}
+	
+	public MovementType getMovementType()
+	{
+		return movementType;
 	}
 	
 	public boolean isGrounded()
@@ -370,25 +496,9 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 		this.groundFriction = friction;
 	}
 	
-	@Override
-	public void render(SpriteBatch batch, float delta)
+	public boolean isFaceRight()
 	{
-	}
-	
-	@Override
-	public void dispose(ResourceManager resourceManager)
-	{
-		resourceManager.getAssetManager().unload(atlasPath);
-		for (Updateable component : updateableComponents)
-		{
-			if (component instanceof Disposable)
-				((Disposable) component).dispose(resourceManager);
-		}
-		for (AbstractComponent component : miscComponents)
-		{
-			if (component instanceof Disposable)
-				((Disposable) component).dispose(resourceManager);
-		}
+		return faceRight;
 	}
 	
 	@Override

@@ -14,7 +14,10 @@ import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.physics.box2d.joints.PrismaticJoint;
 import com.badlogic.gdx.physics.box2d.joints.PrismaticJointDef;
+import com.badlogic.gdx.physics.box2d.joints.RevoluteJoint;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
+
+import java.util.ArrayDeque;
 
 /**
  * GrappleRope
@@ -24,9 +27,9 @@ import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 public class GrappleRope implements Updateable, Renderable
 {
 	private static final float DISTANCE_PER_SECOND = 20f;
-	private static final float SEGMENTS_PER_TILE = 2f;
-	private static final float ROPE_WIDTH = 0.25f;
-	public static final float TRIANGLE_HALF_THICKNESS = 0.1f;
+	public static final float ROPE_HALF_THICKNESS = 0.1f;
+	public static final short ROPE_COLLISION_MASK = CollisionFilters.blacklist(
+		CollisionFilters.ROPE, CollisionFilters.CHARACTER);
 	
 	private World world;
 	private GrappleComponent grapple;
@@ -39,12 +42,22 @@ public class GrappleRope implements Updateable, Renderable
 	
 	private Targetable target;
 	
-	private Body[] segments;
 	private Vector2 end;
 	private Vector2 prevEnd;
 	private boolean retracting;
 	
 	private NinePatch texture;
+	
+	private ArrayDeque<Vector2> points;
+	private Body rope;
+	private Fixture ropeFixture;
+	private RevoluteJoint targetJoint;
+	private Body slider;
+	private PrismaticJoint prismaticJoint;
+	private RevoluteJoint sourceJoint;
+	
+	private Vector2 createRope;
+	private Body newTarget;
 	
 	public GrappleRope(GrappleComponent grapple, Targetable target, World world, NinePatch texture)
 	{
@@ -63,6 +76,8 @@ public class GrappleRope implements Updateable, Renderable
 		this.texture = texture;
 		
 		GameScreen.getInstance().getRenderableManager().add(this);
+		
+		points = new ArrayDeque<>();
 	}
 	
 	/**
@@ -71,60 +86,80 @@ public class GrappleRope implements Updateable, Renderable
 	public void stopGrappling()
 	{
 		moveToState2 = true;
+		grapple.setRetractGrapple();
 	}
 	
 	/**
 	 *
 	 */
-	private void createPhysicsRope(boolean reachedTarget)
+	private void createPhysicsRope(Vector2 pos, Body target)
 	{
-		final float distance = grapple.getPosition().dst(end);
-		final float angle = (float) Math.atan2(grapple.getPosition().y - end.y, grapple.getPosition().x - end.x);
+		final float distance = grapple.getPosition().dst(pos);
+		final float angle = (float) Math.atan2(grapple.getPosition().y - pos.y, grapple.getPosition().x - pos.x);
 		
 		BodyDef bodyDef = new BodyDef();
 		bodyDef.type = BodyDef.BodyType.DynamicBody;
-		bodyDef.position.set(end);
+		bodyDef.position.set(pos);
 		
-		Body rope = world.createBody(bodyDef);
+		rope = world.createBody(bodyDef);
 		rope.setBullet(true);
 		
 		FixtureDef fixtureDef = new FixtureDef();
 		fixtureDef.density = 0.01f;
 		fixtureDef.filter.categoryBits = CollisionFilters.ROPE;
-		fixtureDef.filter.maskBits = CollisionFilters.blacklist(CollisionFilters.ROPE, CollisionFilters.CHARACTER);
+		fixtureDef.filter.maskBits = ROPE_COLLISION_MASK;
 		fixtureDef.friction = 0;
 		fixtureDef.shape = new PolygonShape();
 		((PolygonShape) fixtureDef.shape).set(new float[]{
-			0, -TRIANGLE_HALF_THICKNESS,
-			0, +TRIANGLE_HALF_THICKNESS,
+			0, -ROPE_HALF_THICKNESS,
+			0, +ROPE_HALF_THICKNESS,
 			maxRopeLength, 0});
 		
-		rope.createFixture(fixtureDef).setUserData((PreSolvable) (contact, oldManifold) ->
+		ropeFixture = rope.createFixture(fixtureDef);
+		ropeFixture.setUserData((PreSolvable) (contact, oldManifold) ->
 		{
 			contact.setEnabled(false);
 			
 			//only continue if this is the first time this frame that presolve for this rope fixture is called
 			
-			//use contact.getWorldManifold().getPoints()[0]) for contact position
 			//check if that position is between start of rope and player
 			// (by checking if distance from rope start to contact is shorter than distance from rope start to player
-			//if true then move collision point a bit outwards using contact.getWorldManifold().getNormal()
-			//divide rope
+			if (rope.getPosition().dst2(contact.getWorldManifold().getPoints()[0])
+				< rope.getPosition().dst2(grapple.getPosition()))
+			{
+				//if true then move collision point a bit outwards using contact.getWorldManifold().getNormal()
+				//divide rope
+				System.out.println(contact.getWorldManifold().getPoints()[0]);
+				
+				Fixture temp;
+				if (contact.getFixtureA() == ropeFixture)
+				{
+					temp = contact.getFixtureB();
+				}
+				else
+				{
+					temp = contact.getFixtureA();
+				}
+				newTarget = temp.getBody();
+				createRope = new Vector2(contact.getWorldManifold().getNormal()).nor().scl(ROPE_HALF_THICKNESS + 0.1f);
+				
+				createRope.add(contact.getWorldManifold().getPoints()[0]);
+				System.out.println(newTarget.getPosition());
+			}
 			
 			
-			System.out.println(contact.getWorldManifold().getPoints()[0]);
 		});
 		rope.setTransform(rope.getPosition(), angle);
 		
 		RevoluteJointDef revoluteJointDef = new RevoluteJointDef();
-		revoluteJointDef.bodyA = target.getBody();
+		revoluteJointDef.bodyA = target;
+		revoluteJointDef.localAnchorA.set(target.getLocalPoint(pos));
 		revoluteJointDef.bodyB = rope;
-		
-		world.createJoint(revoluteJointDef);
+		targetJoint = (RevoluteJoint) world.createJoint(revoluteJointDef);
 		
 		bodyDef.position.set(grapple.getPosition());
 		
-		Body slider = world.createBody(bodyDef);
+		slider = world.createBody(bodyDef);
 		
 		((PolygonShape) fixtureDef.shape).setAsBox(0.25f, 0.25f);
 		fixtureDef.filter.maskBits = CollisionFilters.NONE;
@@ -137,100 +172,27 @@ public class GrappleRope implements Updateable, Renderable
 		prismaticJointDef.localAxisA.set(1, 0);
 		prismaticJointDef.enableLimit = true;
 		prismaticJointDef.lowerTranslation = 0.1f;
-		prismaticJointDef.upperTranslation = 10f;
+		prismaticJointDef.upperTranslation = distance + 2f;
 		prismaticJointDef.enableMotor = true;
 		prismaticJointDef.maxMotorForce = 2000f;
 		
-		PrismaticJoint prismaticJoint = (PrismaticJoint) world.createJoint(prismaticJointDef);
+		prismaticJoint = (PrismaticJoint) world.createJoint(prismaticJointDef);
 		
 		revoluteJointDef.bodyA = slider;
+		revoluteJointDef.localAnchorA.set(0, 0);
 		revoluteJointDef.bodyB = grapple.getBody();
-		
-		world.createJoint(revoluteJointDef);
-		
-		/*int numSegments = MathUtils.roundPositive(distance * SEGMENTS_PER_TILE);
-		if (numSegments < 1)
-			numSegments = 1;
-		
-		segments = new Body[numSegments];
-		
-		final float dx = (end.x - grapple.getPosition().x) / numSegments / 2f;
-		final float dy = (end.y - grapple.getPosition().y) / numSegments / 2f;
-		
-		BodyDef bodyDef = new BodyDef();
-		bodyDef.type = BodyDef.BodyType.DynamicBody;
-		bodyDef.position.set(grapple.getPosition().x - dx, grapple.getPosition().y - dy);
-		
-		FixtureDef fixtureDef = new FixtureDef();
-		fixtureDef.shape = new PolygonShape();
-		final float halfWidth = distance / numSegments / 2f;
-		((PolygonShape) fixtureDef.shape).setAsBox(halfWidth - ROPE_WIDTH / 2f, ROPE_WIDTH / 2f);
-		fixtureDef.density = 10f;
-		
-		fixtureDef.filter.categoryBits = CollisionFilters.ROPE;
-		//ropes don't collide with itself
-		//fixtureDef.filter.maskBits = CollisionFilters.toggleAll(CollisionFilters.ROPE);
-		fixtureDef.filter.maskBits = CollisionFilters.toggleAll(CollisionFilters.CHARACTER);
-		
-		RevoluteJointDef jointDef = new RevoluteJointDef();
-		jointDef.localAnchorA.set(halfWidth, 0f);
-		jointDef.localAnchorB.set(-halfWidth, 0f);
-		
-		RopeJointDef ropeJointDef = new RopeJointDef();
-		ropeJointDef.localAnchorA.set(halfWidth, 0f);
-		ropeJointDef.localAnchorB.set(-halfWidth, 0f);
-		ropeJointDef.maxLength = distance / numSegments;
-		
-		for (int i = 0; i < numSegments; i++)
-		{
-			bodyDef.position.add(dx, dy);
-			segments[i] = world.createBody(bodyDef);
-			//segments[i].setLinearDamping(0.25f);
-			segments[i].createFixture(fixtureDef);
-			segments[i].setTransform(bodyDef.position, angle);
-			
-			if (i == 0)
-				continue;
-			
-			jointDef.bodyA = segments[i - 1];
-			jointDef.bodyB = segments[i];
-			world.createJoint(jointDef);
-			
-			ropeJointDef.bodyA = jointDef.bodyA;
-			ropeJointDef.bodyB = jointDef.bodyB;
-			world.createJoint(ropeJointDef);
-		}
-		
-		fixtureDef.shape.dispose();
-		
-		jointDef.localAnchorB.set(0, 0);
-		ropeJointDef.localAnchorB.set(0, 0);
-		
-		if (reachedTarget)
-		{
-			jointDef.bodyA = segments[segments.length - 1];
-			jointDef.bodyB = target.getBody();
-			world.createJoint(jointDef);
-			
-			ropeJointDef.bodyA = jointDef.bodyA;
-			ropeJointDef.bodyB = jointDef.bodyB;
-			world.createJoint(ropeJointDef);
-		}
-		
-		jointDef.bodyA = segments[0];
-		jointDef.localAnchorA.set(-halfWidth, 0f);
-		jointDef.bodyB = grapple.getBody();
-		world.createJoint(jointDef);
-		
-		ropeJointDef.bodyA = jointDef.bodyA;
-		ropeJointDef.localAnchorA.set(-halfWidth, 0f);
-		ropeJointDef.bodyB = jointDef.bodyB;
-		//world.createJoint(ropeJointDef);*/
+		sourceJoint = (RevoluteJoint) world.createJoint(revoluteJointDef);
 	}
 	
 	private void destroyPhysicsRope()
 	{
-	
+		world.destroyJoint(sourceJoint);
+		
+		world.destroyJoint(prismaticJoint);
+		world.destroyBody(slider);
+		
+		world.destroyJoint(targetJoint);
+		world.destroyBody(rope);
 	}
 	
 	@Override
@@ -253,17 +215,33 @@ public class GrappleRope implements Updateable, Renderable
 		if (state == 0) //start
 		{
 			//collision check
-			/*world.rayCast((fixture, point, normal, fraction) ->
+			if (!grapple.getPosition().equals(end))
 			{
-				if (fixture.isSensor())
-					return -1;
+				world.rayCast((fixture, point, normal, fraction) ->
+				{
+					if (fixture.isSensor())
+					{
+						return -1;
+					}
+					if (!CollisionFilters.check(ROPE_COLLISION_MASK, fixture.getFilterData().categoryBits))
+					{
+						return -1;
+					}
+					if (!CollisionFilters.check(fixture.getFilterData().maskBits, CollisionFilters.ROPE))
+					{
+						return -1;
+					}
+					
+					stopGrappling();
+					return 0;
+				}, grapple.getPosition(), end);
 				
-				stopGrappling();
-				return 0;
-			}, grapple.getPosition(), end);*/
+				if (moveToState2)
+				{
+					return;
+				}
+			}
 			
-			if (moveToState2)
-				return;
 			
 			//lengthen rope
 			prevEnd.set(end);
@@ -275,7 +253,7 @@ public class GrappleRope implements Updateable, Renderable
 				end.set(target.getPosition());
 				
 				//todo: end of state 0 so move to state 1
-				createPhysicsRope(true);
+				createPhysicsRope(end, target.getBody());
 				grapple.setGrappling();
 				
 				state = 1;
@@ -283,13 +261,12 @@ public class GrappleRope implements Updateable, Renderable
 		}
 		else if (state == 1) //main
 		{
-			//if (segments[0].getPosition().x != target.getPosition().x)
+			if (createRope != null)
 			{
-				/*float impulse = segments[0].getMass() * segments.length * 2f * Math.signum(target.getPosition().x - segments[0].getPosition().x);
-				
-				Vector2 pos = segments[0].getWorldCenter();
-				segments[0].applyLinearImpulse(impulse, -2, pos.x, pos.y, true);*/
-				//segments[0].setGravityScale(10f);
+				points.push(rope.getPosition());
+				destroyPhysicsRope();
+				createPhysicsRope(createRope, newTarget);
+				createRope = null;
 			}
 			
 			if (retracting)
@@ -299,6 +276,7 @@ public class GrappleRope implements Updateable, Renderable
 		}
 		else //end
 		{
+			System.out.println("test");
 			//shorten rope
 		}
 	}

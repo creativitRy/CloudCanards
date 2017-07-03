@@ -71,7 +71,7 @@ public class CloudCanards extends Game
 				resourceManager.getAssetManager().finishLoading();
 				
 				ObjectMap<String, Object> fontMap = new ObjectMap<>();
-				fontMap.put("default", resourceManager.getAssetManager().get("normal.ttf"));
+				fontMap.put("normal", resourceManager.getAssetManager().get("normal.ttf"));
 				fontMap.put("small", resourceManager.getAssetManager().get("small.ttf"));
 				
 				resourceManager.getAssetManager().load(Assets.DIR + Assets.SKIN, Skin.class, new SkinLoader.SkinParameter(fontMap));

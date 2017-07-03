@@ -120,9 +120,9 @@ public class MapCollisionBuilderTask extends AbstractTask
 	{
 		Rectangle rectangle = rectangleObject.getRectangle();
 		PolygonShape polygon = new PolygonShape();
-		Vector2 size = new Vector2((rectangle.x + rectangle.width / 2f) / tileSize, (rectangle.y + rectangle.height
-			/ 2f) / tileSize);
-		polygon.setAsBox(rectangle.width / 2f / tileSize, rectangle.height / 2f / tileSize, size, 0.0f);
+		Vector2 center = new Vector2((rectangle.x + rectangle.width / 2f) / tileSize,
+			(rectangle.y + rectangle.height / 2f) / tileSize);
+		polygon.setAsBox(rectangle.width / 2f / tileSize, rectangle.height / 2f / tileSize, center, 0.0f);
 		return polygon;
 	}
 	
