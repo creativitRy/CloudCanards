@@ -17,6 +17,7 @@ public interface PostSolvable
 	 * sub-step is small. Hence the impulse is provided explicitly in a separate data structure.
 	 * <p>
 	 * Note: this is only called for contacts that are touching, solid, and awake.
+	 * @param impulse normal = impulse to push bodies away to stop contact, tangent = friction
 	 */
 	void postSolve(Contact contact, ContactImpulse impulse);
 }

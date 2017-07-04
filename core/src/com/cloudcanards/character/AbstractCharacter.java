@@ -14,6 +14,7 @@ import com.cloudcanards.util.MathUtil;
 
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
@@ -25,7 +26,7 @@ import com.badlogic.gdx.utils.Array;
  */
 public abstract class AbstractCharacter implements Loadable, Updateable, Renderable, Disposable, Targetable
 {
-	private static final int JUMP_VELOCITY = 15;
+	private static final int JUMP_VELOCITY = 17;
 	
 	//render
 	private String atlasPath;
@@ -44,6 +45,7 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 	private float groundFriction;
 	private MovementType movementType;
 	private float movementSpeed;
+	private float maxSpeedChange = 10f;
 	private Vector2 platformVelocity; //if char is standing on a moving platform this is not 0,0
 	/**
 	 * -1 is left, 0 is not moving, 1 is right
@@ -107,8 +109,8 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 		//x1, y1, x2, y2, x3, y3, etc
 		//this causes a bug where if you jump while trying to go up a ledge, you jump higher
 		poly.set(new float[]{
-			+radius, 2f * halfHeight, +radius, halfHeight / 2f, 0.75f * +radius, 0,
-			-radius, 2f * halfHeight, -radius, halfHeight / 2f, 0.75f * -radius, 0});
+			+radius, 2f * halfHeight, +radius, halfHeight / 2f, 0.9f * +radius, 0,
+			-radius, 2f * halfHeight, -radius, halfHeight / 2f, 0.9f * -radius, 0});
 		//poly.setAsBox(radius, halfHeight, new Vector2(0, halfHeight), 0);
 		FixtureDef bodyFixtureDef = new FixtureDef();
 		bodyFixtureDef.shape = poly;
@@ -119,7 +121,7 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 		bodyFixture.setFriction(0f);
 		
 		poly = new PolygonShape();
-		poly.setAsBox(radius * 0.75f, 0.05f, new Vector2(0f, -0.025f), 0);
+		poly.setAsBox(radius * 0.9f, 0.05f, new Vector2(0f, -0.025f), 0);
 		bodyFixtureDef.shape = poly;
 		bodyFixtureDef.density = 0f;
 		bodyFixtureDef.filter.categoryBits = CollisionFilters.CHARACTER;
@@ -284,11 +286,12 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 	
 	public void jump()
 	{
+		body.setLinearDamping(0f);
 		body.setLinearVelocity(body.getLinearVelocity().x, 0);
 		Vector2 pos = body.getWorldCenter();
 		//body.setLinearVelocity(body.getLinearVelocity().x, 15);
 		body.applyLinearImpulse(0, JUMP_VELOCITY * body.getMass(), pos.x, pos.y, true);
-		state = CharacterState.JUMP;
+		setState(CharacterState.JUMP);
 	}
 	
 	public void stopJump()
@@ -309,6 +312,14 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 		
 		float desiredVel = MathUtil.lerp(vel.x, velocity, delta, slowness);
 		float velChange = desiredVel - vel.x;
+		if (velChange > maxSpeedChange)
+		{
+			velChange = maxSpeedChange;
+		}
+		else if (velChange < -maxSpeedChange)
+		{
+			velChange = -maxSpeedChange;
+		}
 		float impulse = body.getMass() * velChange;
 		
 		Vector2 pos = body.getWorldCenter();
@@ -325,24 +336,37 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 		{
 			if (body.getLinearVelocity().y > 0)
 			{
-				state = CharacterState.JUMP;
+				setState(CharacterState.JUMP);
 			}
 			else
 			{
-				state = CharacterState.FALL;
+				setState(CharacterState.FALL);
 			}
 		}
 	}
 	
 	private void updateGroundedState()
 	{
-		if (movementDir == 0)
+		if (movementDir != 0)
 		{
-			state = CharacterState.IDLE;
+			setState(CharacterState.RUN);
+		}
+		else if (MathUtils.isEqual(body.getLinearVelocity().x, platformVelocity.x, 0.01f) &&
+			state != CharacterState.JUMP)
+		{
+			setState(CharacterState.IDLE);
+		}
+	}
+	
+	private void updateLinearDamping()
+	{
+		if (state == CharacterState.IDLE)
+		{
+			body.setLinearDamping(9999f);
 		}
 		else
 		{
-			state = CharacterState.RUN;
+			body.setLinearDamping(0.25f);
 		}
 	}
 	
@@ -352,7 +376,22 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 		Vector2 vel = body.getLinearVelocity();
 		
 		float slowness = 0.25f;
-		if (!isGrounded())
+		if (isGrounded())
+		{
+			/*if (state == CharacterState.FALL)
+			{*/
+			updateGroundedState();/*
+			}
+			else if (movementDir == 0)
+			{
+				if (vel.x == platformVelocity.x)
+				{
+					System.out.println("?");
+					setState(CharacterState.IDLE);
+				}
+			}*/
+		}
+		else
 		{
 			slowness = 0.75f;
 			
@@ -362,20 +401,13 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 				{
 					if (vel.y <= 0)
 					{
-						state = CharacterState.FALL;
+						setState(CharacterState.FALL);
 					}
 				}
 				else
 				{
-					state = CharacterState.FALL;
+					setState(CharacterState.FALL);
 				}
-			}
-		}
-		else
-		{
-			if (state == CharacterState.FALL)
-			{
-				updateGroundedState();
 			}
 		}
 		
@@ -401,28 +433,21 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 		{
 			if (vel.y <= 0)
 			{
-				if (body.getGravityScale() == 1f)
+				if (body.getGravityScale() != 2f)
 				{
 					body.setGravityScale(2f);
 				}
 			}
 			else if (vel.y > 0)
 			{
-				if (body.getGravityScale() == 2f)
+				if (body.getGravityScale() != 1f)
 				{
 					body.setGravityScale(1f);
 				}
 			}
 		}
 		
-		if (state == CharacterState.IDLE)
-		{
-			body.setLinearDamping(9999f);
-		}
-		else
-		{
-			body.setLinearDamping(0.25f);
-		}
+		if (state == CharacterState.RUN)
 		
 		for (Updateable component : updateableComponents)
 		{
@@ -510,5 +535,7 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 	public void setState(CharacterState state)
 	{
 		this.state = state;
+		
+		updateLinearDamping();
 	}
 }
