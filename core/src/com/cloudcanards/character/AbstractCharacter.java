@@ -267,7 +267,7 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 		
 		this.movementDir = movementDir;
 		
-		if (isGrounded())
+		if (isGrounded() && canSetState())
 		{
 			updateGroundedState();
 		}
@@ -291,7 +291,11 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 		Vector2 pos = body.getWorldCenter();
 		//body.setLinearVelocity(body.getLinearVelocity().x, 15);
 		body.applyLinearImpulse(0, JUMP_VELOCITY * body.getMass(), pos.x, pos.y, true);
-		setState(CharacterState.JUMP);
+		
+		if (canSetState())
+		{
+			setState(CharacterState.JUMP);
+		}
 	}
 	
 	public void stopJump()
@@ -324,6 +328,11 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 		
 		Vector2 pos = body.getWorldCenter();
 		body.applyLinearImpulse(impulse, 0, pos.x, pos.y, true);
+	}
+	
+	private boolean canSetState()
+	{
+		return state != CharacterState.GRAPPLE;
 	}
 	
 	public void updateState()
@@ -378,24 +387,16 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 		float slowness = 0.25f;
 		if (isGrounded())
 		{
-			/*if (state == CharacterState.FALL)
-			{*/
-			updateGroundedState();/*
-			}
-			else if (movementDir == 0)
+			if (canSetState())
 			{
-				if (vel.x == platformVelocity.x)
-				{
-					System.out.println("?");
-					setState(CharacterState.IDLE);
-				}
-			}*/
+				updateGroundedState();
+			}
 		}
 		else
 		{
 			slowness = 0.75f;
 			
-			if (state != CharacterState.GRAPPLE)
+			if (canSetState())
 			{
 				if (state == CharacterState.JUMP)
 				{
