@@ -39,6 +39,22 @@ public class InputManager implements InputProcessor, ControllerListener
 		getInstance().addListener(listener);
 	}
 	
+	public static boolean isEnabled()
+	{
+		return getInstance().enabled;
+	}
+	
+	public static void setEnabled(boolean enabled)
+	{
+		getInstance().enabled = enabled;
+		if (enabled)
+		{
+			Gdx.input.setInputProcessor(getInstance());
+		}
+	}
+	
+	private boolean enabled;
+	
 	//maps
 	private ObjectMap<Integer, InputAction> keyMap;
 	private ObjectMap<Integer, InputAction> mouseButtonMap;
@@ -57,6 +73,7 @@ public class InputManager implements InputProcessor, ControllerListener
 	{
 		Gdx.input.setInputProcessor(this);
 		Controllers.addListener(this);
+		enabled = true;
 		
 		listeners = new Array<>(16);
 		removalPendingListeners = new Array<>(4);
@@ -99,10 +116,16 @@ public class InputManager implements InputProcessor, ControllerListener
 			}
 		}
 		
-		for (InputListener listener : listeners)
+		if (enabled)
 		{
-			if (listener.isEnabled() && listener.onInput(action, type, args))
-				return true;
+			for (int i = listeners.size - 1; i >= 0; i--)
+			{
+				InputListener listener = listeners.get(i);
+				if (listener.isEnabled() && listener.onInput(action, type, args))
+				{
+					return true;
+				}
+			}
 		}
 		
 		return false;

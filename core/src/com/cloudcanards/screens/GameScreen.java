@@ -6,6 +6,7 @@ import com.cloudcanards.box2d.MapCollisionBuilderTask;
 import com.cloudcanards.box2d.WorldContactListener;
 import com.cloudcanards.camera.CameraFocus;
 import com.cloudcanards.character.TestChar;
+import com.cloudcanards.console.Console;
 import com.cloudcanards.graphics.RenderableManager;
 import com.cloudcanards.grapple.Targetable;
 import com.cloudcanards.loading.AbstractLoadAssetTask;
@@ -132,13 +133,13 @@ public class GameScreen extends AbstractScreen
 				TmxMapLoader.Parameters params = new TmxMapLoader.Parameters();
 				params.textureMinFilter = Texture.TextureFilter.Linear;
 				params.textureMagFilter = Texture.TextureFilter.Nearest;
-				resourceManager.getAssetManager().load(Assets.DIR + mapName, TiledMap.class, params);
+				resourceManager.getAssetManager().load(Assets.DIR + Assets.LEVEL_DIR + mapName, TiledMap.class, params);
 			}
 			
 			@Override
 			public void postRun()
 			{
-				map = resourceManager.getAssetManager().get(Assets.DIR + mapName);
+				map = resourceManager.getAssetManager().get(Assets.DIR + Assets.LEVEL_DIR + mapName);
 				
 				float tileSize = map.getProperties().get("tilewidth", 32, Integer.class);
 				mapRenderer = new OrthogonalTiledMapRenderer(map, 1 / tileSize, batch);
@@ -175,6 +176,7 @@ public class GameScreen extends AbstractScreen
 				return player.getState().name();
 			}
 		});
+		uiStage.addActor(Console.getInstance().ui());
 	}
 	
 	@Override
@@ -253,6 +255,7 @@ public class GameScreen extends AbstractScreen
 	@Override
 	public void dispose(ResourceManager resourceManager)
 	{
+		//todo: unregister inputlisteners here
 		uiStage.dispose();
 	}
 	
@@ -304,5 +307,16 @@ public class GameScreen extends AbstractScreen
 	public void addUiActor(Actor actor)
 	{
 		uiStage.addActor(actor);
+	}
+	
+	public Stage getUiStage()
+	{
+		return uiStage;
+	}
+	
+	public TestChar getPlayer()
+	{
+		//todo: return character with input component, if any
+		return player;
 	}
 }

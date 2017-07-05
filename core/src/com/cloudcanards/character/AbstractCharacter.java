@@ -447,8 +447,6 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 			}
 		}
 		
-		if (state == CharacterState.RUN)
-		
 		for (Updateable component : updateableComponents)
 		{
 			component.update(delta);

@@ -13,5 +13,6 @@ public enum InputAction
 	MOVE,
 	MOVE_LEFT,
 	MOVE_RIGHT,
-	SHOOT
+	SHOOT,
+	CONSOLE
 }

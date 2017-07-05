@@ -5,6 +5,7 @@
 		129: SPRINT
 		29: MOVE_LEFT
 		32: MOVE_RIGHT
+		68: CONSOLE
 	}
 	1: {
 		0: SHOOT

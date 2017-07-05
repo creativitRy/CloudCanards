@@ -126,7 +126,9 @@ public class MouseGrappleComponent extends AbstractRenderableComponent implement
 	public void update(float delta)
 	{
 		if (!character.getBody().getLinearVelocity().equals(Vector2.Zero))
+		{
 			updateTargets();
+		}
 		updateAngle(Gdx.input.getX() - character.getPosition().x, Gdx.input.getY() - character.getPosition().y);
 	}
 	
@@ -151,7 +153,9 @@ public class MouseGrappleComponent extends AbstractRenderableComponent implement
 	public boolean onInput(InputAction action, InputType type, Object... args)
 	{
 		if (currentTarget == null)
+		{
 			return false;
+		}
 		if (action == InputAction.SHOOT)
 		{
 			if (args[0] instanceof Boolean && ((Boolean) args[0]))

@@ -23,6 +23,11 @@
 	dialogDim: {
 	  name: white,
 	  color: {r: 0, g: 0, b: 0, a: 0.45}
+	},
+	  consoleBackground: {
+		  name: textfield,
+		  color: black,
+		  leftWidth: 100
 	}
   },
   com.badlogic.gdx.scenes.scene2d.ui.Button$ButtonStyle: {
@@ -133,12 +138,12 @@
   com.badlogic.gdx.scenes.scene2d.ui.ProgressBar$ProgressBarStyle: {
 	default-horizontal: {
 	  background: progressbar,
-		//	  knob: progressbar-filled,
+		//	    knob: progressbar-filled,
 	  knobBefore: progressbar-filled
 	},
 	default-vertical: {
 	  background: progressbar-vertical,
-		//	  knob: progressbar-filled-vertical,
+		//	    knob: progressbar-filled-vertical,
 	  knobBefore: progressbar-filled-vertical
 	}
   },
@@ -196,6 +201,16 @@
 	  cursor: cursor,
 	  messageFont: default-font,
 	  messageFontColor: grey
+	},
+	  console: {
+		  font: small,
+		  fontColor: white,
+		  disabledFontColor: grey,
+		  selection: selection,
+		  background: consoleBackground,
+		  cursor: cursor,
+		  messageFont: default-font,
+		  messageFontColor: grey,
 	}
   },
   com.badlogic.gdx.scenes.scene2d.ui.CheckBox$CheckBoxStyle: {
