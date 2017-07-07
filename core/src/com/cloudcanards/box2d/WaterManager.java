@@ -373,7 +373,7 @@ public class WaterManager implements Updateable
 	 *
 	 * @param fixture water fixture to unregister
 	 */
-	private void unregisterWater(Fixture fixture)
+	public void unregisterWater(Fixture fixture)
 	{
 		waterGroups.remove(fixture);
 		waterVertices.remove(fixture);
