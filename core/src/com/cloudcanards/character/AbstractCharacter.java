@@ -281,7 +281,7 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 		}
 		
 		//fixme
-		return true;
+		return false;
 	}
 	
 	public void jump()

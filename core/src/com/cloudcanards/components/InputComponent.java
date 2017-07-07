@@ -34,7 +34,7 @@ public class InputComponent extends AbstractComponent implements InputListener
 		switch (action)
 		{
 			case WALK:
-				if (args[0] instanceof Boolean && ((Boolean) args[0]))
+				if ((Boolean) args[0])
 				{
 					walk = true;
 				}
@@ -46,7 +46,7 @@ public class InputComponent extends AbstractComponent implements InputListener
 				return true;
 			
 			case SPRINT:
-				if (args[0] instanceof Boolean && ((Boolean) args[0]))
+				if ((Boolean) args[0])
 				{
 					sprint = true;
 				}
@@ -71,7 +71,7 @@ public class InputComponent extends AbstractComponent implements InputListener
 				return true;
 			
 			case MOVE_LEFT:
-				if (args[0] instanceof Boolean && ((Boolean) args[0]))
+				if ((Boolean) args[0])
 				{
 					left = true;
 				}
@@ -83,7 +83,7 @@ public class InputComponent extends AbstractComponent implements InputListener
 				return true;
 			
 			case MOVE_RIGHT:
-				if (args[0] instanceof Boolean && ((Boolean) args[0]))
+				if ((Boolean) args[0])
 				{
 					right = true;
 				}
@@ -95,7 +95,7 @@ public class InputComponent extends AbstractComponent implements InputListener
 				return true;
 			
 			case JUMP:
-				if (args[0] instanceof Boolean && ((Boolean) args[0]))
+				if ((Boolean) args[0])
 				{
 					if (character.canJump())
 					{

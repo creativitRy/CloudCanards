@@ -165,6 +165,7 @@ public class GrappleRope implements Updateable, Renderable
 		fixtureDef.filter.maskBits = CollisionFilters.NONE;
 		
 		slider.createFixture(fixtureDef);
+		fixtureDef.shape.dispose();
 		
 		PrismaticJointDef prismaticJointDef = new PrismaticJointDef();
 		prismaticJointDef.bodyA = rope;

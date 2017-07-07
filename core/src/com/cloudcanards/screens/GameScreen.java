@@ -43,7 +43,6 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 public class GameScreen extends AbstractScreen
 {
 	private static GameScreen INSTANCE;
-	
 	public static GameScreen getInstance()
 	{
 		return INSTANCE;
@@ -194,7 +193,9 @@ public class GameScreen extends AbstractScreen
 		
 		//set camera
 		if (focus != null)
+		{
 			focus.setPosition(camera);
+		}
 		camera.update();
 		viewport.apply();
 		batch.setProjectionMatrix(camera.combined);
@@ -206,7 +207,6 @@ public class GameScreen extends AbstractScreen
 		renderableManager.render(batch, delta);
 		
 		box2DDebugRenderer.render(world, camera.combined);
-		
 		uiStage.act(delta);
 		uiStage.draw();
 	}
@@ -223,7 +223,9 @@ public class GameScreen extends AbstractScreen
 		physicsTick += deltaTime;
 		
 		if (physicsTick < TIME_STEP)
+		{
 			return false;
+		}
 		
 		while (physicsTick >= TIME_STEP)
 		{
@@ -299,7 +301,9 @@ public class GameScreen extends AbstractScreen
 	public static Vector2 screenToWorldCoords(float x, float y)
 	{
 		if (getInstance() == null || getInstance().camera == null)
+		{
 			return null;
+		}
 		Vector3 unproject = getInstance().camera.unproject(new Vector3(x, y, 0));
 		return new Vector2(unproject.x, unproject.y);
 	}
