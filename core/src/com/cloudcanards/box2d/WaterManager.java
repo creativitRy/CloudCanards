@@ -245,15 +245,16 @@ public class WaterManager implements Updateable
 			throw new RuntimeException("Fixture colliding with water can only be a polygon or a circle");
 		}
 		Array<Vector2> result = vectorArrayPool.obtain();
+		result.addAll(subject);
 		
-		clipPolygon(subject, clipper, result);
+		result = clipPolygon(subject, clipper, result);
 		
 		vectorArrayPool.free(clipper);
 		
 		return result;
 	}
 	
-	private void clipPolygon(Array<Vector2> subject, Array<Vector2> clipper, Array<Vector2> result)
+	private Array<Vector2> clipPolygon(Array<Vector2> subject, Array<Vector2> clipper, Array<Vector2> result)
 	{
 		int len = clipper.size;
 		for (int i = 0; i < len; i++)
@@ -284,6 +285,8 @@ public class WaterManager implements Updateable
 				}
 			}
 		}
+		
+		return result;
 	}
 	
 	private boolean isInside(Vector2 a, Vector2 b, Vector2 c)
@@ -376,6 +379,6 @@ public class WaterManager implements Updateable
 	public void unregisterWater(Fixture fixture)
 	{
 		waterGroups.remove(fixture);
-		waterVertices.remove(fixture);
+		vectorArrayPool.free(waterVertices.remove(fixture));
 	}
 }

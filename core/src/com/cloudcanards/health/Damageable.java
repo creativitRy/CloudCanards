@@ -99,4 +99,12 @@ public interface Damageable
 			onOverMax();
 		}
 	}
+	
+	/**
+	 * Sets the health to max health
+	 */
+	default void resetHealth()
+	{
+		setHealth(getMaxHealth());
+	}
 }

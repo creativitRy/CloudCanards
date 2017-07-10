@@ -136,7 +136,7 @@ public class GrappleComponent extends AbstractComponent implements Loadable, Upd
 	
 	public void setGrappling()
 	{
-		character.setState(CharacterState.GRAPPLE);
+		character.getStateMachine().changeState(CharacterState.GRAPPLE);
 	}
 	
 	public void setRetractGrapple()

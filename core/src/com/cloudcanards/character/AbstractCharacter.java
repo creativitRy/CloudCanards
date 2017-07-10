@@ -5,6 +5,7 @@ import com.cloudcanards.box2d.CollisionFilters;
 import com.cloudcanards.components.AbstractComponent;
 import com.cloudcanards.graphics.Renderable;
 import com.cloudcanards.grapple.Targetable;
+import com.cloudcanards.health.Damageable;
 import com.cloudcanards.loading.AbstractLoadAssetTask;
 import com.cloudcanards.loading.Disposable;
 import com.cloudcanards.loading.Loadable;
@@ -12,6 +13,7 @@ import com.cloudcanards.loading.ResourceManager;
 import com.cloudcanards.screens.GameScreen;
 import com.cloudcanards.util.MathUtil;
 
+import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.MathUtils;
@@ -24,7 +26,7 @@ import com.badlogic.gdx.utils.Array;
  *
  * @author creativitRy
  */
-public abstract class AbstractCharacter implements Loadable, Updateable, Renderable, Disposable, Targetable
+public abstract class AbstractCharacter implements Loadable, Updateable, Renderable, Disposable, Targetable, Damageable
 {
 	private static final int JUMP_VELOCITY = 17;
 	
@@ -38,7 +40,7 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 	private World world;
 	
 	//movement
-	private CharacterState state;
+	private DefaultStateMachine<AbstractCharacter, CharacterState> stateMachine;
 	/**
 	 * -1 if in air, friction of ground if touching ground
 	 */
@@ -51,6 +53,8 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 	 * -1 is left, 0 is not moving, 1 is right
 	 */
 	private int movementDir;
+	
+	private int health;
 	
 	//components
 	private Array<Updateable> updateableComponents;
@@ -76,6 +80,7 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 		
 		platformVelocity = new Vector2();
 		
+		stateMachine = new DefaultStateMachine<>(this);
 		updateState();
 		run();
 		
@@ -121,7 +126,7 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 		bodyFixture.setFriction(0f);
 		
 		poly = new PolygonShape();
-		poly.setAsBox(radius * 0.9f, 0.05f, new Vector2(0f, -0.025f), 0);
+		poly.setAsBox(radius * 0.9f, 0.5f, new Vector2(0f, -0.025f), 0);
 		bodyFixtureDef.shape = poly;
 		bodyFixtureDef.density = 0f;
 		bodyFixtureDef.filter.categoryBits = CollisionFilters.CHARACTER;
@@ -294,7 +299,7 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 		
 		if (canSetState())
 		{
-			setState(CharacterState.JUMP);
+			stateMachine.changeState(CharacterState.JUMP);
 		}
 	}
 	
@@ -332,7 +337,7 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 	
 	private boolean canSetState()
 	{
-		return state != CharacterState.GRAPPLE;
+		return stateMachine.getCurrentState() != CharacterState.GRAPPLE;
 	}
 	
 	public void updateState()
@@ -345,11 +350,11 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 		{
 			if (body.getLinearVelocity().y > 0)
 			{
-				setState(CharacterState.JUMP);
+				stateMachine.changeState(CharacterState.JUMP);
 			}
 			else
 			{
-				setState(CharacterState.FALL);
+				stateMachine.changeState(CharacterState.FALL);
 			}
 		}
 	}
@@ -358,18 +363,18 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 	{
 		if (movementDir != 0)
 		{
-			setState(CharacterState.RUN);
+			stateMachine.changeState(CharacterState.RUN);
 		}
 		else if (MathUtils.isEqual(body.getLinearVelocity().x, platformVelocity.x, 0.01f) &&
-			state != CharacterState.JUMP)
+			stateMachine.getCurrentState() != CharacterState.JUMP)
 		{
-			setState(CharacterState.IDLE);
+			stateMachine.changeState(CharacterState.IDLE);
 		}
 	}
 	
 	private void updateLinearDamping()
 	{
-		if (state == CharacterState.IDLE)
+		if (stateMachine.getCurrentState() == CharacterState.IDLE)
 		{
 			body.setLinearDamping(9999f);
 		}
@@ -382,6 +387,8 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 	@Override
 	public void update(float delta)
 	{
+		stateMachine.update();
+		
 		Vector2 vel = body.getLinearVelocity();
 		
 		float slowness = 0.25f;
@@ -398,16 +405,16 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 			
 			if (canSetState())
 			{
-				if (state == CharacterState.JUMP)
+				if (stateMachine.getCurrentState() == CharacterState.JUMP)
 				{
 					if (vel.y <= 0)
 					{
-						setState(CharacterState.FALL);
+						stateMachine.changeState(CharacterState.FALL);
 					}
 				}
 				else
 				{
-					setState(CharacterState.FALL);
+					stateMachine.changeState(CharacterState.FALL);
 				}
 			}
 		}
@@ -426,7 +433,7 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 		}
 		
 		//todo: don't set custom gravity when swinging on rope
-		if (state == CharacterState.GRAPPLE)
+		if (stateMachine.getCurrentState() == CharacterState.GRAPPLE)
 		{
 			body.setGravityScale(1f);
 		}
@@ -479,6 +486,18 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 		}
 	}
 	
+	@Override
+	public int getHealth()
+	{
+		return health;
+	}
+	
+	@Override
+	public void setHealth(int health)
+	{
+		this.health = health;
+	}
+	
 	public TextureAtlas getAtlas()
 	{
 		return atlas;
@@ -493,11 +512,6 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 	public World getWorld()
 	{
 		return world;
-	}
-	
-	public CharacterState getState()
-	{
-		return state;
 	}
 	
 	public MovementType getMovementType()
@@ -531,10 +545,8 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 		return body.getWorldCenter();
 	}
 	
-	public void setState(CharacterState state)
+	public DefaultStateMachine<AbstractCharacter, CharacterState> getStateMachine()
 	{
-		this.state = state;
-		
-		updateLinearDamping();
+		return stateMachine;
 	}
 }

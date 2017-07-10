@@ -28,4 +28,10 @@ public class TestChar extends AbstractCharacter
 		addComponent(grappleComponent);
 		addComponent(new MouseGrappleComponent(this, grappleComponent, true));
 	}
+	
+	@Override
+	public void onDeath()
+	{
+		System.out.println("Ded");
+	}
 }

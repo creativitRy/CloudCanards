@@ -26,7 +26,7 @@ public class TpCommand extends AbstractCommand
 		{
 			print("Unable to teleport player");
 		}
-		else if (GameScreen.getInstance().getPlayer().getState() == CharacterState.GRAPPLE)
+		else if (GameScreen.getInstance().getPlayer().getStateMachine().getCurrentState() == CharacterState.GRAPPLE)
 		{
 			print("Player must not be grappling to be teleported");
 		}

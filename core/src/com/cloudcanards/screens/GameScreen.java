@@ -3,6 +3,7 @@ package com.cloudcanards.screens;
 import com.cloudcanards.algorithms.kd.KDTree;
 import com.cloudcanards.assets.Assets;
 import com.cloudcanards.box2d.MapCollisionBuilderTask;
+import com.cloudcanards.box2d.WaterManager;
 import com.cloudcanards.box2d.WorldContactListener;
 import com.cloudcanards.camera.CameraFocus;
 import com.cloudcanards.character.TestChar;
@@ -43,6 +44,7 @@ import com.badlogic.gdx.utils.viewport.FitViewport;
 public class GameScreen extends AbstractScreen
 {
 	private static GameScreen INSTANCE;
+	
 	public static GameScreen getInstance()
 	{
 		return INSTANCE;
@@ -70,8 +72,11 @@ public class GameScreen extends AbstractScreen
 	//box2d
 	private World world;
 	private float physicsTick;
+	private WaterManager waterManager;
 	//todo
 	private Box2DDebugRenderer box2DDebugRenderer;
+	
+	//entity
 	private TestChar player;
 	
 	//ui
@@ -115,6 +120,7 @@ public class GameScreen extends AbstractScreen
 			{
 				world = new World(GRAVITY, true);
 				world.setContactListener(new WorldContactListener());
+				waterManager = new WaterManager(world);
 				player = new TestChar(world, new Vector2(20, 70));
 				player.load(resourceManager);
 				renderableManager.add(player);
@@ -172,7 +178,7 @@ public class GameScreen extends AbstractScreen
 			@Override
 			public String updateText()
 			{
-				return player.getState().name();
+				return player.getStateMachine().getCurrentState().name();
 			}
 		});
 		uiStage.addActor(Console.getInstance().ui());
@@ -189,6 +195,7 @@ public class GameScreen extends AbstractScreen
 		//update
 		player.update(delta);
 		
+		waterManager.update(delta);
 		boolean physics = doPhysicsStep(delta);
 		
 		//set camera
