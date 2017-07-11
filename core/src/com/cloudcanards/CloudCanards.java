@@ -5,6 +5,7 @@ import com.cloudcanards.input.InputManager;
 import com.cloudcanards.loading.ResourceManager;
 import com.cloudcanards.screens.GameScreen;
 import com.cloudcanards.screens.LoadingScreen;
+import com.cloudcanards.time.TimeManager;
 import com.cloudcanards.util.Logger;
 
 import com.badlogic.gdx.Game;
@@ -108,6 +109,8 @@ public class CloudCanards extends Game
 	{
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
+		
+		TimeManager.getInstance().setDelta(Gdx.graphics.getDeltaTime());
 		
 		//super.render();
 		if (screen != null)

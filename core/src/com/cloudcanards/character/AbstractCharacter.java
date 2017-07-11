@@ -126,7 +126,7 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 		bodyFixture.setFriction(0f);
 		
 		poly = new PolygonShape();
-		poly.setAsBox(radius * 0.9f, 0.5f, new Vector2(0f, -0.025f), 0);
+		poly.setAsBox(radius * 0.9f, 0.05f, new Vector2(0f, -0.025f), 0);
 		bodyFixtureDef.shape = poly;
 		bodyFixtureDef.density = 0f;
 		bodyFixtureDef.filter.categoryBits = CollisionFilters.CHARACTER;
@@ -291,13 +291,7 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 	
 	public void jump()
 	{
-		body.setLinearDamping(0f);
-		body.setLinearVelocity(body.getLinearVelocity().x, 0);
-		Vector2 pos = body.getWorldCenter();
-		//body.setLinearVelocity(body.getLinearVelocity().x, 15);
-		body.applyLinearImpulse(0, JUMP_VELOCITY * body.getMass(), pos.x, pos.y, true);
-		
-		if (canSetState())
+		if (canJump() && canSetState())
 		{
 			stateMachine.changeState(CharacterState.JUMP);
 		}
@@ -305,7 +299,18 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 	
 	public void stopJump()
 	{
-		body.setGravityScale(2f);
+		//todo: using a new field, move this to the update thread along with line 408
+		if (stateMachine.getCurrentState() != CharacterState.JUMP)
+		{
+			return;
+		}
+		if (isGrounded())
+		{
+			return;
+		}
+		
+		body.setGravityScale(4f);
+		stateMachine.changeState(CharacterState.FALL);
 	}
 	
 	/**
@@ -348,14 +353,7 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 		}
 		else
 		{
-			if (body.getLinearVelocity().y > 0)
-			{
-				stateMachine.changeState(CharacterState.JUMP);
-			}
-			else
-			{
-				stateMachine.changeState(CharacterState.FALL);
-			}
+			stateMachine.changeState(CharacterState.FALL);
 		}
 	}
 	
@@ -405,14 +403,7 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 			
 			if (canSetState())
 			{
-				if (stateMachine.getCurrentState() == CharacterState.JUMP)
-				{
-					if (vel.y <= 0)
-					{
-						stateMachine.changeState(CharacterState.FALL);
-					}
-				}
-				else
+				if (stateMachine.getCurrentState() != CharacterState.JUMP)
 				{
 					stateMachine.changeState(CharacterState.FALL);
 				}
@@ -430,29 +421,6 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 		else
 		{
 			setHorizontalVel(0, delta, slowness);
-		}
-		
-		//todo: don't set custom gravity when swinging on rope
-		if (stateMachine.getCurrentState() == CharacterState.GRAPPLE)
-		{
-			body.setGravityScale(1f);
-		}
-		else
-		{
-			if (vel.y <= 0)
-			{
-				if (body.getGravityScale() != 2f)
-				{
-					body.setGravityScale(2f);
-				}
-			}
-			else if (vel.y > 0)
-			{
-				if (body.getGravityScale() != 1f)
-				{
-					body.setGravityScale(1f);
-				}
-			}
 		}
 		
 		for (Updateable component : updateableComponents)
