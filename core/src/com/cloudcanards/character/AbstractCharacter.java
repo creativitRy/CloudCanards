@@ -16,7 +16,6 @@ import com.cloudcanards.util.MathUtil;
 import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
-import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
@@ -53,6 +52,9 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 	 * -1 is left, 0 is not moving, 1 is right
 	 */
 	private int movementDir;
+	private CharacterJumpContact jumpContact;
+	private boolean jump;
+	private boolean stopJump;
 	
 	private int health;
 	
@@ -135,7 +137,18 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 		bottomFixture.setSensor(true);
 		bottomFixture.setUserData(new CharacterGroundContact(this, halfHeight));
 		
-		//body.setBullet(true);
+		poly = new PolygonShape();
+		poly.setAsBox(radius * 1.5f, 0.2f, new Vector2(0f, -0.05f), 0);
+		bodyFixtureDef.shape = poly;
+		bodyFixtureDef.density = 0f;
+		bodyFixtureDef.filter.categoryBits = CollisionFilters.CHARACTER;
+		Fixture jumpFixture = body.createFixture(bodyFixtureDef);
+		poly.dispose();
+		jumpFixture.setSensor(true);
+		jumpContact = new CharacterJumpContact(this);
+		jumpFixture.setUserData(jumpContact);
+		
+		body.setBullet(true);
 		body.setFixedRotation(true);
 		
 		return body;
@@ -271,15 +284,15 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 		}
 		
 		this.movementDir = movementDir;
-		
-		if (isGrounded() && canSetState())
-		{
-			updateGroundedState();
-		}
 	}
 	
 	public boolean canJump()
 	{
+		if (jumpContact.canJump())
+		{
+			//todo: https://github.com/creativitRy/CloudCanards/issues/9#issuecomment-314543597
+			//return true;
+		}
 		if (isGrounded())
 		{
 			return true;
@@ -291,26 +304,14 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 	
 	public void jump()
 	{
-		if (canJump() && canSetState())
-		{
-			stateMachine.changeState(CharacterState.JUMP);
-		}
+		jump = true;
 	}
 	
 	public void stopJump()
 	{
+		stopJump = true;
 		//todo: using a new field, move this to the update thread along with line 408
-		if (stateMachine.getCurrentState() != CharacterState.JUMP)
-		{
-			return;
-		}
-		if (isGrounded())
-		{
-			return;
-		}
 		
-		body.setGravityScale(4f);
-		stateMachine.changeState(CharacterState.FALL);
 	}
 	
 	/**
@@ -349,36 +350,11 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 	{
 		if (isGrounded())
 		{
-			updateGroundedState();
+			stateMachine.changeState(CharacterState.IDLE);
 		}
 		else
 		{
 			stateMachine.changeState(CharacterState.FALL);
-		}
-	}
-	
-	private void updateGroundedState()
-	{
-		if (movementDir != 0)
-		{
-			stateMachine.changeState(CharacterState.RUN);
-		}
-		else if (MathUtils.isEqual(body.getLinearVelocity().x, platformVelocity.x, 0.01f) &&
-			stateMachine.getCurrentState() != CharacterState.JUMP)
-		{
-			stateMachine.changeState(CharacterState.IDLE);
-		}
-	}
-	
-	private void updateLinearDamping()
-	{
-		if (stateMachine.getCurrentState() == CharacterState.IDLE)
-		{
-			body.setLinearDamping(9999f);
-		}
-		else
-		{
-			body.setLinearDamping(0.25f);
 		}
 	}
 	
@@ -389,30 +365,25 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 		
 		Vector2 vel = body.getLinearVelocity();
 		
-		float slowness = 0.25f;
-		if (isGrounded())
+		if (isJumping())
 		{
-			if (canSetState())
+			if (canJump() && canSetState())
 			{
-				updateGroundedState();
+				stateMachine.changeState(CharacterState.JUMP);
 			}
 		}
-		else
+		
+		endJump();
+		endStopJump();
+		
+		float slowness = 0.25f;
+		if (!isGrounded())
 		{
 			slowness = 0.75f;
-			
-			if (canSetState())
-			{
-				if (stateMachine.getCurrentState() != CharacterState.JUMP)
-				{
-					stateMachine.changeState(CharacterState.FALL);
-				}
-			}
 		}
 		
 		if (movementDir != 0)
 		{
-			
 			if ((vel.x >= -movementSpeed && movementDir < 0) || (vel.x <= movementSpeed && movementDir > 0))
 			{
 				setHorizontalVel(movementDir * movementSpeed, delta, slowness);
@@ -516,5 +487,35 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 	public DefaultStateMachine<AbstractCharacter, CharacterState> getStateMachine()
 	{
 		return stateMachine;
+	}
+	
+	public Vector2 getPlatformVelocity()
+	{
+		return platformVelocity;
+	}
+	
+	CharacterJumpContact getJumpContact()
+	{
+		return jumpContact;
+	}
+	
+	boolean isJumping()
+	{
+		return jump;
+	}
+	
+	void endJump()
+	{
+		this.jump = false;
+	}
+	
+	boolean isStopJumping()
+	{
+		return stopJump;
+	}
+	
+	void endStopJump()
+	{
+		this.stopJump = false;
 	}
 }

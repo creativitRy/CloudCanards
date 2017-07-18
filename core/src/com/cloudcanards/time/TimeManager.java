@@ -26,7 +26,7 @@ public class TimeManager
 	}
 	
 	/**
-	 * Regular delta time
+	 * Regular delta time. Modified by time multiplier and slowing down game if necessary
 	 *
 	 * @return
 	 */

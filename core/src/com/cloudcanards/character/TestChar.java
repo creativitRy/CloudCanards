@@ -27,6 +27,23 @@ public class TestChar extends AbstractCharacter
 		GrappleComponent grappleComponent = new GrappleComponent(this, world);
 		addComponent(grappleComponent);
 		addComponent(new MouseGrappleComponent(this, grappleComponent, true));
+		
+		/*addComponent(new AbstractRenderableComponent(this) {
+			WarpedTexture texture = new WarpedTexture(
+				CloudCanards.getInstance().getResourceManager().getAssetManager().get(Assets.DIR + "test.png", Texture.class),
+				30, 60, 4, 4, 4, 4
+			);
+			
+			@Override
+			public void render(SpriteBatch batch, float delta)
+			{
+				int tempA = (int) (Math.random() * texture.getGrid().length);
+				int tempB = (int) (Math.random() * texture.getGrid()[0].length);
+				texture.getGrid()[tempA][tempB].add(new Vector2(0.1f, 0).setAngle(MathUtils.random(360)));
+				texture.render(batch, delta);
+			}
+		});*/
+		
 	}
 	
 	@Override

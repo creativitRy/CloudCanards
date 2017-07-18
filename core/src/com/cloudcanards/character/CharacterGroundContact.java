@@ -1,6 +1,7 @@
 package com.cloudcanards.character;
 
 import com.cloudcanards.box2d.AdvancedCollidable;
+import com.cloudcanards.util.Logger;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.Fixture;
@@ -30,7 +31,7 @@ public class CharacterGroundContact implements AdvancedCollidable
 	{
 		/*if (!isBeneathCharacter(contactedFixture))
 			return;*/
-		System.out.println("begin");
+		Logger.log("begin");
 		numContacts++;
 		character.setGroundFriction(contactedFixture.getFriction());
 	}
@@ -44,7 +45,7 @@ public class CharacterGroundContact implements AdvancedCollidable
 		if (numContacts == 0)
 		{
 			character.setGroundFriction(-1f);
-			System.out.println("end");
+			Logger.log("end");
 		}
 	}
 	

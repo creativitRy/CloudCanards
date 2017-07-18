@@ -13,6 +13,7 @@ public class Assets
 {
 	public static final String DIR = "data/cloudCanards/";
 	public static final String ITEM_DIR = "items/";
+	public static final String SHADER_DIR = "shaders/";
 	
 	public static final String BADLOGIC = "badlogic.jpg";
 	@Temporary
@@ -25,8 +26,8 @@ public class Assets
 	@Temporary
 	public static final String SKIN = "ui/vis/uiskin.json";
 	public static final String FONT = "ui/poiretOne.ttf";
-	public static final String TIMER_SHADER = "shaders/Timer.frag";
-	public static final String VERTEX_SHADER = "shaders/VertexShader.vert";
+	public static final String TIMER_SHADER = "Timer.frag";
+	public static final String VERTEX_SHADER = "VertexShader.vert";
 	public static final String LEVEL_DIR = "levels/";
 	
 	/**

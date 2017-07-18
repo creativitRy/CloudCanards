@@ -180,13 +180,6 @@ public class GameScreen extends AbstractScreen
 			{
 				return player.getStateMachine().getCurrentState().name();
 			}
-		}).addChangePoster(new LogUI.ChangePoster()
-		{
-			@Override
-			protected String getValue()
-			{
-				return Float.toString(player.getBody().getGravityScale());
-			}
 		}));
 		uiStage.addActor(Console.getInstance().ui());
 	}
@@ -336,5 +329,10 @@ public class GameScreen extends AbstractScreen
 	{
 		//todo: return character with input component, if any
 		return player;
+	}
+	
+	public OrthographicCamera getCamera()
+	{
+		return camera;
 	}
 }

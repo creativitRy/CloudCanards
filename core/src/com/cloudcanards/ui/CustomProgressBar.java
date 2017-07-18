@@ -5,8 +5,8 @@ import com.cloudcanards.assets.Assets;
 import com.cloudcanards.loading.AbstractLoadAssetTask;
 import com.cloudcanards.loading.Loadable;
 import com.cloudcanards.loading.ResourceManager;
+import com.cloudcanards.loading.ShaderParameter;
 
-import com.badlogic.gdx.assets.loaders.ShaderProgramLoader;
 import com.badlogic.gdx.graphics.g2d.Batch;
 import com.badlogic.gdx.graphics.glutils.ShaderProgram;
 import com.badlogic.gdx.scenes.scene2d.Actor;
@@ -49,9 +49,7 @@ public class CustomProgressBar extends Actor implements Loadable
 			@Override
 			public void run()
 			{
-				ShaderProgramLoader.ShaderProgramParameter param = new ShaderProgramLoader.ShaderProgramParameter();
-				param.vertexFile = Assets.DIR + Assets.VERTEX_SHADER;
-				resourceManager.getAssetManager().load(Assets.DIR + Assets.TIMER_SHADER, ShaderProgram.class, param);
+				resourceManager.getAssetManager().load(Assets.DIR + Assets.TIMER_SHADER, ShaderProgram.class, new ShaderParameter());
 			}
 			
 			@Override

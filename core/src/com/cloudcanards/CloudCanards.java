@@ -115,7 +115,7 @@ public class CloudCanards extends Game
 		//super.render();
 		if (screen != null)
 		{
-			screen.render(Math.min(Gdx.graphics.getDeltaTime(), MAX_DELTA_TIME));
+			screen.render(Math.min(TimeManager.getInstance().getDelta(), MAX_DELTA_TIME));
 		}
 	}
 	
