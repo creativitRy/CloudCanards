@@ -73,7 +73,7 @@ public class GameScreen extends AbstractScreen
 	private World world;
 	private float physicsTick;
 	private WaterManager waterManager;
-	//todo
+	
 	private Box2DDebugRenderer box2DDebugRenderer;
 	
 	//entity
@@ -266,6 +266,7 @@ public class GameScreen extends AbstractScreen
 	{
 		//todo: unregister inputlisteners here
 		uiStage.dispose();
+		box2DDebugRenderer.dispose();
 	}
 	
 	public void setCameraFocus(CameraFocus cameraFocus)

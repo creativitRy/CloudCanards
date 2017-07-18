@@ -10,9 +10,13 @@ import com.badlogic.gdx.Gdx;
  */
 public class Logger
 {
-	private Logger()
-	{
+	private Logger() {}
 	
+	private static long startTime;
+	
+	static
+	{
+		startTime = System.currentTimeMillis();
 	}
 	
 	/**
@@ -38,9 +42,13 @@ public class Logger
 		for (Object object : objects)
 		{
 			if (first)
+			{
 				first = false;
+			}
 			else
+			{
 				sb.append(separator);
+			}
 			sb.append(object);
 		}
 		
@@ -115,7 +123,7 @@ public class Logger
 	 */
 	private static String getTag()
 	{
-		//return "";
+		//return getTimestamp();
 		//debug
 		StackTraceElement[] stElements = Thread.currentThread().getStackTrace();
 		for (int i = 1; i < stElements.length; i++)
@@ -126,10 +134,23 @@ public class Logger
 				String temp = ste.getClassName();
 				int index = temp.lastIndexOf(".") + 1;
 				if (index == 0)
-					return temp;
-				return temp.substring(index);
+				{
+					return getTimestamp() + ": " + temp;
+				}
+				return getTimestamp() + ": " + temp.substring(index);
 			}
 		}
-		return "";
+		return getTimestamp();
+	}
+	
+	private static String getTimestamp()
+	{
+		long elapsed = System.currentTimeMillis() - startTime;
+		long elapsedHours = elapsed / (60 * 60 * 1000);
+		long elapsedMinutes = (elapsed - elapsedHours * 60 * 60 * 1000) / (60 * 1000);
+		long elapsedSeconds = (elapsed - elapsedHours * 60 * 60 * 1000 - elapsedMinutes * 60 * 1000) / 1000;
+		long elapsedMillis = elapsed - elapsedHours * 60 * 60 * 1000 - elapsedMinutes * 60 * 1000 - elapsedSeconds * 1000;
+		
+		return String.format("%d:%02d:%02d:%03d", elapsedHours, elapsedMinutes, elapsedSeconds, elapsedMillis);
 	}
 }

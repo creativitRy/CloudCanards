@@ -1,6 +1,10 @@
 package com.cloudcanards.console;
 
 import com.cloudcanards.CloudCanards;
+import com.cloudcanards.commands.HelpCommand;
+import com.cloudcanards.commands.ListCommand;
+import com.cloudcanards.commands.RenderBox2DCommand;
+import com.cloudcanards.commands.TpCommand;
 import com.cloudcanards.input.InputAction;
 import com.cloudcanards.input.InputListener;
 import com.cloudcanards.input.InputManager;
@@ -16,6 +20,7 @@ import com.badlogic.gdx.utils.reflect.ClassReflection;
 import com.badlogic.gdx.utils.reflect.ReflectionException;
 
 import java.util.ArrayDeque;
+import java.util.TreeMap;
 
 /**
  * ConsoleUI
@@ -24,6 +29,24 @@ import java.util.ArrayDeque;
  */
 public class Console implements InputListener
 {
+	/**
+	 * All registered commands
+	 */
+	private static void initCommands()
+	{
+		commands.put("help", HelpCommand.class);
+		commands.put("list", ListCommand.class);
+		commands.put("renderbox2d", RenderBox2DCommand.class);
+		commands.put("tp", TpCommand.class);
+	}
+	
+	private static final TreeMap<String, Class<? extends AbstractCommand>> commands = new TreeMap<>();
+	
+	public static TreeMap<String, Class<? extends AbstractCommand>> getCommands()
+	{
+		return commands;
+	}
+	
 	public static Console getInstance()
 	{
 		return INSTANCE;
@@ -42,6 +65,8 @@ public class Console implements InputListener
 	
 	private Console()
 	{
+		initCommands();
+		
 		textField = new TextField("", CloudCanards.getInstance().getSkin(), "console");
 		textField.setSize(GameScreen.SCREEN_WIDTH, 30);
 		textField.setPosition(0, 0);
@@ -133,8 +158,12 @@ public class Console implements InputListener
 		
 		try
 		{
-			@SuppressWarnings("unchecked")
-			Class<AbstractCommand> commandClass = ClassReflection.forName("com.cloudcanards.commands." + convert(args[0]));
+			Class<? extends AbstractCommand> commandClass = commands.get(convert(args[0]));
+			
+			if (commandClass == null)
+			{
+				return false;
+			}
 			
 			ClassReflection.newInstance(commandClass).tryExecute(args);
 		}
@@ -162,11 +191,12 @@ public class Console implements InputListener
 	}
 	
 	/**
-	 * Capitalizes the first letter of the given string and adds Command at the end
+	 * converts to lowercase
 	 */
 	private String convert(String arg)
 	{
-		return arg.substring(0, 1).toUpperCase() + arg.substring(1) + "Command";
+		return arg.toLowerCase();
+		//return arg.substring(0, 1).toUpperCase() + arg.substring(1) + "Command";
 	}
 	
 	private void enableConsole()
