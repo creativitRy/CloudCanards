@@ -8,6 +8,7 @@ import com.cloudcanards.screens.LoadingScreen;
 import com.cloudcanards.time.TimeManager;
 import com.cloudcanards.util.Logger;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Game;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Screen;
@@ -46,6 +47,9 @@ public class CloudCanards extends Game
 	@Override
 	public void create()
 	{
+		//todo: change before production
+		Gdx.app.setLogLevel(Application.LOG_DEBUG);
+		
 		resourceManager = new ResourceManager();
 		
 		//todo: move to loading screen after starting splash screen - make sure this is called before getInstance()

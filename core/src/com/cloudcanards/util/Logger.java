@@ -1,6 +1,8 @@
 package com.cloudcanards.util;
 
+import com.badlogic.gdx.Application;
 import com.badlogic.gdx.Gdx;
+import com.badlogic.gdx.utils.TimeUtils;
 
 /**
  * Logger
@@ -14,9 +16,47 @@ public class Logger
 	
 	private static long startTime;
 	
+	private static int level = Application.LOG_INFO;
+	
+	/**
+	 * Gets the level
+	 *
+	 * @return level
+	 * @see Application#LOG_INFO
+	 * @see Application#LOG_DEBUG
+	 * @see Application#LOG_ERROR
+	 */
+	public static int getLevel()
+	{
+		return level;
+	}
+	
+	/**
+	 * Sets the level of logging - how the logged messages will be graded
+	 *
+	 * @param level level
+	 * @see Application#LOG_INFO
+	 * @see Application#LOG_DEBUG
+	 * @see Application#LOG_ERROR
+	 */
+	public static void setLevel(int level)
+	{
+		Logger.level = level;
+	}
+	
+	/**
+	 * Sets the logging level to {@link Application#LOG_INFO}
+	 *
+	 * @see #setLevel(int)
+	 */
+	public static void resetLevel()
+	{
+		setLevel(Application.LOG_INFO);
+	}
+	
 	static
 	{
-		startTime = System.currentTimeMillis();
+		startTime = TimeUtils.millis();
 	}
 	
 	/**
@@ -112,7 +152,23 @@ public class Logger
 	 */
 	public static void log(String message)
 	{
-		Gdx.app.log(getTag(), message);
+		logWithLevel(getTag(), message);
+	}
+	
+	private static void logWithLevel(String tag, String message)
+	{
+		switch (level)
+		{
+			case Application.LOG_INFO:
+				Gdx.app.log(tag, message);
+				break;
+			case Application.LOG_ERROR:
+				Gdx.app.error(tag, message);
+				break;
+			case Application.LOG_DEBUG:
+				Gdx.app.debug(tag, message);
+				break;
+		}
 	}
 	
 	/**
@@ -145,7 +201,7 @@ public class Logger
 	
 	private static String getTimestamp()
 	{
-		long elapsed = System.currentTimeMillis() - startTime;
+		long elapsed = TimeUtils.timeSinceMillis(startTime);
 		long elapsedHours = elapsed / (60 * 60 * 1000);
 		long elapsedMinutes = (elapsed - elapsedHours * 60 * 60 * 1000) / (60 * 1000);
 		long elapsedSeconds = (elapsed - elapsedHours * 60 * 60 * 1000 - elapsedMinutes * 60 * 1000) / 1000;

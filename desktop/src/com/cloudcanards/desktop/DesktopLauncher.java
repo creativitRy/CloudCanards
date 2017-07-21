@@ -21,7 +21,7 @@ public class DesktopLauncher
 		config.width = 1600;
 		config.height = 900;
 		//todo: to change antialiasing settings, restart and load this from preferences
-		config.samples = 4; //antialiasing
+		config.samples = 0; //antialiasing
 		//Sets the window to borderless window
 		/*System.setProperty("org.lwjgl.opengl.Window.undecorated", "true");
 		config.width = LwjglApplicationConfiguration.getDesktopDisplayMode().width;

@@ -16,12 +16,14 @@ import com.badlogic.gdx.utils.reflect.ReflectionException;
  */
 public class RenderBox2DCommand extends AbstractCommand
 {
+	private static final String FIELD_NAME = "box2DDebugRenderer";
+	
 	@Override
 	public void execute(String[] args) throws ArrayIndexOutOfBoundsException
 	{
 		try
 		{
-			Field field = ClassReflection.getDeclaredField(GameScreen.class, "box2DDebugRenderer");
+			Field field = ClassReflection.getDeclaredField(GameScreen.class, FIELD_NAME);
 			field.setAccessible(true);
 			Box2DDebugRenderer renderer = (Box2DDebugRenderer) field.get(GameScreen.getInstance());
 			

@@ -1,6 +1,8 @@
 package com.cloudcanards.assets;
 
-import com.badlogic.gdx.Gdx;
+import com.cloudcanards.util.Logger;
+
+import com.badlogic.gdx.Application;
 
 import java.lang.reflect.Field;
 
@@ -35,14 +37,16 @@ public class Assets
 	 */
 	public static void checkTempAssets()
 	{
-		Gdx.app.log("Assets", "Checking for temporary assets...");
+		Logger.log("Checking for temporary assets...");
+		Logger.setLevel(Application.LOG_ERROR);
 		for (Field field : Assets.class.getFields())
 		{
 			if (field.isAnnotationPresent(Temporary.class))
 			{
-				Gdx.app.error("Assets", "The asset " + field.getName() + " is temporary!");
+				Logger.log("The asset " + field.getName() + " is temporary!");
 			}
 		}
+		Logger.resetLevel();
 	}
 	
 	private Assets() {}

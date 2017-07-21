@@ -27,9 +27,7 @@ public class TestChar extends AbstractCharacter
 		GrappleComponent grappleComponent = new GrappleComponent(this, world);
 		addComponent(grappleComponent);
 		addComponent(new MouseGrappleComponent(this, grappleComponent, true));
-		
 		addComponent(new ScarfComponent(this, world));
-		
 	}
 	
 	@Override

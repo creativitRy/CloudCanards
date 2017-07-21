@@ -1,6 +1,7 @@
 package com.cloudcanards.input;
 
 import com.cloudcanards.assets.Assets;
+import com.cloudcanards.util.Logger;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.files.FileHandle;
@@ -40,14 +41,14 @@ public class InputIO
 	
 	public static InputManager load(FileHandle file)
 	{
-		Gdx.app.log(InputIO.class.getSimpleName(), "Inputs loaded");
+		Logger.log("Inputs loaded");
 		return json.fromJson(InputManager.class, file);
 	}
 	
 	//todo - call this
 	public static void save(InputManager inputManager)
 	{
-		Gdx.app.log(InputIO.class.getSimpleName(), "Inputs saved");
+		Logger.log("Inputs saved");
 		json.toJson(inputManager, FILE);
 	}
 	

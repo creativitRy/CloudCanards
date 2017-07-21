@@ -28,4 +28,15 @@ public class CellGraph implements IndexedGraph<Cell>
 	{
 		return fromCell.getConnections();
 	}
+	
+	public Cell getCellAtPos(int x, int y)
+	{
+		return getCellAtPos(x, y, 0);
+	}
+	
+	public Cell getCellAtPos(int x, int y, int jump)
+	{
+		//todo:
+		throw new RuntimeException("I should implement this soon");
+	}
 }

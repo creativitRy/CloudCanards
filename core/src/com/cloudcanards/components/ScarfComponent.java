@@ -99,6 +99,7 @@ public class ScarfComponent extends AbstractRenderableComponent implements Loada
 		shape.dispose();
 		
 		RopeJointDef charJointDef = new RopeJointDef();
+		//todo: connect to static body that moves to character position so the scarf doesn't affect the character movement
 		charJointDef.bodyA = character.getBody();
 		float charSeparation = 1f / (WIDTH_DIVISIONS - 1); //todo: replace 1f with character width
 		Vector2 localAnchorA = new Vector2(-1f / 2f, 1.5f); //todo: replace 1f with character width and 1.5f with character height - character head height
