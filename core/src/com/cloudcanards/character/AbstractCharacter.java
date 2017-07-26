@@ -321,7 +321,7 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 	 * @param delta    dt
 	 * @param slowness float in range (0,1) where 0.1 is fast and 0.9 is slow
 	 */
-	private void setHorizontalVel(float velocity, float delta, float slowness)
+	void setHorizontalVel(float velocity, float delta, float slowness)
 	{
 		Vector2 vel = body.getLinearVelocity();
 		
@@ -363,8 +363,6 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 	{
 		stateMachine.update();
 		
-		Vector2 vel = body.getLinearVelocity();
-		
 		if (isJumping())
 		{
 			if (canJump() && canSetState())
@@ -375,24 +373,6 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 		
 		endJump();
 		endStopJump();
-		
-		float slowness = 0.25f;
-		if (!isGrounded())
-		{
-			slowness = 0.75f;
-		}
-		
-		if (movementDir != 0)
-		{
-			if ((vel.x >= -movementSpeed && movementDir < 0) || (vel.x <= movementSpeed && movementDir > 0))
-			{
-				setHorizontalVel(movementDir * movementSpeed, delta, slowness);
-			}
-		}
-		else
-		{
-			setHorizontalVel(0, delta, slowness);
-		}
 		
 		for (Updateable component : updateableComponents)
 		{
@@ -517,5 +497,10 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 	void endStopJump()
 	{
 		this.stopJump = false;
+	}
+	
+	public float getMovementSpeed()
+	{
+		return movementSpeed;
 	}
 }

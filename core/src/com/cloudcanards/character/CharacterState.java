@@ -1,5 +1,7 @@
 package com.cloudcanards.character;
 
+import com.cloudcanards.time.TimeManager;
+
 import com.badlogic.gdx.ai.fsm.State;
 import com.badlogic.gdx.ai.msg.Telegram;
 import com.badlogic.gdx.math.MathUtils;
@@ -31,6 +33,8 @@ public enum CharacterState implements State<AbstractCharacter>
 					}
 				}
 				
+				horizMove(entity);
+				
 			}
 		},
 	RUN
@@ -45,6 +49,8 @@ public enum CharacterState implements State<AbstractCharacter>
 						entity.getStateMachine().changeState(IDLE);
 					}
 				}
+				
+				horizMove(entity);
 			}
 		},
 	JUMP
@@ -78,6 +84,8 @@ public enum CharacterState implements State<AbstractCharacter>
 				{
 					entity.getStateMachine().changeState(FALL);
 				}
+				
+				horizMove(entity);
 			}
 		},
 	FALL
@@ -102,6 +110,8 @@ public enum CharacterState implements State<AbstractCharacter>
 						entity.getBody().setGravityScale(2f);
 					}
 				}
+				
+				horizMove(entity);
 			}
 		},
 	GRAPPLE
@@ -113,6 +123,14 @@ public enum CharacterState implements State<AbstractCharacter>
 			}
 		},;
 	
+	
+	private static final int JUMP_VELOCITY = 17;
+	
+	/**
+	 * Checks whether the entity is grounded and if false, changes to fall state
+	 *
+	 * @return true if state was altered
+	 */
 	private static boolean groundCheck(AbstractCharacter entity)
 	{
 		if (!entity.isGrounded())
@@ -126,7 +144,30 @@ public enum CharacterState implements State<AbstractCharacter>
 		return false;
 	}
 	
-	private static final int JUMP_VELOCITY = 17;
+	/**
+	 * When the entity wants to move left or right
+	 */
+	private static void horizMove(AbstractCharacter entity)
+	{
+		Vector2 vel = entity.getBody().getLinearVelocity();
+		float slowness = 0.25f;
+		if (!entity.isGrounded())
+		{
+			slowness = 0.75f;
+		}
+		
+		if (entity.getMovementDir() != 0)
+		{
+			if ((vel.x >= -entity.getMovementSpeed() && entity.getMovementDir() < 0) || (vel.x <= entity.getMovementSpeed() && entity.getMovementDir() > 0))
+			{
+				entity.setHorizontalVel(entity.getMovementDir() * entity.getMovementSpeed(), TimeManager.getInstance().getDelta(), slowness);
+			}
+		}
+		else
+		{
+			entity.setHorizontalVel(0, TimeManager.getInstance().getDelta(), slowness);
+		}
+	}
 	
 	@Override
 	public void enter(AbstractCharacter entity)

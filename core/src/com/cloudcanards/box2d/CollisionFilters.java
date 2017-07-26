@@ -13,6 +13,9 @@ public class CollisionFilters
 	public static final short CHARACTER = (short) (1 << 1);
 	public static final short ROPE = (short) (1 << 15);
 	
+	public static final short ROPE_COLLISION_MASK = blacklist(
+		ROPE, CHARACTER);
+	
 	public static final short NONE = 0;
 	public static final short ALL = -1;
 	
