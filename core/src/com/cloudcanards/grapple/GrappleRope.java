@@ -28,8 +28,6 @@ public class GrappleRope implements Updateable, Renderable
 {
 	private static final float DISTANCE_PER_SECOND = 20f;
 	public static final float ROPE_HALF_THICKNESS = 0.1f;
-	public static final short ROPE_COLLISION_MASK = CollisionFilters.blacklist(
-		CollisionFilters.ROPE, CollisionFilters.CHARACTER);
 	
 	private World world;
 	private GrappleComponent grapple;
@@ -94,6 +92,7 @@ public class GrappleRope implements Updateable, Renderable
 	 */
 	private void createPhysicsRope(Vector2 pos, Body target)
 	{
+		new PhysicsGrappleRope(this, world, pos);
 		final float distance = grapple.getPosition().dst(pos);
 		final float angle = (float) Math.atan2(grapple.getPosition().y - pos.y, grapple.getPosition().x - pos.x);
 		
@@ -107,7 +106,7 @@ public class GrappleRope implements Updateable, Renderable
 		FixtureDef fixtureDef = new FixtureDef();
 		fixtureDef.density = 0.01f;
 		fixtureDef.filter.categoryBits = CollisionFilters.ROPE;
-		fixtureDef.filter.maskBits = ROPE_COLLISION_MASK;
+		fixtureDef.filter.maskBits = CollisionFilters.ROPE_COLLISION_MASK;
 		fixtureDef.friction = 0;
 		fixtureDef.shape = new PolygonShape();
 		((PolygonShape) fixtureDef.shape).set(new float[]{
@@ -224,7 +223,7 @@ public class GrappleRope implements Updateable, Renderable
 					{
 						return -1;
 					}
-					if (!CollisionFilters.check(ROPE_COLLISION_MASK, fixture.getFilterData().categoryBits))
+					if (!CollisionFilters.check(CollisionFilters.ROPE_COLLISION_MASK, fixture.getFilterData().categoryBits))
 					{
 						return -1;
 					}
@@ -332,5 +331,10 @@ public class GrappleRope implements Updateable, Renderable
 	public void setTarget(Targetable target)
 	{
 		this.target = target;
+	}
+	
+	public GrappleComponent getGrapple()
+	{
+		return grapple;
 	}
 }
