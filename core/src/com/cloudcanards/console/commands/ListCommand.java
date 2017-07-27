@@ -1,4 +1,4 @@
-package com.cloudcanards.commands;
+package com.cloudcanards.console.commands;
 
 import com.cloudcanards.console.AbstractCommand;
 import com.cloudcanards.console.Console;

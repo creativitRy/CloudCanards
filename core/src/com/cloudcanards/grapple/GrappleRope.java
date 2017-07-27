@@ -3,7 +3,7 @@ package com.cloudcanards.grapple;
 import com.cloudcanards.behavior.Updateable;
 import com.cloudcanards.box2d.CollisionFilters;
 import com.cloudcanards.box2d.PreSolvable;
-import com.cloudcanards.components.GrappleComponent;
+import com.cloudcanards.character.components.GrappleComponent;
 import com.cloudcanards.graphics.Renderable;
 import com.cloudcanards.screens.GameScreen;
 

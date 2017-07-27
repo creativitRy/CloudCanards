@@ -1,6 +1,7 @@
-package com.cloudcanards.commands;
+package com.cloudcanards.console.commands;
 
 import com.cloudcanards.console.AbstractCommand;
+import com.cloudcanards.console.Console;
 
 import com.badlogic.gdx.utils.reflect.ClassReflection;
 import com.badlogic.gdx.utils.reflect.ReflectionException;
@@ -28,8 +29,12 @@ public class HelpCommand extends AbstractCommand
 	{
 		try
 		{
-			@SuppressWarnings("unchecked")
-			Class<AbstractCommand> commandClass = ClassReflection.forName("com.cloudcanards.commands." + convert(args[1]));
+			Class<? extends AbstractCommand> commandClass = Console.getCommands().get(convert(args[1]));
+			
+			if (commandClass == null)
+			{
+				return "Unknown command " + Console.convert(args[1]);
+			}
 			
 			return ClassReflection.newInstance(commandClass).help(2, args);
 		}

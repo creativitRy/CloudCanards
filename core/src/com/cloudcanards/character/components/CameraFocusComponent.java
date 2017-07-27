@@ -1,4 +1,4 @@
-package com.cloudcanards.components;
+package com.cloudcanards.character.components;
 
 import com.cloudcanards.camera.CameraFocus;
 import com.cloudcanards.character.AbstractCharacter;

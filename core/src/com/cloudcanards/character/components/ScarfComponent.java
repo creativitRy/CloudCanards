@@ -1,4 +1,4 @@
-package com.cloudcanards.components;
+package com.cloudcanards.character.components;
 
 import com.cloudcanards.assets.Assets;
 import com.cloudcanards.behavior.Updateable;
@@ -99,8 +99,7 @@ public class ScarfComponent extends AbstractRenderableComponent implements Loada
 		shape.dispose();
 		
 		RopeJointDef charJointDef = new RopeJointDef();
-		//todo: connect to static body that moves to character position so the scarf doesn't affect the character movement
-		charJointDef.bodyA = character.getBody();
+		charJointDef.bodyA = character.getGraphicsBody();
 		float charSeparation = 1f / (WIDTH_DIVISIONS - 1); //todo: replace 1f with character width
 		Vector2 localAnchorA = new Vector2(-1f / 2f, 1.5f); //todo: replace 1f with character width and 1.5f with character height - character head height
 		charJointDef.localAnchorB.set(0, 0);
@@ -143,6 +142,7 @@ public class ScarfComponent extends AbstractRenderableComponent implements Loada
 		{
 			for (int w = 0; w < bodies[h].length; w++)
 			{
+				//.getPosition() is necessary to update the internal vector2 of the body
 				grid[h][w].set(bodies[h][w].getPosition());
 			}
 		}

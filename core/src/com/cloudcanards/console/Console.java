@@ -1,10 +1,10 @@
 package com.cloudcanards.console;
 
 import com.cloudcanards.CloudCanards;
-import com.cloudcanards.commands.HelpCommand;
-import com.cloudcanards.commands.ListCommand;
-import com.cloudcanards.commands.RenderBox2DCommand;
-import com.cloudcanards.commands.TpCommand;
+import com.cloudcanards.console.commands.HelpCommand;
+import com.cloudcanards.console.commands.ListCommand;
+import com.cloudcanards.console.commands.RenderBox2DCommand;
+import com.cloudcanards.console.commands.TpCommand;
 import com.cloudcanards.input.InputAction;
 import com.cloudcanards.input.InputListener;
 import com.cloudcanards.input.InputManager;
@@ -20,6 +20,7 @@ import com.badlogic.gdx.utils.reflect.ClassReflection;
 import com.badlogic.gdx.utils.reflect.ReflectionException;
 
 import java.util.ArrayDeque;
+import java.util.Map;
 import java.util.TreeMap;
 
 /**
@@ -193,7 +194,7 @@ public class Console implements InputListener
 	/**
 	 * converts to lowercase
 	 */
-	private String convert(String arg)
+	public static String convert(String arg)
 	{
 		return arg.toLowerCase();
 		//return arg.substring(0, 1).toUpperCase() + arg.substring(1) + "Command";

@@ -236,6 +236,7 @@ public class GameScreen extends AbstractScreen
 		
 		while (physicsTick >= TIME_STEP)
 		{
+			player.physicsStep();
 			world.step(TIME_STEP, VELOCITY_ITERATIONS, POSITION_ITERATIONS);
 			physicsTick -= TIME_STEP;
 		}

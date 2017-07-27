@@ -2,7 +2,7 @@ package com.cloudcanards.character;
 
 import com.cloudcanards.behavior.Updateable;
 import com.cloudcanards.box2d.CollisionFilters;
-import com.cloudcanards.components.AbstractComponent;
+import com.cloudcanards.character.components.AbstractComponent;
 import com.cloudcanards.graphics.Renderable;
 import com.cloudcanards.grapple.Targetable;
 import com.cloudcanards.health.Damageable;
@@ -37,6 +37,7 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 	//physics
 	private Body body;
 	private World world;
+	private Body graphicsBody;
 	
 	//movement
 	private DefaultStateMachine<AbstractCharacter, CharacterState> stateMachine;
@@ -71,8 +72,8 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 	public AbstractCharacter(World world, Vector2 position, float height, float diameter, String atlasPath)
 	{
 		this.world = world;
-		body = createPhysicsBody(position, height / 2f, diameter / 2f);
-		body.setSleepingAllowed(false);
+		createPhysicsBody(position, height / 2f, diameter / 2f);
+		createGraphicsBody();
 		
 		//todo
 		groundFriction = -1;
@@ -96,9 +97,8 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 	 * @param position
 	 * @param halfHeight
 	 * @param radius
-	 * @return
 	 */
-	protected Body createPhysicsBody(Vector2 position, float halfHeight, float radius)
+	protected void createPhysicsBody(Vector2 position, float halfHeight, float radius)
 	{
 		if (halfHeight < radius)
 		{
@@ -109,7 +109,7 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 		def.type = BodyDef.BodyType.DynamicBody;
 		def.position.set(position);
 		
-		Body body = world.createBody(def);
+		body = world.createBody(def);
 		
 		//middle
 		PolygonShape poly = new PolygonShape();
@@ -150,8 +150,16 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 		
 		body.setBullet(true);
 		body.setFixedRotation(true);
+		body.setSleepingAllowed(false);
+	}
+	
+	private void createGraphicsBody()
+	{
+		BodyDef bodyDef = new BodyDef();
+		bodyDef.type = BodyDef.BodyType.KinematicBody;
+		bodyDef.position.set(body.getPosition());
 		
-		return body;
+		graphicsBody = world.createBody(bodyDef);
 	}
 	
 	@Override
@@ -374,10 +382,21 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 		endJump();
 		endStopJump();
 		
+		graphicsBody.setLinearDamping(body.getLinearDamping());
+		graphicsBody.setTransform(body.getPosition(), 0);
+		
 		for (Updateable component : updateableComponents)
 		{
 			component.update(delta);
 		}
+	}
+	
+	/**
+	 * Called every time before the physics world updates
+	 */
+	public void physicsStep()
+	{
+		graphicsBody.setLinearVelocity(body.getLinearVelocity());
 	}
 	
 	@Override
@@ -502,5 +521,10 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 	public float getMovementSpeed()
 	{
 		return movementSpeed;
+	}
+	
+	public Body getGraphicsBody()
+	{
+		return graphicsBody;
 	}
 }

@@ -1,4 +1,4 @@
-package com.cloudcanards.components;
+package com.cloudcanards.character.components;
 
 import com.cloudcanards.assets.Assets;
 import com.cloudcanards.behavior.Updateable;

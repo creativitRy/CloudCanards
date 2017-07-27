@@ -2,7 +2,7 @@ package com.cloudcanards.character;
 
 import com.cloudcanards.assets.Assets;
 import com.cloudcanards.camera.LerpFocus;
-import com.cloudcanards.components.*;
+import com.cloudcanards.character.components.*;
 import com.cloudcanards.screens.GameScreen;
 
 import com.badlogic.gdx.math.Vector2;
