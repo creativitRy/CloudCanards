@@ -1,7 +1,5 @@
 package com.cloudcanards.console;
 
-import com.cloudcanards.util.Logger;
-
 /**
  * AbstractCommand
  *
@@ -58,7 +56,7 @@ public abstract class AbstractCommand
 	 */
 	protected final void print(String x)
 	{
-		Logger.log(x);
+		Console.getInstance().print(x);
 	}
 	
 	/**

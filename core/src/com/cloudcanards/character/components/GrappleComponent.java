@@ -11,6 +11,7 @@ import com.cloudcanards.loading.AbstractLoadAssetTask;
 import com.cloudcanards.loading.Loadable;
 import com.cloudcanards.loading.ResourceManager;
 import com.cloudcanards.screens.GameScreen;
+import com.cloudcanards.util.Logger;
 
 import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.TextureAtlas;
@@ -83,7 +84,7 @@ public class GrappleComponent extends AbstractComponent implements Loadable, Upd
 	
 	public boolean shoot(Targetable target)
 	{
-		System.out.println("test");
+		Logger.log("Attempting to shoot");
 		if (target == null)
 			return false;
 		
@@ -93,7 +94,7 @@ public class GrappleComponent extends AbstractComponent implements Loadable, Upd
 			return false;
 		
 		rope = new GrappleRope(this, target, GameScreen.getInstance().getWorld(), texture);
-		
+		Logger.log("Shot");
 		return true;
 	}
 	
@@ -124,6 +125,15 @@ public class GrappleComponent extends AbstractComponent implements Loadable, Upd
 		}*/
 	}
 	
+	public void move(Vector2 pos)
+	{
+		body.setTransform(pos, 0);
+		character.getBody().setTransform(
+			pos.x - getPosition().x + character.getBody().getPosition().x,
+			pos.y - getPosition().y + character.getBody().getPosition().y,
+			0);
+	}
+	
 	public Vector2 getPosition()
 	{
 		return character.getPosition();
@@ -142,5 +152,10 @@ public class GrappleComponent extends AbstractComponent implements Loadable, Upd
 	public void setRetractGrapple()
 	{
 		character.updateState();
+	}
+	
+	public GrappleRope getRope()
+	{
+		return rope;
 	}
 }

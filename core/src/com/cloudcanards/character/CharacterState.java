@@ -1,5 +1,6 @@
 package com.cloudcanards.character;
 
+import com.cloudcanards.grapple.PhysicsGrappleRope;
 import com.cloudcanards.time.TimeManager;
 
 import com.badlogic.gdx.ai.fsm.State;
@@ -116,10 +117,25 @@ public enum CharacterState implements State<AbstractCharacter>
 		},
 	GRAPPLE
 		{
+			//todo: move to entity since GRAPPLE is a persistent object used by all characters
+			private float impulse;
+			
 			@Override
 			public void enter(AbstractCharacter entity)
 			{
 				entity.getBody().setGravityScale(1f);
+				impulse = 0.15f * PhysicsGrappleRope.DENSITY * entity.getBody().getMass() * entity.getGrappleComponent().getRope().getPhysicsGrappleRope().getAmount();
+			}
+			
+			@Override
+			public void update(AbstractCharacter entity)
+			{
+				if (entity.getMovementDir() != 0)
+				{
+					entity.getBody().applyLinearImpulse(
+						Math.signum(entity.getMovementDir()) * impulse * TimeManager.getInstance().getDelta(),
+						0, entity.getPosition().x, entity.getPosition().y, true);
+				}
 			}
 		},;
 	

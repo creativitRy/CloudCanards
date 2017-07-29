@@ -3,6 +3,7 @@ package com.cloudcanards.character;
 import com.cloudcanards.behavior.Updateable;
 import com.cloudcanards.box2d.CollisionFilters;
 import com.cloudcanards.character.components.AbstractComponent;
+import com.cloudcanards.character.components.GrappleComponent;
 import com.cloudcanards.graphics.Renderable;
 import com.cloudcanards.grapple.Targetable;
 import com.cloudcanards.health.Damageable;
@@ -11,6 +12,7 @@ import com.cloudcanards.loading.Disposable;
 import com.cloudcanards.loading.Loadable;
 import com.cloudcanards.loading.ResourceManager;
 import com.cloudcanards.screens.GameScreen;
+import com.cloudcanards.util.Logger;
 import com.cloudcanards.util.MathUtil;
 
 import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
@@ -62,6 +64,7 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 	//components
 	private Array<Updateable> updateableComponents;
 	private Array<AbstractComponent> miscComponents;
+	private GrappleComponent grappleComponent;
 	
 	/**
 	 * @param world
@@ -211,6 +214,9 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 		{
 			miscComponents.add(component);
 		}
+		
+		if (component instanceof GrappleComponent)
+			grappleComponent = (GrappleComponent) component;
 	}
 	
 	private void registerRenderable(Renderable component)
@@ -307,7 +313,7 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 		}
 		
 		//fixme
-		return false;
+		return true;
 	}
 	
 	public void jump()
@@ -526,5 +532,16 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 	public Body getGraphicsBody()
 	{
 		return graphicsBody;
+	}
+	
+	public GrappleComponent getGrappleComponent()
+	{
+		if (grappleComponent == null)
+		{
+			Logger.setLevel(Logger.ERROR);
+			Logger.log("Grapple component requested when it is null");
+			Logger.resetLevel();
+		}
+		return grappleComponent;
 	}
 }

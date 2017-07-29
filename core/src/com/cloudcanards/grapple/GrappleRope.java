@@ -2,20 +2,20 @@ package com.cloudcanards.grapple;
 
 import com.cloudcanards.behavior.Updateable;
 import com.cloudcanards.box2d.CollisionFilters;
-import com.cloudcanards.box2d.PreSolvable;
 import com.cloudcanards.character.components.GrappleComponent;
 import com.cloudcanards.graphics.Renderable;
 import com.cloudcanards.screens.GameScreen;
+import com.cloudcanards.util.Logger;
 
 import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
-import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.physics.box2d.Body;
+import com.badlogic.gdx.physics.box2d.Fixture;
+import com.badlogic.gdx.physics.box2d.World;
 import com.badlogic.gdx.physics.box2d.joints.PrismaticJoint;
-import com.badlogic.gdx.physics.box2d.joints.PrismaticJointDef;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJoint;
-import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 
 import java.util.ArrayDeque;
 
@@ -27,7 +27,7 @@ import java.util.ArrayDeque;
 public class GrappleRope implements Updateable, Renderable
 {
 	private static final float DISTANCE_PER_SECOND = 20f;
-	public static final float ROPE_HALF_THICKNESS = 0.1f;
+	private static final float ROPE_HALF_THICKNESS = 0.1f;
 	
 	private World world;
 	private GrappleComponent grapple;
@@ -46,6 +46,7 @@ public class GrappleRope implements Updateable, Renderable
 	
 	private NinePatch texture;
 	
+	private PhysicsGrappleRope physicsGrappleRope;
 	private ArrayDeque<Vector2> points;
 	private Body rope;
 	private Fixture ropeFixture;
@@ -92,8 +93,14 @@ public class GrappleRope implements Updateable, Renderable
 	 */
 	private void createPhysicsRope(Vector2 pos, Body target)
 	{
-		new PhysicsGrappleRope(this, world, pos);
-		final float distance = grapple.getPosition().dst(pos);
+		float len = pos.dst(grapple.getPosition());
+		if (len > getMaxRopeLength())
+		{
+			stopGrappling();
+			return;
+		}
+		physicsGrappleRope = new PhysicsGrappleRope(this, world, pos, len);
+		/*final float distance = grapple.getPosition().dst(pos);
 		final float angle = (float) Math.atan2(grapple.getPosition().y - pos.y, grapple.getPosition().x - pos.x);
 		
 		BodyDef bodyDef = new BodyDef();
@@ -181,18 +188,21 @@ public class GrappleRope implements Updateable, Renderable
 		revoluteJointDef.bodyA = slider;
 		revoluteJointDef.localAnchorA.set(0, 0);
 		revoluteJointDef.bodyB = grapple.getBody();
-		sourceJoint = (RevoluteJoint) world.createJoint(revoluteJointDef);
+		sourceJoint = (RevoluteJoint) world.createJoint(revoluteJointDef);*/
 	}
 	
 	private void destroyPhysicsRope()
 	{
+		/*physicsGrappleRope.destroyPhysicsRope();
+		physicsGrappleRope = null;
+		
 		world.destroyJoint(sourceJoint);
 		
 		world.destroyJoint(prismaticJoint);
 		world.destroyBody(slider);
 		
 		world.destroyJoint(targetJoint);
-		world.destroyBody(rope);
+		world.destroyBody(rope);*/
 	}
 	
 	@Override
@@ -252,8 +262,10 @@ public class GrappleRope implements Updateable, Renderable
 			{
 				end.set(target.getPosition());
 				
-				//todo: end of state 0 so move to state 1
+				//end of state 0 so move to state 1
 				createPhysicsRope(end, target.getBody());
+				if (moveToState2)
+					return;
 				grapple.setGrappling();
 				
 				state = 1;
@@ -261,13 +273,15 @@ public class GrappleRope implements Updateable, Renderable
 		}
 		else if (state == 1) //main
 		{
-			if (createRope != null)
+			if (physicsGrappleRope != null)
+				physicsGrappleRope.update(delta);
+			/*if (createRope != null)
 			{
 				points.push(rope.getPosition());
 				destroyPhysicsRope();
 				createPhysicsRope(createRope, newTarget);
 				createRope = null;
-			}
+			}*/
 			
 			if (retracting)
 			{
@@ -276,7 +290,7 @@ public class GrappleRope implements Updateable, Renderable
 		}
 		else //end
 		{
-			System.out.println("test");
+			Logger.log("state 2");
 			//shorten rope
 		}
 	}
@@ -336,5 +350,15 @@ public class GrappleRope implements Updateable, Renderable
 	public GrappleComponent getGrapple()
 	{
 		return grapple;
+	}
+	
+	public PhysicsGrappleRope getPhysicsGrappleRope()
+	{
+		return physicsGrappleRope;
+	}
+	
+	public float getMaxRopeLength()
+	{
+		return maxRopeLength;
 	}
 }

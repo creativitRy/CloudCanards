@@ -10,6 +10,7 @@ import com.cloudcanards.input.InputListener;
 import com.cloudcanards.input.InputManager;
 import com.cloudcanards.input.InputType;
 import com.cloudcanards.screens.GameScreen;
+import com.cloudcanards.util.Logger;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -20,7 +21,6 @@ import com.badlogic.gdx.utils.reflect.ClassReflection;
 import com.badlogic.gdx.utils.reflect.ReflectionException;
 
 import java.util.ArrayDeque;
-import java.util.Map;
 import java.util.TreeMap;
 
 /**
@@ -141,7 +141,7 @@ public class Console implements InputListener
 	{
 		command = command.trim();
 		addHistory(command);
-		System.out.println(command);
+		print(command);
 		if (command.isEmpty())
 		{
 			return false;
@@ -192,12 +192,17 @@ public class Console implements InputListener
 	}
 	
 	/**
-	 * converts to lowercase
+	 * converts to lowercase to find command
 	 */
 	public static String convert(String arg)
 	{
 		return arg.toLowerCase();
 		//return arg.substring(0, 1).toUpperCase() + arg.substring(1) + "Command";
+	}
+	
+	public void print(String x)
+	{
+		Logger.log(x);
 	}
 	
 	private void enableConsole()

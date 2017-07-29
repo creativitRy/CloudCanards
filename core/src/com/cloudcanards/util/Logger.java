@@ -12,19 +12,32 @@ import com.badlogic.gdx.utils.TimeUtils;
  */
 public class Logger
 {
+	/**
+	 * Often printed
+	 */
+	public static final int INFO = 2;
+	/**
+	 * Rarely printed
+	 */
+	public static final int DEBUG = 3;
+	/**
+	 * Most likely printed
+	 */
+	public static final int ERROR = 1;
+	
 	private Logger() {}
 	
 	private static long startTime;
 	
-	private static int level = Application.LOG_INFO;
+	private static int level = INFO;
 	
 	/**
 	 * Gets the level
 	 *
 	 * @return level
-	 * @see Application#LOG_INFO
-	 * @see Application#LOG_DEBUG
-	 * @see Application#LOG_ERROR
+	 * @see #INFO
+	 * @see #DEBUG
+	 * @see #ERROR
 	 */
 	public static int getLevel()
 	{
@@ -35,9 +48,9 @@ public class Logger
 	 * Sets the level of logging - how the logged messages will be graded
 	 *
 	 * @param level level
-	 * @see Application#LOG_INFO
-	 * @see Application#LOG_DEBUG
-	 * @see Application#LOG_ERROR
+	 * @see #INFO
+	 * @see #DEBUG
+	 * @see #ERROR
 	 */
 	public static void setLevel(int level)
 	{
@@ -45,13 +58,13 @@ public class Logger
 	}
 	
 	/**
-	 * Sets the logging level to {@link Application#LOG_INFO}
+	 * Sets the logging level to {@link #INFO}
 	 *
 	 * @see #setLevel(int)
 	 */
 	public static void resetLevel()
 	{
-		setLevel(Application.LOG_INFO);
+		setLevel(INFO);
 	}
 	
 	static

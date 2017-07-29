@@ -13,6 +13,7 @@ import com.badlogic.gdx.math.Vector3;
 import com.badlogic.gdx.utils.Array;
 import com.badlogic.gdx.utils.ObjectMap;
 
+import java.util.EnumMap;
 import java.util.Iterator;
 
 /**
@@ -65,6 +66,8 @@ public class InputManager implements InputProcessor, ControllerListener
 	private ObjectMap<Integer, InputAction> controllerPOVMap;
 	private ObjectMap<Integer, InputAction> controllerTriggerMap;
 	
+	private EnumMap<InputAction, Boolean> currentInputs;
+	
 	private transient Array<InputListener> listeners;
 	private transient Array<InputListener> removalPendingListeners; //this is an array bc listeners might not have
 	// unique hashes
@@ -77,6 +80,12 @@ public class InputManager implements InputProcessor, ControllerListener
 		
 		listeners = new Array<>(16);
 		removalPendingListeners = new Array<>(4);
+		
+		currentInputs = new EnumMap<>(InputAction.class);
+		for (InputAction inputAction : InputAction.values())
+		{
+			currentInputs.put(inputAction, false);
+		}
 	}
 	
 	/**
@@ -131,11 +140,17 @@ public class InputManager implements InputProcessor, ControllerListener
 		return false;
 	}
 	
+	public boolean isPressed(InputAction inputAction)
+	{
+		return currentInputs.get(inputAction);
+	}
+	
 	@Override
 	public boolean keyDown(int keycode)
 	{
 		if (keyMap.containsKey(keycode))
 		{
+			currentInputs.put(keyMap.get(keycode), true);
 			return notifyListeners(keyMap.get(keycode), InputType.KEYBOARD_KEY, true);
 		}
 		
@@ -148,6 +163,7 @@ public class InputManager implements InputProcessor, ControllerListener
 	{
 		if (keyMap.containsKey(keycode))
 		{
+			currentInputs.put(keyMap.get(keycode), false);
 			return notifyListeners(keyMap.get(keycode), InputType.KEYBOARD_KEY, false);
 		}
 		return false;
@@ -164,6 +180,7 @@ public class InputManager implements InputProcessor, ControllerListener
 	{
 		if (mouseButtonMap.containsKey(button))
 		{
+			currentInputs.put(mouseButtonMap.get(button), true);
 			return notifyListeners(mouseButtonMap.get(button), InputType.MOUSE_BUTTON, true, screenX, screenY);
 		}
 		return false;
@@ -174,6 +191,7 @@ public class InputManager implements InputProcessor, ControllerListener
 	{
 		if (mouseButtonMap.containsKey(button))
 		{
+			currentInputs.put(mouseButtonMap.get(button), false);
 			return notifyListeners(mouseButtonMap.get(button), InputType.MOUSE_BUTTON, false, screenX, screenY);
 		}
 		return false;
@@ -216,7 +234,7 @@ public class InputManager implements InputProcessor, ControllerListener
 		if (controllerButtonMap.containsKey(buttonCode))
 		{
 			//todo - based on controller name
-			buttonCode = buttonCode << 3 & 0b001;
+			buttonCode = (buttonCode << 3) & 0b001;
 			return notifyListeners(controllerButtonMap.get(buttonCode), InputType.CONTROLLER_BUTTON, true);
 		}
 		return false;

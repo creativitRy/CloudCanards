@@ -4,6 +4,7 @@ import com.cloudcanards.assets.Assets;
 import com.cloudcanards.camera.LerpFocus;
 import com.cloudcanards.character.components.*;
 import com.cloudcanards.screens.GameScreen;
+import com.cloudcanards.util.Logger;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
@@ -33,6 +34,6 @@ public class TestChar extends AbstractCharacter
 	@Override
 	public void onDeath()
 	{
-		System.out.println("Ded");
+		Logger.log("Ded");
 	}
 }

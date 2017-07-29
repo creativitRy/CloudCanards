@@ -311,7 +311,7 @@ public class GameScreen extends AbstractScreen
 	{
 		if (getInstance() == null || getInstance().camera == null)
 		{
-			return null;
+			throw new RuntimeException("GameScreen or camera is null");
 		}
 		Vector3 unproject = getInstance().camera.unproject(new Vector3(x, y, 0));
 		return new Vector2(unproject.x, unproject.y);

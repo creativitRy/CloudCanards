@@ -1,7 +1,7 @@
 package com.cloudcanards.grapple;
 
+import com.cloudcanards.behavior.Updateable;
 import com.cloudcanards.box2d.CollisionFilters;
-import com.cloudcanards.box2d.PreSolvable;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
@@ -12,22 +12,38 @@ import com.badlogic.gdx.physics.box2d.joints.*;
  *
  * @author GahwonLee
  */
-public class PhysicsGrappleRope
+public class PhysicsGrappleRope implements Updateable
 {
 	private static final float APPROX_DIST_BETWEEN_SEGMENTS = 0.5f;
-	private static final float DENSITY = 0.2f;
-	private static final float BOX_HALFSIZE = 0.05f;
+	public static final float DENSITY = 10f;
+	private static final float ROPE_HALF_THICKNESS = 0.1f;
+	private static final float MIN_LENGTH = 0.1f;
+	private static final float ROPE_INCREMENT_AMOUNT = 5f; //make sure this is small to avoid physics bugs
+	private static final float ROPE_DECREMENT_AMOUNT = 12f;
 	
 	private GrappleRope grappleRope;
 	private World world;
 	
 	private Body[] bodies;
-	private DistanceJoint[] joints;
+	private DistanceJoint[] distanceJoints;
+	private RopeJoint[] ropeJoints;
+	private RopeJointDef ropeJointDef;
 	
-	public PhysicsGrappleRope(GrappleRope grappleRope, World world, Vector2 pos)
+	private float ropeLength;
+	
+	private boolean climbing;
+	private boolean climbUp;
+	private boolean climbDown;
+	
+	public PhysicsGrappleRope(GrappleRope grappleRope, World world, Vector2 pos, float ropeLength)
 	{
 		this.grappleRope = grappleRope;
 		this.world = world;
+		this.ropeLength = ropeLength;
+		
+		ropeJointDef = new RopeJointDef();
+		ropeJointDef.localAnchorA.set(0, 0);
+		ropeJointDef.localAnchorB.set(0, 0);
 		
 		createPhysicsRope(pos);
 	}
@@ -37,12 +53,11 @@ public class PhysicsGrappleRope
 	 */
 	private void createPhysicsRope(Vector2 pos)
 	{
-		float dist = pos.dst(grappleRope.getGrapple().getPosition());
-		
-		int amount = Math.max(2, ((int) (dist / APPROX_DIST_BETWEEN_SEGMENTS)));
+		int amount = getAmount();
 		bodies = new Body[amount];
-		joints = new DistanceJoint[amount - 1];
-		float segmentDistance = dist / (amount - 1);
+		distanceJoints = new DistanceJoint[amount - 1];
+		ropeJoints = new RopeJoint[amount - 1];
+		float segmentDistance = ropeLength / (amount - 1);
 		Vector2 dir = new Vector2(grappleRope.getGrapple().getPosition()).sub(pos).nor();
 		
 		BodyDef bodyDef = new BodyDef();
@@ -53,31 +68,85 @@ public class PhysicsGrappleRope
 		fixtureDef.filter.categoryBits = CollisionFilters.ROPE;
 		fixtureDef.filter.maskBits = CollisionFilters.ROPE_COLLISION_MASK;
 		PolygonShape shape = new PolygonShape();
-		shape.setAsBox(BOX_HALFSIZE, BOX_HALFSIZE);
+		shape.setAsBox(ROPE_HALF_THICKNESS, ROPE_HALF_THICKNESS);
 		fixtureDef.shape = shape;
 		
 		for (int i = 0; i < amount; i++)
 		{
 			bodyDef.position.set(dir).scl(segmentDistance * i).add(pos);
 			bodies[i] = world.createBody(bodyDef);
+			bodies[i].setLinearDamping(2f);
 			
 			bodies[i].createFixture(fixtureDef);
 		}
+		shape.dispose();
 		
-		DistanceJointDef jointDef = new DistanceJointDef();
-		jointDef.length = segmentDistance;
-		jointDef.dampingRatio = 0; //todo: ?
+		DistanceJointDef distanceJointDef = new DistanceJointDef();
+		distanceJointDef.length = segmentDistance;
+		distanceJointDef.frequencyHz = 0;
+		distanceJointDef.dampingRatio = 1;
 		
 		for (int i = 1; i < amount; i++)
 		{
-			jointDef.bodyA = bodies[i - 1];
-			jointDef.bodyB = bodies[i];
+			distanceJointDef.bodyA = bodies[i - 1];
+			distanceJointDef.bodyB = bodies[i];
 			
-			joints[i - 1] = (DistanceJoint) world.createJoint(jointDef);
+			distanceJoints[i - 1] = (DistanceJoint) world.createJoint(distanceJointDef);
 		}
 		
+		createRopeJoints(segmentDistance);
 		
-		shape.dispose();
+		RevoluteJointDef revoluteJointDef = new RevoluteJointDef();
+		revoluteJointDef.bodyA = grappleRope.getTarget().getBody();
+		revoluteJointDef.bodyB = bodies[0];
+		world.createJoint(revoluteJointDef);
+		
+		revoluteJointDef.bodyA = bodies[bodies.length - 1];
+		revoluteJointDef.bodyB = grappleRope.getGrapple().getBody();
+		world.createJoint(revoluteJointDef);
+	}
+	
+	private void createRopeJoints(float segmentDistance)
+	{
+		ropeJointDef.bodyA = grappleRope.getTarget().getBody();
+		for (int i = 1; i < getAmount(); i++)
+		{
+			ropeJointDef.maxLength = segmentDistance * i;
+			ropeJointDef.bodyB = bodies[i];
+			ropeJoints[i - 1] = (RopeJoint) world.createJoint(ropeJointDef);
+		}
+	}
+	
+	@Override
+	public void update(float delta)
+	{
+		//todo: maybe apply radial force from target to vertex so rope wants to remain straight?
+		
+		if (climbUp != climbDown)
+		{
+			/*if (!climbing)
+			{
+				for (int i = 0; i < ropeJoints.length; i++)
+				{
+					world.destroyJoint(ropeJoints[i]);
+				}
+			}*/
+			climbing = true;
+			if (climbUp)
+				decrementRopeLength(delta);
+			else
+				incrementRopeLength(delta);
+		}
+		else
+		{
+			/*if (climbing)
+			{
+				float segmentDistance = ropeLength / (getAmount() - 1);
+				createRopeJoints(segmentDistance);
+			}*/
+			climbing = false;
+		}
+		
 	}
 	
 	public void destroyPhysicsRope()
@@ -85,5 +154,61 @@ public class PhysicsGrappleRope
 	
 	}
 	
+	public void incrementRopeLength(float delta)
+	{
+		setRopeLength(ropeLength + ROPE_INCREMENT_AMOUNT * delta);
+	}
 	
+	public void decrementRopeLength(float delta)
+	{
+		setRopeLength(ropeLength - ROPE_DECREMENT_AMOUNT * delta);
+	}
+	
+	public int getAmount()
+	{
+		if (bodies != null)
+			return bodies.length;
+		return Math.max(2, ((int) (grappleRope.getMaxRopeLength() / APPROX_DIST_BETWEEN_SEGMENTS)));
+	}
+	
+	public float getRopeLength()
+	{
+		return ropeLength;
+	}
+	
+	public void setRopeLength(float ropeLength)
+	{
+		if (ropeLength < MIN_LENGTH)
+			ropeLength = MIN_LENGTH;
+		else if (ropeLength > grappleRope.getMaxRopeLength())
+			ropeLength = grappleRope.getMaxRopeLength();
+		
+		if (ropeLength == this.ropeLength)
+			return;
+		
+		this.ropeLength = ropeLength;
+		System.out.println(ropeLength);
+		
+		float segmentDistance = ropeLength / (getAmount() - 1);
+		for (int i = 0; i < distanceJoints.length; i++)
+		{
+			distanceJoints[i].setLength(segmentDistance);
+		}
+		for (int i = 0; i < ropeJoints.length; i++)
+		{
+			world.destroyJoint(ropeJoints[i]);
+		}
+		createRopeJoints(segmentDistance);
+		grappleRope.getGrapple().move(bodies[getAmount() - 1].getPosition());
+	}
+	
+	public void setClimbUp(boolean climbUp)
+	{
+		this.climbUp = climbUp;
+	}
+	
+	public void setClimbDown(boolean climbDown)
+	{
+		this.climbDown = climbDown;
+	}
 }
