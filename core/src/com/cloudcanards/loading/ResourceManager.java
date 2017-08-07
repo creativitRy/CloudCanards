@@ -38,6 +38,7 @@ public class ResourceManager
 		addLoaders(resolver);
 		tasks = new ArrayDeque<>();
 		multithreadAddFixer = new ArrayDeque<>();
+		//todo: Texture.setAssetManager(assetManager);
 	}
 	
 	private void addLoaders(FileHandleResolver resolver)

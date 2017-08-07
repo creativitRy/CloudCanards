@@ -26,7 +26,7 @@ import java.util.ArrayDeque;
  */
 public class GrappleRope implements Updateable, Renderable
 {
-	private static final float DISTANCE_PER_SECOND = 20f;
+	private static final float DISTANCE_PER_SECOND = 40f;
 	private static final float ROPE_HALF_THICKNESS = 0.1f;
 	
 	private World world;
@@ -84,6 +84,7 @@ public class GrappleRope implements Updateable, Renderable
 	 */
 	public void stopGrappling()
 	{
+		Logger.log("Stop grappling");
 		moveToState2 = true;
 		grapple.setRetractGrapple();
 	}
@@ -210,13 +211,10 @@ public class GrappleRope implements Updateable, Renderable
 	{
 		if (moveToState2)
 		{
-			if (state == 0)
+			if (physicsGrappleRope != null)
 			{
-				//construct the rope
-			}
-			else
-			{
-				//disconnect rope from target
+				physicsGrappleRope.destroyPhysicsRope();
+				physicsGrappleRope = null;
 			}
 			
 			state = 2;
@@ -290,8 +288,12 @@ public class GrappleRope implements Updateable, Renderable
 		}
 		else //end
 		{
-			Logger.log("state 2");
-			//shorten rope
+			//todo: rope end animation
+			
+			//if (animation ended)
+			{
+				grapple.destroyGrappleRope();
+			}
 		}
 	}
 	
@@ -306,6 +308,11 @@ public class GrappleRope implements Updateable, Renderable
 				grapple.getPosition().dst(end) * 4, 1, 0.25f, 0.25f,
 				MathUtils.atan2(end.y - grapple.getPosition().y, end.x - grapple.getPosition().x)
 					* MathUtils.radiansToDegrees);
+		}
+		else if (state == 1)
+		{
+			if (physicsGrappleRope != null)
+				physicsGrappleRope.render(batch, delta);
 		}
 		else
 		{

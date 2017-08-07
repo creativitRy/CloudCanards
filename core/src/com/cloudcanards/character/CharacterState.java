@@ -124,7 +124,7 @@ public enum CharacterState implements State<AbstractCharacter>
 			public void enter(AbstractCharacter entity)
 			{
 				entity.getBody().setGravityScale(1f);
-				impulse = 0.15f * PhysicsGrappleRope.DENSITY * entity.getBody().getMass() * entity.getGrappleComponent().getRope().getPhysicsGrappleRope().getAmount();
+				impulse = 0.10f * PhysicsGrappleRope.DENSITY * entity.getBody().getMass() * entity.getGrappleComponent().getRope().getPhysicsGrappleRope().getAmount();
 			}
 			
 			@Override

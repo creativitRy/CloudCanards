@@ -103,7 +103,14 @@ public class GrappleComponent extends AbstractComponent implements Loadable, Upd
 		if (rope == null || rope.getState() == 2)
 			return false;
 		
+		rope.stopGrappling();
 		return true;
+	}
+	
+	public void destroyGrappleRope()
+	{
+		rope = null;
+		Logger.log("Destroying grappling rope");
 	}
 	
 	@Override
@@ -127,11 +134,13 @@ public class GrappleComponent extends AbstractComponent implements Loadable, Upd
 	
 	public void move(Vector2 pos)
 	{
-		body.setTransform(pos, 0);
-		character.getBody().setTransform(
-			pos.x - getPosition().x + character.getBody().getPosition().x,
-			pos.y - getPosition().y + character.getBody().getPosition().y,
-			0);
+		//body.setTransform(pos, 0);
+		body.setLinearVelocity(
+			(pos.x - body.getPosition().x) * 60f,
+			(pos.y - body.getPosition().y) * 60f);
+		character.getBody().setLinearVelocity(
+			(pos.x - getPosition().x) * 60f,
+			(pos.y - getPosition().y) * 60f);
 	}
 	
 	public Vector2 getPosition()

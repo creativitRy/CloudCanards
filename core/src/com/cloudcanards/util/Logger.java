@@ -159,6 +159,38 @@ public class Logger
 	}
 	
 	/**
+	 * Logs a formatted string using the specified format string and
+	 * arguments.
+	 * <p>
+	 * <p> The locale always used is the one returned by {@link
+	 * java.util.Locale#getDefault() Locale.getDefault()}.
+	 *
+	 * @param format A <a href="../util/Formatter.html#syntax">format string</a>
+	 * @param args   Arguments referenced by the format specifiers in the format
+	 *               string.  If there are more arguments than format specifiers, the
+	 *               extra arguments are ignored.  The number of arguments is
+	 *               variable and may be zero.  The maximum number of arguments is
+	 *               limited by the maximum dimension of a Java array as defined by
+	 *               <cite>The Java&trade; Virtual Machine Specification</cite>.
+	 *               The behaviour on a
+	 *               {@code null} argument depends on the <a
+	 *               href="../util/Formatter.html#syntax">conversion</a>.
+	 * @throws java.util.IllegalFormatException If a format string contains an illegal syntax, a format
+	 *                                          specifier that is incompatible with the given arguments,
+	 *                                          insufficient arguments given the format string, or other
+	 *                                          illegal conditions.  For specification of all possible
+	 *                                          formatting errors, see the <a
+	 *                                          href="../util/Formatter.html#detail">Details</a> section of the
+	 *                                          formatter class specification.
+	 * @see java.util.Formatter
+	 * @since 1.5
+	 */
+	public static void logf(String format, Object... args)
+	{
+		log(String.format(format, args));
+	}
+	
+	/**
 	 * Prints out a message
 	 *
 	 * @param message message to print
