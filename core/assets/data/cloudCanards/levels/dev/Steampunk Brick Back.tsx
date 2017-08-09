@@ -1,5 +1,4 @@
-<
-?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <tileset name="Steampunk Brick Back" tilewidth="16" tileheight="16" tilecount="48" columns="12">
 	<image source="Steampunk Brick Back.png" width="192" height="64"/>
 	<terraintypes>

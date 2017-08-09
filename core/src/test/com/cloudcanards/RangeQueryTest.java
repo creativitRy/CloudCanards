@@ -1,4 +1,4 @@
-package com.cloudcanards.algorithms;
+package com.cloudcanards;
 
 import com.cloudcanards.algorithms.kd.KDTree;
 
@@ -17,7 +17,7 @@ public class RangeQueryTest
 	public static void main(String[] args)
 	{
 		Timer timer = new Timer();
-		Array<Vector2> vectors = generateRandomVectors(500);
+		Array<Vector2> vectors;
 		/*vectors = Array.with(
 			new Vector2(2, 3),
 			new Vector2(5, 4),

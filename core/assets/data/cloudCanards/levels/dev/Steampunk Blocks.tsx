@@ -1,5 +1,4 @@
-<
-?xml version="1.0" encoding="UTF-8"?>
+<?xml version="1.0" encoding="UTF-8"?>
 <tileset name="Steampunk Blocks" tilewidth="16" tileheight="16" tilecount="96" columns="12">
 	<image source="Steampunk Blocks.png" width="192" height="128"/>
 	<terraintypes>

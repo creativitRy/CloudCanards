@@ -1,5 +1,7 @@
 package com.cloudcanards.health;
 
+import com.cloudcanards.health.combat.AttackType;
+
 /**
  * Anything that has health and can be damaged
  *
@@ -107,4 +109,11 @@ public interface Damageable
 	{
 		setHealth(getMaxHealth());
 	}
+	
+	/**
+	 * Gets the current attack type that this is executing
+	 *
+	 * @return current attack type or null if not attacking
+	 */
+	AttackType getCurrentAttackType();
 }

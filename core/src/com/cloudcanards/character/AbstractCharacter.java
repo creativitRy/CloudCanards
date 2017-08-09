@@ -7,6 +7,7 @@ import com.cloudcanards.character.components.GrappleComponent;
 import com.cloudcanards.graphics.Renderable;
 import com.cloudcanards.grapple.Targetable;
 import com.cloudcanards.health.Damageable;
+import com.cloudcanards.health.combat.AttackType;
 import com.cloudcanards.loading.AbstractLoadAssetTask;
 import com.cloudcanards.loading.Disposable;
 import com.cloudcanards.loading.Loadable;
@@ -59,7 +60,9 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 	private boolean jump;
 	private boolean stopJump;
 	
+	//health
 	private int health;
+	private AttackType currentAttackType;
 	
 	//components
 	private Array<Updateable> updateableComponents;
@@ -543,5 +546,11 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 			Logger.resetLevel();
 		}
 		return grappleComponent;
+	}
+	
+	@Override
+	public AttackType getCurrentAttackType()
+	{
+		return currentAttackType;
 	}
 }
