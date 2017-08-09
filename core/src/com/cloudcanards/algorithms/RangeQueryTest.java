@@ -1,4 +1,4 @@
-package com.cloudcanards;
+package com.cloudcanards.algorithms;
 
 import com.cloudcanards.algorithms.kd.KDTree;
 

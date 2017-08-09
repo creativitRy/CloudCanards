@@ -286,6 +286,11 @@ public class PhysicsGrappleRope implements Updateable, Renderable
 			grappleRope.getGrapple().move(bodies[getAmount() - 1].getPosition());
 	}
 	
+	public boolean isClimbing()
+	{
+		return climbing;
+	}
+	
 	public void setClimbUp(boolean climbUp)
 	{
 		this.climbUp = climbUp;

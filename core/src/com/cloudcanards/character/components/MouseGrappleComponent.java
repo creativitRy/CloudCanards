@@ -171,11 +171,17 @@ public class MouseGrappleComponent extends AbstractRenderableComponent implement
 		if (grapple.getRope() != null && grapple.getRope().getPhysicsGrappleRope() != null)
 		{
 			if (action == InputAction.GRAPPLE_CLIMB_UP)
+			{
 				grapple.getRope().getPhysicsGrappleRope().setClimbUp(args[0] instanceof Boolean && ((Boolean) args[0]));
+			}
 			else if (action == InputAction.GRAPPLE_CLIMB_DOWN)
+			{
 				grapple.getRope().getPhysicsGrappleRope().setClimbDown(args[0] instanceof Boolean && ((Boolean) args[0]));
+			}
 			else
+			{
 				return false;
+			}
 			return true;
 		}
 		return false;

@@ -1,6 +1,7 @@
 package com.cloudcanards.health;
 
 import com.cloudcanards.health.combat.AttackType;
+import org.jetbrains.annotations.Nullable;
 
 /**
  * Anything that has health and can be damaged
@@ -115,5 +116,6 @@ public interface Damageable
 	 *
 	 * @return current attack type or null if not attacking
 	 */
+	@Nullable
 	AttackType getCurrentAttackType();
 }

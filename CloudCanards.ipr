@@ -33,7 +33,6 @@
             <option value="$PROJECT_DIR$/desktop" />
           </set>
         </option>
-        <option name="useAutoImport" value="true" />
       </GradleProjectSettings>
     </option>
   </component>
@@ -262,6 +261,12 @@
         </option>
         <option name="JD_PRESERVE_LINE_FEEDS" value="true" />
         <option name="WRAP_COMMENTS" value="true" />
+        <JetCodeStyleSettings>
+          <option name="LBRACE_ON_NEXT_LINE" value="true" />
+        </JetCodeStyleSettings>
+        <Properties>
+          <option name="KEEP_BLANK_LINES" value="true" />
+        </Properties>
         <XML>
           <option name="XML_LEGACY_SETTINGS_IMPORTED" value="true" />
         </XML>
@@ -302,6 +307,9 @@
           </indentOptions>
         </codeStyleSettings>
         <codeStyleSettings language="Groovy">
+          <option name="BRACE_STYLE" value="2" />
+          <option name="CLASS_BRACE_STYLE" value="2" />
+          <option name="METHOD_BRACE_STYLE" value="2" />
           <indentOptions>
             <option name="USE_TAB_CHARACTER" value="true" />
             <option name="KEEP_INDENTS_ON_EMPTY_LINES" value="true" />
@@ -425,6 +433,10 @@
           </indentOptions>
         </codeStyleSettings>
         <codeStyleSettings language="kotlin">
+          <option name="ELSE_ON_NEW_LINE" value="true" />
+          <option name="WHILE_ON_NEW_LINE" value="true" />
+          <option name="CATCH_ON_NEW_LINE" value="true" />
+          <option name="FINALLY_ON_NEW_LINE" value="true" />
           <indentOptions>
             <option name="USE_TAB_CHARACTER" value="true" />
             <option name="KEEP_INDENTS_ON_EMPTY_LINES" value="true" />
@@ -592,6 +604,15 @@
       <JAVADOC />
       <SOURCES />
     </library>
+    <library name="Gradle: com.rafaskoberg.gdx:typing-label:1.0.4">
+      <CLASSES>
+        <root url="jar://$USER_HOME$/gradle-4.0/caches/modules-2/files-2.1/com.rafaskoberg.gdx/typing-label/1.0.4/45dddf6ddba01c056f1742133c4030ce34dde488/typing-label-1.0.4.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES>
+        <root url="jar://$USER_HOME$/gradle-4.0/caches/modules-2/files-2.1/com.rafaskoberg.gdx/typing-label/1.0.4/5efd11cfaaff7de091684d54796b3717d8af749a/typing-label-1.0.4-sources.jar!/" />
+      </SOURCES>
+    </library>
     <library name="Gradle: net.dermetfan.libgdx-utils:libgdx-utils-box2d:0.13.4">
       <CLASSES>
         <root url="jar://$USER_HOME$/gradle-4.0/caches/modules-2/files-2.1/net.dermetfan.libgdx-utils/libgdx-utils-box2d/0.13.4/918d79a20ea3c898cdb3611782c5b2bfa6ec575b/libgdx-utils-box2d-0.13.4.jar!/" />
@@ -648,6 +669,13 @@
     <library name="Gradle: org.jcraft:jorbis:0.0.17">
       <CLASSES>
         <root url="jar://$MAVEN_REPOSITORY$/org/jcraft/jorbis/0.0.17/jorbis-0.0.17.jar!/" />
+      </CLASSES>
+      <JAVADOC />
+      <SOURCES />
+    </library>
+    <library name="Gradle: org.jetbrains:annotations:15.0">
+      <CLASSES>
+        <root url="jar://$MAVEN_REPOSITORY$/org/jetbrains/annotations/15.0/annotations-15.0.jar!/" />
       </CLASSES>
       <JAVADOC />
       <SOURCES />

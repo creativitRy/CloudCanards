@@ -1,5 +1,7 @@
 package com.cloudcanards.health.combat;
 
+import org.jetbrains.annotations.Nullable;
+
 /**
  * AttackTypes
  *
@@ -34,7 +36,7 @@ public enum AttackType
 	 * @param attacker attack type that is attacking this. Can be null if not attacking
 	 * @return true if this can beat the attacker (or if attacker is null), false otherwise
 	 */
-	public boolean canBeat(AttackType attacker)
+	public boolean canBeat(@Nullable AttackType attacker)
 	{
 		if (attacker == null)
 			return true;

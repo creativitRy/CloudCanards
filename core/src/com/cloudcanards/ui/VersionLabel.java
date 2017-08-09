@@ -36,7 +36,7 @@ public class VersionLabel extends Table
 		{
 			properties.load(Gdx.files.internal(Assets.DIR + "version.properties").read());
 			
-			return properties.getProperty("artifactVersion") + "." + properties.getProperty("artifactBuildNumber") + "-" + properties.getProperty("artifactDate");
+			return properties.getProperty("artifactVersion") + "-" + properties.getProperty("artifactDate");
 		}
 		catch (IOException | IllegalArgumentException | GdxRuntimeException e)
 		{

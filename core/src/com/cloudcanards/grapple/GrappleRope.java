@@ -6,6 +6,7 @@ import com.cloudcanards.character.components.GrappleComponent;
 import com.cloudcanards.graphics.Renderable;
 import com.cloudcanards.screens.GameScreen;
 import com.cloudcanards.util.Logger;
+import org.jetbrains.annotations.Nullable;
 
 import com.badlogic.gdx.graphics.g2d.NinePatch;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -26,7 +27,7 @@ import java.util.ArrayDeque;
  */
 public class GrappleRope implements Updateable, Renderable
 {
-	private static final float DISTANCE_PER_SECOND = 40f;
+	private static final float DISTANCE_PER_SECOND = 60f;
 	private static final float ROPE_HALF_THICKNESS = 0.1f;
 	
 	private World world;
@@ -42,11 +43,10 @@ public class GrappleRope implements Updateable, Renderable
 	
 	private Vector2 end;
 	private Vector2 prevEnd;
-	private boolean retracting;
 	
 	private NinePatch texture;
 	
-	private PhysicsGrappleRope physicsGrappleRope;
+	private @Nullable PhysicsGrappleRope physicsGrappleRope;
 	private ArrayDeque<Vector2> points;
 	private Body rope;
 	private Fixture ropeFixture;
@@ -280,11 +280,6 @@ public class GrappleRope implements Updateable, Renderable
 				createPhysicsRope(createRope, newTarget);
 				createRope = null;
 			}*/
-			
-			if (retracting)
-			{
-				//shorten rope
-			}
 		}
 		else //end
 		{
@@ -339,11 +334,6 @@ public class GrappleRope implements Updateable, Renderable
 		return state;
 	}
 	
-	public boolean isRetracting()
-	{
-		return retracting;
-	}
-	
 	public Targetable getTarget()
 	{
 		return target;
@@ -359,6 +349,7 @@ public class GrappleRope implements Updateable, Renderable
 		return grapple;
 	}
 	
+	@Nullable
 	public PhysicsGrappleRope getPhysicsGrappleRope()
 	{
 		return physicsGrappleRope;
