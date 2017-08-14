@@ -1,7 +1,6 @@
 package com.cloudcanards.character.components;
 
 import com.cloudcanards.assets.Assets;
-import com.cloudcanards.behavior.Updateable;
 import com.cloudcanards.box2d.CollisionFilters;
 import com.cloudcanards.character.AbstractCharacter;
 import com.cloudcanards.graphics.WarpedTexture;
@@ -20,7 +19,7 @@ import com.badlogic.gdx.physics.box2d.joints.RopeJointDef;
  *
  * @author creativitRy
  */
-public class ScarfComponent extends AbstractRenderableComponent implements Loadable, Updateable
+public class ScarfComponent extends AbstractRenderableComponent implements Loadable
 {
 	private static final int WIDTH_DIVISIONS = 2;
 	private static final int HEIGHT_DIVISIONS = 8;
@@ -136,7 +135,7 @@ public class ScarfComponent extends AbstractRenderableComponent implements Loada
 	}
 	
 	@Override
-	public void update(float delta)
+	public void render(SpriteBatch batch, float delta)
 	{
 		for (int h = 0; h < bodies.length; h++)
 		{
@@ -146,11 +145,6 @@ public class ScarfComponent extends AbstractRenderableComponent implements Loada
 				grid[h][w].set(bodies[h][w].getPosition());
 			}
 		}
-	}
-	
-	@Override
-	public void render(SpriteBatch batch, float delta)
-	{
 		//		int tempA = (int) (Math.random() * texture.getGrid().length);
 		//		int tempB = (int) (Math.random() * texture.getGrid()[0].length);
 		//		texture.getGrid()[tempA][tempB].add(new Vector2(0.1f, 0).setAngle(MathUtils.random(360)));
