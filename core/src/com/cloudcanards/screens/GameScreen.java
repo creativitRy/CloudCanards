@@ -300,6 +300,8 @@ public class GameScreen extends AbstractScreen
 		return world;
 	}
 	
+	private Vector2 tempScreenToWorldCoords = new Vector2();
+	
 	/**
 	 * Unwraps screen space coordinates to world coordinates
 	 *
@@ -314,7 +316,7 @@ public class GameScreen extends AbstractScreen
 			throw new RuntimeException("GameScreen or camera is null");
 		}
 		Vector3 unproject = getInstance().camera.unproject(new Vector3(x, y, 0));
-		return new Vector2(unproject.x, unproject.y);
+		return getInstance().tempScreenToWorldCoords.set(unproject.x, unproject.y);
 	}
 	
 	public void addUiActor(Actor actor)

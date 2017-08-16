@@ -8,6 +8,7 @@ import com.cloudcanards.graphics.Renderable;
 import com.cloudcanards.grapple.Targetable;
 import com.cloudcanards.health.Damageable;
 import com.cloudcanards.health.combat.AttackType;
+import com.cloudcanards.health.combat.CombatTeam;
 import com.cloudcanards.loading.AbstractLoadAssetTask;
 import com.cloudcanards.loading.Disposable;
 import com.cloudcanards.loading.Loadable;
@@ -15,6 +16,7 @@ import com.cloudcanards.loading.ResourceManager;
 import com.cloudcanards.screens.GameScreen;
 import com.cloudcanards.util.Logger;
 import com.cloudcanards.util.MathUtil;
+import org.jetbrains.annotations.Nullable;
 
 import com.badlogic.gdx.ai.fsm.DefaultStateMachine;
 import com.badlogic.gdx.graphics.g2d.SpriteBatch;
@@ -62,6 +64,8 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 	
 	//health
 	private int health;
+	private CombatTeam combatTeam;
+	@Nullable
 	private AttackType currentAttackType;
 	
 	//components
@@ -69,13 +73,8 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 	private Array<AbstractComponent> miscComponents;
 	private GrappleComponent grappleComponent;
 	
-	/**
-	 * @param world
-	 * @param position
-	 * @param height
-	 * @param diameter
-	 */
-	public AbstractCharacter(World world, Vector2 position, float height, float diameter, String atlasPath)
+	
+	public AbstractCharacter(World world, Vector2 position, float height, float diameter, String atlasPath, CombatTeam combatTeam)
 	{
 		this.world = world;
 		createPhysicsBody(position, height / 2f, diameter / 2f);
@@ -92,6 +91,8 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 		stateMachine = new DefaultStateMachine<>(this);
 		updateState();
 		run();
+		
+		this.combatTeam = combatTeam;
 		
 		updateableComponents = new Array<>();
 		miscComponents = new Array<>();

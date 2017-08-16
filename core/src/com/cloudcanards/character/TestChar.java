@@ -3,6 +3,7 @@ package com.cloudcanards.character;
 import com.cloudcanards.assets.Assets;
 import com.cloudcanards.camera.LerpFocus;
 import com.cloudcanards.character.components.*;
+import com.cloudcanards.health.combat.CombatTeam;
 import com.cloudcanards.screens.GameScreen;
 import com.cloudcanards.util.Logger;
 
@@ -18,7 +19,7 @@ public class TestChar extends AbstractCharacter
 {
 	public TestChar(World world, Vector2 position)
 	{
-		super(world, position, 1.5f, 32f / 32, Assets.DIR + "characters/test/player.atlas");
+		super(world, position, 1.5f, 32f / 32, Assets.DIR + "characters/test/player.atlas", CombatTeam.ALLY);
 		
 		addComponent(new DefaultRenderComponent(this));
 		addComponent(new InputComponent(this, true));
