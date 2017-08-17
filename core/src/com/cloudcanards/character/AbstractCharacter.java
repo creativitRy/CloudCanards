@@ -118,6 +118,11 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 		
 		body = world.createBody(def);
 		
+		body.setUserData(this);
+		body.setBullet(true);
+		body.setFixedRotation(true);
+		body.setSleepingAllowed(false);
+		
 		//middle
 		PolygonShape poly = new PolygonShape();
 		//x1, y1, x2, y2, x3, y3, etc
@@ -154,10 +159,6 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 		jumpFixture.setSensor(true);
 		jumpContact = new CharacterJumpContact(this);
 		jumpFixture.setUserData(jumpContact);
-		
-		body.setBullet(true);
-		body.setFixedRotation(true);
-		body.setSleepingAllowed(false);
 	}
 	
 	private void createGraphicsBody()

@@ -11,6 +11,7 @@ public class CollisionFilters
 {
 	public static final short DEFAULT = (1);
 	public static final short CHARACTER = (short) (1 << 1);
+	public static final short WEAPON = (short) (1 << 2);
 	public static final short ROPE = (short) (1 << 15);
 	
 	public static final short ROPE_COLLISION_MASK = blacklist(

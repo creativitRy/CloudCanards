@@ -51,7 +51,7 @@ public class ScarfComponent extends AbstractRenderableComponent implements Loada
 		FixtureDef fixtureDef = new FixtureDef();
 		fixtureDef.density = 0.2f;
 		fixtureDef.filter.categoryBits = CollisionFilters.CHARACTER;
-		fixtureDef.filter.maskBits = CollisionFilters.blacklist(CollisionFilters.CHARACTER);
+		fixtureDef.filter.maskBits = CollisionFilters.blacklist(CollisionFilters.CHARACTER, CollisionFilters.WEAPON, CollisionFilters.ROPE);
 		PolygonShape shape = new PolygonShape();
 		shape.setAsBox(0.05f, 0.05f);
 		fixtureDef.shape = shape;
