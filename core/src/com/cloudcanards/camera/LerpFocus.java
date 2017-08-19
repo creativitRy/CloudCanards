@@ -1,5 +1,6 @@
 package com.cloudcanards.camera;
 
+import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 
 /**
@@ -13,11 +14,14 @@ public class LerpFocus implements CameraFocus
 	private Vector2 prev;
 	private float strength;
 	
+	private float prevZoom;
+	
 	public LerpFocus(CameraFocus focus, float lerpStrength)
 	{
 		this.focus = focus;
 		prev = null;
 		strength = lerpStrength;
+		prevZoom = focus.getScale();
 	}
 	
 	@Override
@@ -30,5 +34,22 @@ public class LerpFocus implements CameraFocus
 		}
 		Vector2 pos = focus.getPosition();
 		return prev.lerp(pos, strength);
+	}
+	
+	@Override
+	public float getScale()
+	{
+		float scale = focus.getScale();
+		if (scale == prevZoom)
+		{
+			return scale;
+		}
+		
+		if (scale < prevZoom)
+		{
+			return prevZoom = MathUtils.lerp(prevZoom, scale, strength / 8f);
+		}
+		
+		return prevZoom = MathUtils.lerp(prevZoom, scale, strength / 2f);
 	}
 }

@@ -93,7 +93,6 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 		updateState();
 		run();
 		
-		resetHealth();
 		this.combatTeam = combatTeam;
 		
 		updateableComponents = new Array<>();
@@ -404,6 +403,12 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 		{
 			component.update(delta);
 		}
+		
+		if (body.getPosition().y < -5f)
+		{
+			//dead
+			damage(getHealth() + 1);
+		}
 	}
 	
 	/**
@@ -411,11 +416,6 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 	 */
 	public void physicsStep()
 	{
-		if (body.getPosition().y < -5f)
-		{
-			//dead
-			damage(getHealth() + 1);
-		}
 		graphicsBody.setLinearVelocity(body.getLinearVelocity());
 	}
 	

@@ -6,6 +6,8 @@ import com.cloudcanards.box2d.MapCollisionBuilderTask;
 import com.cloudcanards.box2d.WaterManager;
 import com.cloudcanards.box2d.WorldContactListener;
 import com.cloudcanards.camera.CameraFocus;
+import com.cloudcanards.camera.LerpFocus;
+import com.cloudcanards.camera.MultiCameraFocus;
 import com.cloudcanards.character.TestChar;
 import com.cloudcanards.console.Console;
 import com.cloudcanards.graphics.RenderableManager;
@@ -19,6 +21,7 @@ import com.cloudcanards.ui.FpsCounter;
 import com.cloudcanards.ui.LogUI;
 import com.cloudcanards.ui.MainHUD;
 import com.cloudcanards.ui.VersionLabel;
+import org.jetbrains.annotations.Nullable;
 
 import com.badlogic.gdx.graphics.OrthographicCamera;
 import com.badlogic.gdx.graphics.Texture;
@@ -59,7 +62,9 @@ public class GameScreen extends AbstractScreen
 	//render
 	private SpriteBatch batch;
 	private OrthographicCamera camera;
-	private CameraFocus focus;
+	@Nullable
+	private CameraFocus cameraFocus;
+	private MultiCameraFocus multiCameraFocus;
 	private FitViewport viewport;
 	private RenderableManager renderableManager;
 	
@@ -102,6 +107,8 @@ public class GameScreen extends AbstractScreen
 		camera = new OrthographicCamera();
 		camera.position.x = 30;
 		camera.position.y = 50;
+		multiCameraFocus = new MultiCameraFocus(48 / 2f, 27 / 2f, 0, 0, 100, 100);
+		cameraFocus = new LerpFocus(multiCameraFocus, 0.5f);
 		viewport = new FitViewport(48, 27, camera);
 		renderableManager = new RenderableManager();
 		
@@ -202,9 +209,10 @@ public class GameScreen extends AbstractScreen
 		boolean physics = doPhysicsStep(delta);
 		
 		//set camera
-		if (focus != null)
+		if (cameraFocus != null)
 		{
-			focus.setPosition(camera);
+			cameraFocus.setPosition(camera);
+			cameraFocus.setScale(camera);
 		}
 		camera.update();
 		viewport.apply();
@@ -273,9 +281,24 @@ public class GameScreen extends AbstractScreen
 		box2DDebugRenderer.dispose();
 	}
 	
+	public CameraFocus getCameraFocus()
+	{
+		return cameraFocus;
+	}
+	
+	public void addCameraFocus(CameraFocus cameraFocus)
+	{
+		multiCameraFocus.getFoci().add(cameraFocus);
+	}
+	
+	public void removeCameraFocus(CameraFocus cameraFocus)
+	{
+		multiCameraFocus.getFoci().removeValue(cameraFocus, true);
+	}
+	
 	public void setCameraFocus(CameraFocus cameraFocus)
 	{
-		this.focus = cameraFocus;
+		this.cameraFocus = cameraFocus;
 	}
 	
 	public RenderableManager getRenderableManager()
@@ -286,11 +309,6 @@ public class GameScreen extends AbstractScreen
 	public KDTree<Targetable> getStaticGrappleTargets()
 	{
 		return staticGrappleTargets;
-	}
-	
-	public void setStaticGrappleTargets(KDTree<Targetable> staticGrappleTargets)
-	{
-		this.staticGrappleTargets = staticGrappleTargets;
 	}
 	
 	public Array<Targetable> getDynamicGrappleTargets()
