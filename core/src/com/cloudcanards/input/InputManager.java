@@ -72,7 +72,7 @@ public class InputManager implements InputProcessor, ControllerListener
 	private transient Array<InputListener> removalPendingListeners; //this is an array bc listeners might not have
 	// unique hashes
 	
-	public InputManager()
+	InputManager()
 	{
 		Gdx.input.setInputProcessor(this);
 		Controllers.addListener(this);

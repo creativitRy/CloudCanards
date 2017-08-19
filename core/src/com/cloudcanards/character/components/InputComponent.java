@@ -11,14 +11,9 @@ import com.cloudcanards.input.InputType;
  *
  * @author creativitRy
  */
-public class InputComponent extends AbstractComponent implements InputListener
+public class InputComponent extends AbstractInputComponent implements InputListener
 {
 	public static final double WALK_AXIS_THRESHOLD = 0.4;
-	
-	private boolean walk;
-	private boolean sprint;
-	private boolean left;
-	private boolean right;
 	
 	public InputComponent(AbstractCharacter character, boolean enableInput)
 	{
@@ -36,11 +31,11 @@ public class InputComponent extends AbstractComponent implements InputListener
 			case WALK:
 				if ((Boolean) args[0])
 				{
-					walk = true;
+					setWalk(true);
 				}
 				else
 				{
-					walk = false;
+					setWalk(false);
 				}
 				setSpeed();
 				return true;
@@ -48,11 +43,11 @@ public class InputComponent extends AbstractComponent implements InputListener
 			case SPRINT:
 				if ((Boolean) args[0])
 				{
-					sprint = true;
+					setSprint(true);
 				}
 				else
 				{
-					sprint = false;
+					setSprint(false);
 				}
 				setSpeed();
 				return true;
@@ -63,7 +58,7 @@ public class InputComponent extends AbstractComponent implements InputListener
 				{
 					float axis = (Float) args[1];
 					
-					walk = Math.abs(axis) < WALK_AXIS_THRESHOLD;
+					setWalk(Math.abs(axis) < WALK_AXIS_THRESHOLD);
 					setSpeed();
 					
 					character.setMovementDir((int) Math.signum(axis));
@@ -73,11 +68,11 @@ public class InputComponent extends AbstractComponent implements InputListener
 			case MOVE_LEFT:
 				if ((Boolean) args[0])
 				{
-					left = true;
+					setLeft(true);
 				}
 				else
 				{
-					left = false;
+					setLeft(false);
 				}
 				setMovement();
 				return true;
@@ -85,11 +80,11 @@ public class InputComponent extends AbstractComponent implements InputListener
 			case MOVE_RIGHT:
 				if ((Boolean) args[0])
 				{
-					right = true;
+					setRight(true);
 				}
 				else
 				{
-					right = false;
+					setRight(false);
 				}
 				setMovement();
 				return true;
@@ -109,39 +104,6 @@ public class InputComponent extends AbstractComponent implements InputListener
 		
 		return false;
 	}
-	
-	private void setMovement()
-	{
-		if (left == right)
-		{
-			character.setMovementDir(0);
-		}
-		else if (left)
-		{
-			character.setMovementDir(-1);
-		}
-		else
-		{
-			character.setMovementDir(1);
-		}
-	}
-	
-	private void setSpeed()
-	{
-		if (walk == sprint)
-		{
-			character.run();
-		}
-		else if (walk)
-		{
-			character.walk();
-		}
-		else
-		{
-			character.sprint();
-		}
-	}
-	
 	
 	//enable disable input
 	private boolean enableInput = true;

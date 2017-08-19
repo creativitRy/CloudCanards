@@ -1,6 +1,7 @@
 package com.cloudcanards;
 
 import com.cloudcanards.assets.Assets;
+import com.cloudcanards.input.ControllerManager;
 import com.cloudcanards.input.InputManager;
 import com.cloudcanards.loading.ResourceManager;
 import com.cloudcanards.screens.GameScreen;
@@ -54,6 +55,7 @@ public class CloudCanards extends Game
 		
 		//todo: move to loading screen after starting splash screen - make sure this is called before getInstance()
 		InputManager.init();
+		ControllerManager.getInstance().getClass();
 		
 		//todo: move to loading screen after starting splash screen
 		

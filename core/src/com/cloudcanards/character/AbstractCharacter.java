@@ -14,6 +14,7 @@ import com.cloudcanards.loading.Disposable;
 import com.cloudcanards.loading.Loadable;
 import com.cloudcanards.loading.ResourceManager;
 import com.cloudcanards.screens.GameScreen;
+import com.cloudcanards.ui.FloatingHealthBar;
 import com.cloudcanards.util.Logger;
 import com.cloudcanards.util.MathUtil;
 import org.jetbrains.annotations.Nullable;
@@ -92,6 +93,7 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 		updateState();
 		run();
 		
+		resetHealth();
 		this.combatTeam = combatTeam;
 		
 		updateableComponents = new Array<>();
@@ -202,6 +204,8 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 				((Loadable) component).load(resourceManager);
 			}
 		}
+		
+		GameScreen.getInstance().getUiStage().addActor(new FloatingHealthBar(this));
 	}
 	
 	public void addComponent(AbstractComponent component)
@@ -407,6 +411,11 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 	 */
 	public void physicsStep()
 	{
+		if (body.getPosition().y < -5f)
+		{
+			//dead
+			damage(getHealth() + 1);
+		}
 		graphicsBody.setLinearVelocity(body.getLinearVelocity());
 	}
 	

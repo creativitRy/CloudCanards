@@ -10,6 +10,7 @@ import com.cloudcanards.character.TestChar;
 import com.cloudcanards.console.Console;
 import com.cloudcanards.graphics.RenderableManager;
 import com.cloudcanards.grapple.Targetable;
+import com.cloudcanards.input.ControllerManager;
 import com.cloudcanards.loading.AbstractLoadAssetTask;
 import com.cloudcanards.loading.AbstractTask;
 import com.cloudcanards.loading.ResourceManager;
@@ -187,6 +188,7 @@ public class GameScreen extends AbstractScreen
 	@Override
 	public void show()
 	{
+		ControllerManager.getInstance().init();
 	}
 	
 	@Override
@@ -194,6 +196,7 @@ public class GameScreen extends AbstractScreen
 	{
 		//update
 		player.update(delta);
+		ControllerManager.getInstance().update(delta);
 		
 		waterManager.update(delta);
 		boolean physics = doPhysicsStep(delta);
@@ -300,14 +303,11 @@ public class GameScreen extends AbstractScreen
 		return world;
 	}
 	
-	private Vector2 tempScreenToWorldCoords = new Vector2();
+	private final Vector2 tempCoordsConversion2 = new Vector2();
+	private final Vector3 tempCoordsConversion3 = new Vector3();
 	
 	/**
 	 * Unwraps screen space coordinates to world coordinates
-	 *
-	 * @param x
-	 * @param y
-	 * @return null if camera or instance is null, world space otherwise
 	 */
 	public static Vector2 screenToWorldCoords(float x, float y)
 	{
@@ -315,8 +315,21 @@ public class GameScreen extends AbstractScreen
 		{
 			throw new RuntimeException("GameScreen or camera is null");
 		}
-		Vector3 unproject = getInstance().camera.unproject(new Vector3(x, y, 0));
-		return getInstance().tempScreenToWorldCoords.set(unproject.x, unproject.y);
+		Vector3 unproject = getInstance().camera.unproject(getInstance().tempCoordsConversion3.set(x, y, 0));
+		return getInstance().tempCoordsConversion2.set(unproject.x, unproject.y);
+	}
+	
+	/**
+	 * Unwraps world coordinates to screen space coordinates
+	 */
+	public static Vector2 worldToScreenCoords(float x, float y)
+	{
+		if (getInstance() == null || getInstance().camera == null)
+		{
+			throw new RuntimeException("GameScreen or camera is null");
+		}
+		Vector3 project = getInstance().camera.project(getInstance().tempCoordsConversion3.set(x, y, 0));
+		return getInstance().tempCoordsConversion2.set(project.x, project.y);
 	}
 	
 	public void addUiActor(Actor actor)
