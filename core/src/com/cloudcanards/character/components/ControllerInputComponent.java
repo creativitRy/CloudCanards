@@ -18,18 +18,22 @@ import com.badlogic.gdx.math.Vector3;
 public class ControllerInputComponent extends AbstractInputComponent implements ControllerInputListener
 {
 	private static final float WALK_TRIGGER = 0.4f;
+	private final ControllerCombatComponent controllerCombatComponent;
 	
 	@Nullable
 	private Controller controller;
 	private ControllerGrappleComponent controllerGrappleComponent;
 	
-	public ControllerInputComponent(AbstractCharacter character, @NotNull Controller controller, ControllerGrappleComponent controllerGrappleComponent)
+	public ControllerInputComponent(AbstractCharacter character, @NotNull Controller controller,
+									ControllerGrappleComponent controllerGrappleComponent,
+									ControllerCombatComponent controllerCombatComponent)
 	{
 		super(character);
 		
 		this.controller = controller;
 		
 		this.controllerGrappleComponent = controllerGrappleComponent;
+		this.controllerCombatComponent = controllerCombatComponent;
 	}
 	
 	@Override
@@ -45,6 +49,11 @@ public class ControllerInputComponent extends AbstractInputComponent implements 
 		if (buttonCode == Xbox360Controller.BUTTON_A)
 		{
 			character.jump();
+			return true;
+		}
+		if (buttonCode == Xbox360Controller.BUTTON_X)
+		{
+			controllerCombatComponent.onAttackInput(true);
 			return true;
 		}
 		if (buttonCode == Xbox360Controller.BUTTON_LB)
@@ -63,6 +72,11 @@ public class ControllerInputComponent extends AbstractInputComponent implements 
 		if (buttonCode == Xbox360Controller.BUTTON_A)
 		{
 			character.stopJump();
+			return true;
+		}
+		if (buttonCode == Xbox360Controller.BUTTON_X)
+		{
+			controllerCombatComponent.onAttackInput(false);
 			return true;
 		}
 		if (buttonCode == Xbox360Controller.BUTTON_LB)
@@ -86,6 +100,14 @@ public class ControllerInputComponent extends AbstractInputComponent implements 
 			setLeft(value < -0.2f);
 			setRight(value > 0.2f);
 			setMovement();
+			
+			controllerCombatComponent.onAxisMoved(false, value);
+			
+			return true;
+		}
+		if (axisCode == Xbox360Controller.AXIS_LEFT_Y)
+		{
+			controllerCombatComponent.onAxisMoved(true, value);
 			
 			return true;
 		}

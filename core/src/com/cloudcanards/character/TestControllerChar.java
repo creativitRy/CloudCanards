@@ -33,7 +33,11 @@ public class TestControllerChar extends AbstractCharacter
 		addComponent(grappleComponent);
 		ControllerGrappleComponent controllerGrappleComponent = new ControllerGrappleComponent(this, grappleComponent);
 		addComponent(controllerGrappleComponent);
-		controllerInputComponent = new ControllerInputComponent(this, controller, controllerGrappleComponent);
+		WeaponComponent weaponComponent = new WeaponComponent(this, world);
+		addComponent(weaponComponent);
+		ControllerCombatComponent controllerCombatComponent = new ControllerCombatComponent(this, weaponComponent);
+		addComponent(controllerCombatComponent);
+		controllerInputComponent = new ControllerInputComponent(this, controller, controllerGrappleComponent, controllerCombatComponent);
 		addComponent(controllerInputComponent);
 		//addComponent(new ScarfComponent(this, world));
 		

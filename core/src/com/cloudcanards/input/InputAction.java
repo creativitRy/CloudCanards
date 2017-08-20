@@ -13,6 +13,7 @@ public enum InputAction
 	MOVE,
 	MOVE_LEFT,
 	MOVE_RIGHT,
+	ATTACK,
 	SHOOT,
 	CONSOLE,
 	GRAPPLE_CLIMB_UP,

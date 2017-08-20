@@ -31,6 +31,9 @@ public class TestChar extends AbstractCharacter
 		addComponent(grappleComponent);
 		addComponent(new MouseGrappleComponent(this, grappleComponent, true));
 		addComponent(new ScarfComponent(this, world));
+		WeaponComponent weaponComponent = new WeaponComponent(this, world);
+		addComponent(weaponComponent);
+		addComponent(new MouseCombatComponent(this, weaponComponent, true));
 		
 		onStart();
 	}
