@@ -20,7 +20,7 @@ import com.badlogic.gdx.math.Vector2;
 public class MouseGrappleComponent extends AbstractGrappleControllerComponent implements Updateable, InputListener
 {
 	private static final float MIN_ANGLE = 2f;
-	private static final int MAX_TARGET_DISTANCE = 20; //actual target distance is 50 * sqrt(2)
+	private static final int MAX_TARGET_DISTANCE = 10; //actual target distance is 50 * sqrt(2)
 	
 	public MouseGrappleComponent(AbstractCharacter character, GrappleComponent grapple, boolean enableInput)
 	{

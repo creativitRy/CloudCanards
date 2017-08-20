@@ -64,11 +64,24 @@ public class TestChar extends AbstractCharacter
 				public void run()
 				{
 					System.out.println("d");
-					getBody().setLinearVelocity(0, 0);
-					getBody().setTransform(GameScreen.getInstance().getSpawnPoints().random(), 0);
 					
+					Vector2 random = GameScreen.getInstance().getSpawnPoints().random();
+					getBody().setLinearVelocity(0, 0);
+					getBody().setTransform(random, 0);
 					getGrappleComponent().getBody().setLinearVelocity(0, 0);
-					getGrappleComponent().getBody().setTransform(getPosition(), 0);
+					getGrappleComponent().getBody().setTransform(random, 0);
+					getBody().setLinearVelocity(0, 0);
+					getBody().setTransform(random, 0);
+					getGrappleComponent().getBody().setLinearVelocity(0, 0);
+					getGrappleComponent().getBody().setTransform(random, 0);
+					getBody().setLinearVelocity(0, 0);
+					getBody().setTransform(random, 0);
+					getGrappleComponent().getBody().setLinearVelocity(0, 0);
+					getGrappleComponent().getBody().setTransform(random, 0);
+					getBody().setLinearVelocity(0, 0);
+					getBody().setTransform(random, 0);
+					getGrappleComponent().getBody().setLinearVelocity(0, 0);
+					getGrappleComponent().getBody().setTransform(random, 0);
 					
 					onStart();
 					dead = false;
