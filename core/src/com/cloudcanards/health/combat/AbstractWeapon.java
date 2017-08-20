@@ -4,7 +4,9 @@ import com.cloudcanards.behavior.Updateable;
 import com.cloudcanards.box2d.CollisionFilters;
 import com.cloudcanards.character.AbstractCharacter;
 import com.cloudcanards.character.components.AbstractComponent;
+import com.cloudcanards.health.Damageable;
 import com.cloudcanards.util.Logger;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import com.badlogic.gdx.math.MathUtils;
@@ -19,7 +21,7 @@ import com.badlogic.gdx.utils.Timer;
  *
  * @author GahwonLee
  */
-public abstract class AbstractWeapon extends AbstractComponent implements Updateable
+public abstract class AbstractWeapon extends AbstractComponent implements Updateable, Attackable
 {
 	private World world;
 	private Body collisionBody;
@@ -106,7 +108,7 @@ public abstract class AbstractWeapon extends AbstractComponent implements Update
 			return;
 		}
 		
-		currentAttackType = attackType;
+		setCurrentAttackType(attackType);
 		collisionBody.setTransform(character.getPosition(), 0);
 		setEnabled(true);
 		
@@ -129,7 +131,42 @@ public abstract class AbstractWeapon extends AbstractComponent implements Update
 	{
 		world.destroyJoint(joint);
 		setEnabled(false);
-		currentAttackType = null;
+		setCurrentAttackType(null);
+	}
+	
+	protected void notifyCollision(@NotNull Damageable damageable)
+	{
+		if (currentAttackType == null)
+		{
+			return;
+		}
+		attack(damageable, currentAttackType);
+	}
+	
+	@Override
+	public void onAttackSuccessful(Damageable damageable, AttackType attackType)
+	{
+		if (damageable.damage(1))
+		{
+			if (!(damageable instanceof AbstractCharacter))
+			{
+				return;
+			}
+			
+			AbstractCharacter character = (AbstractCharacter) damageable;
+			
+			character.getBody().applyLinearImpulse(
+				(character.getPosition().x > this.character.getPosition().x ? 1 : -1) * 100 * collisionBody.getMass(),
+				attackType != AttackType.RAM ? 0 :
+					((character.getPosition().x > this.character.getPosition().x) == faceRight ? -1 : 1) * 50 * collisionBody.getMass(),
+				character.getPosition().x, character.getPosition().y, true);
+		}
+	}
+	
+	@Override
+	public void onAttackFailed(Damageable damageable, AttackType attackType)
+	{
+		Logger.log("Attack failed");
 	}
 	
 	@Override
@@ -162,5 +199,11 @@ public abstract class AbstractWeapon extends AbstractComponent implements Update
 	private void setEnabled(boolean enabled)
 	{
 		collisionBody.setActive(enabled);
+	}
+	
+	private void setCurrentAttackType(@Nullable AttackType attackType)
+	{
+		currentAttackType = attackType;
+		character.setCurrentAttackType(attackType);
 	}
 }

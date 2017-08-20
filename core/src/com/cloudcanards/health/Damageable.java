@@ -70,20 +70,49 @@ public interface Damageable
 	}
 	
 	/**
+	 * Called when {@link #damage(int)} is called
+	 *
+	 * @return if false is returned. Damage is not dealt
+	 */
+	default boolean canDamage()
+	{
+		return true;
+	}
+	
+	/**
 	 * Decrease the health by amount.
 	 * <p>
 	 * Checks {@link #isDead()} and calls {@link #onDeath()} if true
 	 *
 	 * @param amount integer to decrease health by
+	 * @return true if damage is dealt
 	 */
-	default void damage(int amount)
+	default boolean damage(int amount)
 	{
+		if (!canDamage())
+		{
+			return false;
+		}
+		
 		setHealth(getHealth() - amount);
 		
 		if (isDead())
 		{
 			onDeath();
 		}
+		
+		onDamage(amount);
+		return true;
+	}
+	
+	/**
+	 * Called after damage is done and death is checked
+	 *
+	 * @param amount amount of damage dealt
+	 */
+	default void onDamage(int amount)
+	{
+	
 	}
 	
 	/**

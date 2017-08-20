@@ -14,6 +14,7 @@ import com.cloudcanards.loading.Disposable;
 import com.cloudcanards.loading.Loadable;
 import com.cloudcanards.loading.ResourceManager;
 import com.cloudcanards.screens.GameScreen;
+import com.cloudcanards.time.TimeManager;
 import com.cloudcanards.ui.FloatingHealthBar;
 import com.cloudcanards.util.Logger;
 import com.cloudcanards.util.MathUtil;
@@ -25,6 +26,7 @@ import com.badlogic.gdx.graphics.g2d.TextureAtlas;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
 import com.badlogic.gdx.utils.Array;
+import com.badlogic.gdx.utils.Timer;
 
 /**
  * Character
@@ -34,6 +36,7 @@ import com.badlogic.gdx.utils.Array;
 public abstract class AbstractCharacter implements Loadable, Updateable, Renderable, Disposable, Targetable, Damageable
 {
 	private static final int JUMP_VELOCITY = 17;
+	private static final float DAMAGE_COOLDOWN_TIME = 1f; //in seconds
 	
 	//render
 	private String atlasPath;
@@ -65,6 +68,7 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 	
 	//health
 	private int health;
+	private float damageCooldown;
 	private CombatTeam combatTeam;
 	@Nullable
 	private AttackType currentAttackType;
@@ -336,6 +340,27 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 		
 	}
 	
+	@Override
+	public boolean canDamage()
+	{
+		return damageCooldown <= 0;
+	}
+	
+	@Override
+	public void onDamage(int amount)
+	{
+		damageCooldown = DAMAGE_COOLDOWN_TIME;
+		TimeManager.getInstance().setTimeMultiplier(0.5f);
+		Timer.schedule(new Timer.Task()
+		{
+			@Override
+			public void run()
+			{
+				TimeManager.getInstance().setTimeMultiplier(1f);
+			}
+		}, 0.5f);
+	}
+	
 	/**
 	 * Set horizontal velocity by lerping from prev velocity
 	 *
@@ -408,6 +433,11 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 		{
 			//dead
 			damage(getHealth() + 1);
+		}
+		
+		if (damageCooldown > 0)
+		{
+			damageCooldown -= delta;
 		}
 	}
 	
@@ -563,5 +593,10 @@ public abstract class AbstractCharacter implements Loadable, Updateable, Rendera
 	public AttackType getCurrentAttackType()
 	{
 		return currentAttackType;
+	}
+	
+	public void setCurrentAttackType(@Nullable AttackType currentAttackType)
+	{
+		this.currentAttackType = currentAttackType;
 	}
 }

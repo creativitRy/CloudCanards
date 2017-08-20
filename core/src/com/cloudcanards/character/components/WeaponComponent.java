@@ -6,7 +6,6 @@ import com.cloudcanards.health.combat.AbstractWeapon;
 import com.cloudcanards.health.combat.AttackType;
 
 import com.badlogic.gdx.physics.box2d.World;
-import com.badlogic.gdx.utils.Timer;
 
 /**
  * WeaponComponent
@@ -22,15 +21,6 @@ public class WeaponComponent extends AbstractComponent implements Updateable
 		super(character);
 		
 		weapon = new AbstractWeapon(character, world, 3.5f, 0.2f, 0.2f, 4f) {};
-		
-		Timer.schedule(new Timer.Task()
-		{
-			@Override
-			public void run()
-			{
-				attack(AttackType.RAM);
-			}
-		}, 3f);
 	}
 	
 	public void attack(AttackType attackType)

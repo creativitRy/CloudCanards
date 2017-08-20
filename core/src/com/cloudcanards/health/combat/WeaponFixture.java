@@ -3,6 +3,7 @@ package com.cloudcanards.health.combat;
 import com.cloudcanards.box2d.AdvancedCollidable;
 import com.cloudcanards.box2d.CollisionFilters;
 import com.cloudcanards.character.AbstractCharacter;
+import org.jetbrains.annotations.Nullable;
 
 import com.badlogic.gdx.physics.box2d.Fixture;
 
@@ -29,7 +30,15 @@ public class WeaponFixture implements AdvancedCollidable
 		}
 		else if (contactedFixture.getFilterData().categoryBits == CollisionFilters.CHARACTER)
 		{
+			@Nullable
 			AbstractCharacter character = (AbstractCharacter) contactedFixture.getBody().getUserData();
+			
+			if (character == null)
+			{
+				return;
+			}
+			
+			weapon.notifyCollision(character);
 		}
 	}
 	
