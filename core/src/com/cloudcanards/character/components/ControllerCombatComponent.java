@@ -42,11 +42,11 @@ public class ControllerCombatComponent extends AbstractCombatControllerComponent
 	{
 		if (attack)
 		{
-			if (y < -0.2f)
+			if (y < -0.4f)
 			{
 				attack(AttackType.RAM);
 			}
-			else if (x < -0.2f || x > 0.2f)
+			else if (x < -0.4f || x > 0.4f)
 			{
 				attack(AttackType.STAB);
 			}

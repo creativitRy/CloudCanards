@@ -86,12 +86,16 @@ public class GrappleComponent extends AbstractComponent implements Loadable, Upd
 	{
 		Logger.log("Attempting to shoot");
 		if (target == null)
+		{
 			return false;
+		}
 		
 		this.target = target;
 		
 		if (rope != null)
+		{
 			return false;
+		}
 		
 		rope = new GrappleRope(this, target, GameScreen.getInstance().getWorld(), texture);
 		Logger.log("Shot");
@@ -101,7 +105,9 @@ public class GrappleComponent extends AbstractComponent implements Loadable, Upd
 	public boolean retract()
 	{
 		if (rope == null || rope.getState() == 2)
+		{
 			return false;
+		}
 		
 		rope.stopGrappling();
 		return true;

@@ -8,8 +8,8 @@ import com.cloudcanards.screens.GameScreen;
 import com.cloudcanards.util.Logger;
 
 import com.badlogic.gdx.controllers.Controller;
-import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Timer;
 
 /**
  * TestControllerChar
@@ -22,9 +22,9 @@ public class TestControllerChar extends AbstractCharacter
 	private final ControllerInputComponent controllerInputComponent;
 	private final CameraFocusComponent camera;
 	
-	public TestControllerChar(World world, Vector2 position, Controller controller)
+	public TestControllerChar(World world, Controller controller)
 	{
-		super(world, position, 1.5f, 32f / 32, Assets.DIR + "characters/test/player.atlas", CombatTeam.ETC);
+		super(world, GameScreen.getInstance().getSpawnPoints().random(), 1.5f, 32f / 32, Assets.DIR + "characters/test/player.atlas", CombatTeam.ETC);
 		
 		addComponent(new DefaultRenderComponent(this));
 		camera = new CameraFocusComponent(this);
@@ -56,11 +56,33 @@ public class TestControllerChar extends AbstractCharacter
 		resetHealth();
 	}
 	
+	private boolean dead;
+	
 	@Override
 	public void onDeath()
 	{
 		Logger.log("ded");
 		GameScreen.getInstance().removeCameraFocus(camera);
+		getGrappleComponent().retract();
+		
+		if (!dead)
+		{
+			dead = true;
+			
+			Timer.schedule(new Timer.Task()
+			{
+				@Override
+				public void run()
+				{
+					getBody().setLinearVelocity(0, 0);
+					getBody().setTransform(GameScreen.getInstance().getSpawnPoints().random(), 0);
+					getGrappleComponent().getBody().setLinearVelocity(0, 0);
+					getGrappleComponent().getBody().setTransform(getPosition(), 0);
+					onStart();
+					dead = false;
+				}
+			}, 3f);
+		}
 	}
 	
 	public ControllerInputComponent getControllerInputComponent()

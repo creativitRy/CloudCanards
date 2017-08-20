@@ -8,6 +8,7 @@ import com.cloudcanards.util.Logger;
 
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.World;
+import com.badlogic.gdx.utils.Timer;
 
 /**
  * Yanna
@@ -30,7 +31,7 @@ public class TestChar extends AbstractCharacter
 		GrappleComponent grappleComponent = new GrappleComponent(this, world);
 		addComponent(grappleComponent);
 		addComponent(new MouseGrappleComponent(this, grappleComponent, true));
-		addComponent(new ScarfComponent(this, world));
+		//addComponent(new ScarfComponent(this, world));
 		WeaponComponent weaponComponent = new WeaponComponent(this, world);
 		addComponent(weaponComponent);
 		addComponent(new MouseCombatComponent(this, weaponComponent, true));
@@ -44,10 +45,35 @@ public class TestChar extends AbstractCharacter
 		resetHealth();
 	}
 	
+	private boolean dead;
+	
 	@Override
 	public void onDeath()
 	{
 		Logger.log("Ded");
 		GameScreen.getInstance().removeCameraFocus(camera);
+		getGrappleComponent().retract();
+		
+		if (!dead)
+		{
+			dead = true;
+			
+			Timer.schedule(new Timer.Task()
+			{
+				@Override
+				public void run()
+				{
+					System.out.println("d");
+					getBody().setLinearVelocity(0, 0);
+					getBody().setTransform(GameScreen.getInstance().getSpawnPoints().random(), 0);
+					
+					getGrappleComponent().getBody().setLinearVelocity(0, 0);
+					getGrappleComponent().getBody().setTransform(getPosition(), 0);
+					
+					onStart();
+					dead = false;
+				}
+			}, 3f);
+		}
 	}
 }

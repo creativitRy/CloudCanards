@@ -374,10 +374,6 @@
   </object>
   <object id="125" x="1448" y="880" width="592" height="64"/>
   <object id="130" x="1960" y="464" width="336" height="64"/>
-  <object id="131" x="488" y="1096" width="272" height="72"/>
-  <object id="132" x="296" y="904" width="144" height="40"/>
-  <object id="135" x="872" y="264" width="208" height="40"/>
-  <object id="136" x="936" y="200" width="144" height="40"/>
  </objectgroup>
  <layer name="spawnPoints" width="100" height="50" visible="0">
   <data encoding="csv">

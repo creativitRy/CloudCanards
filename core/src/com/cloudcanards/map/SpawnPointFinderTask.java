@@ -38,7 +38,8 @@ public class SpawnPointFinderTask extends AbstractTask
 			for (int w = 0; w < layer.getWidth(); w++)
 			{
 				//todo: change this to reflections calling method by the tile id if the id is part of an array
-				if (layer.getCell(w, h) != null && layer.getCell(w, h).getTile() != null)
+				if (layer.getCell(w, h) != null && layer.getCell(w, h).getTile() != null &&
+					layer.getCell(w, h).getTile().getId() == 157)
 				{
 					onSpawnTile(w, h, layer.getCell(w, h));
 				}
@@ -51,6 +52,6 @@ public class SpawnPointFinderTask extends AbstractTask
 	
 	private void onSpawnTile(int w, int h, TiledMapTileLayer.Cell cell)
 	{
-		spawnPoints.add(new Vector2(w, h));
+		spawnPoints.add(new Vector2(w + 0.5f, h + 0.5f));
 	}
 }

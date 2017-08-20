@@ -132,7 +132,7 @@ public class GameScreen extends AbstractScreen
 				world = new World(GRAVITY, true);
 				world.setContactListener(new WorldContactListener());
 				waterManager = new WaterManager(world);
-				player = new TestChar(world, new Vector2(20, 70));
+				player = new TestChar(world, new Vector2(20, 32));
 				player.load(resourceManager);
 				renderableManager.add(player);
 				finish();
