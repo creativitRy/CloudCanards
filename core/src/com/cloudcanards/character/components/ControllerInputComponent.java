@@ -74,7 +74,7 @@ public class ControllerInputComponent extends AbstractInputComponent implements 
 			character.stopJump();
 			return true;
 		}
-		if (buttonCode == Xbox360Controller.BUTTON_X)
+		if (buttonCode == Xbox360Controller.BUTTON_X || buttonCode == Xbox360Controller.BUTTON_Y)
 		{
 			controllerCombatComponent.onAttackInput(false);
 			return true;

@@ -3,7 +3,6 @@ package com.cloudcanards.health.combat;
 import com.cloudcanards.behavior.Updateable;
 import com.cloudcanards.box2d.CollisionFilters;
 import com.cloudcanards.character.AbstractCharacter;
-import com.cloudcanards.character.components.AbstractComponent;
 import com.cloudcanards.health.Damageable;
 import com.cloudcanards.util.Logger;
 import org.jetbrains.annotations.NotNull;
@@ -12,6 +11,8 @@ import org.jetbrains.annotations.Nullable;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
+import com.badlogic.gdx.physics.box2d.joints.PrismaticJoint;
+import com.badlogic.gdx.physics.box2d.joints.PrismaticJointDef;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJoint;
 import com.badlogic.gdx.physics.box2d.joints.RevoluteJointDef;
 import com.badlogic.gdx.utils.Timer;
@@ -21,23 +22,34 @@ import com.badlogic.gdx.utils.Timer;
  *
  * @author GahwonLee
  */
-public abstract class AbstractWeapon extends AbstractComponent implements Updateable, Attackable
+public abstract class AbstractWeapon implements Updateable, Attackable
 {
+	private final AbstractCharacter character;
+	
 	private World world;
 	private Body collisionBody;
 	@Nullable
 	private Joint joint;
+	
+	private final float frontLength;
+	private final float backLength;
+	
 	@Nullable
 	private AttackType currentAttackType;
 	private boolean faceRight; //true if attacking to the right
 	private boolean stopScheduled;
 	
 	private RevoluteJointDef ramJointDef;
+	private PrismaticJointDef stabJointDef;
 	
 	public AbstractWeapon(AbstractCharacter character, World world, float frontLength, float backLength, float thickness, float density)
 	{
-		super(character);
+		this.character = character;
 		this.world = world;
+		
+		this.frontLength = frontLength;
+		this.backLength = backLength;
+		
 		createCollisionBody(world, character.getPosition(), frontLength, backLength, thickness, density);
 		
 		createJointDefs();
@@ -56,7 +68,7 @@ public abstract class AbstractWeapon extends AbstractComponent implements Update
 		thickness /= 2;
 		backLength *= -1;
 		shape.set(new float[]{
-			frontLength, thickness, frontLength, -thickness, -backLength, -thickness, -backLength, thickness
+			frontLength, thickness, frontLength, -thickness, backLength, -thickness, backLength, thickness
 		});
 		fixtureDef.shape = shape;
 		fixtureDef.density = density;
@@ -67,7 +79,11 @@ public abstract class AbstractWeapon extends AbstractComponent implements Update
 		fixture.setUserData(new WeaponFixture(this));
 		
 		shape.dispose();
+		
+		Logger.setLevel(Logger.DEBUG);
 		Logger.logAll("Weapon mass is ", collisionBody.getMass(), "kg");
+		Logger.resetLevel();
+		
 		setEnabled(false);
 	}
 	
@@ -83,6 +99,18 @@ public abstract class AbstractWeapon extends AbstractComponent implements Update
 		ramJointDef.upperAngle = MathUtils.PI;
 		ramJointDef.enableMotor = true;
 		ramJointDef.maxMotorTorque = 400; //todo
+		
+		
+		stabJointDef = new PrismaticJointDef();
+		stabJointDef.bodyA = character.getBody();
+		stabJointDef.localAnchorA.set(character.getBody().getLocalCenter());
+		stabJointDef.bodyB = collisionBody;
+		stabJointDef.enableLimit = true;
+		stabJointDef.lowerTranslation = -frontLength;
+		stabJointDef.upperTranslation = backLength;
+		stabJointDef.enableMotor = true;
+		stabJointDef.maxMotorForce = 200; //todo
+		
 	}
 	
 	private void ram()
@@ -98,6 +126,76 @@ public abstract class AbstractWeapon extends AbstractComponent implements Update
 		}
 		
 		joint = world.createJoint(ramJointDef);
+	}
+	
+	private void part()
+	{
+		stopScheduled = true;
+		
+		collisionBody.setGravityScale(0f);
+		
+		if (!faceRight)
+		{
+			collisionBody.setTransform(character.getPosition(), MathUtils.PI);
+		}
+		
+		Timer.schedule(new Timer.Task()
+		{
+			@Override
+			public void run()
+			{
+				collisionBody.setTransform(character.getPosition(), faceRight ? MathUtils.PI : 0);
+				Timer.schedule(new Timer.Task()
+				{
+					@Override
+					public void run()
+					{
+						collisionBody.setGravityScale(1f);
+						stopAttack();
+					}
+				}, 0.5f);
+			}
+		}, 0.5f);
+	}
+	
+	private void stab()
+	{
+		if (faceRight)
+		{
+			stabJointDef.referenceAngle = 0;
+			stabJointDef.localAxisA.set(1, 0);
+			collisionBody.setLinearVelocity(character.getBody().getLinearVelocity());
+			
+		}
+		else
+		{
+			collisionBody.setTransform(collisionBody.getPosition(), MathUtils.PI);
+			stabJointDef.referenceAngle = MathUtils.PI;
+			stabJointDef.localAxisA.set(-1, 0);
+			collisionBody.setLinearVelocity(character.getBody().getLinearVelocity().scl(-1));
+		}
+		
+		stabJointDef.motorSpeed = -4;
+		
+		joint = world.createJoint(stabJointDef);
+		
+		stopScheduled = true;
+		Timer.schedule(new Timer.Task()
+		{
+			@Override
+			public void run()
+			{
+				((PrismaticJoint) joint).setMotorSpeed(100 * collisionBody.getMass());
+				Timer.schedule(new Timer.Task()
+				{
+					@Override
+					public void run()
+					{
+						stopAttack();
+					}
+				}, 0.5f);
+			}
+		}, 0.5f);
 		
 	}
 	
@@ -121,15 +219,21 @@ public abstract class AbstractWeapon extends AbstractComponent implements Update
 				ram();
 				break;
 			case PART:
+				part();
 				break;
 			case STAB:
+				stab();
 				break;
 		}
 	}
 	
 	private void stopAttack()
 	{
-		world.destroyJoint(joint);
+		if (joint != null)
+		{
+			world.destroyJoint(joint);
+			joint = null;
+		}
 		setEnabled(false);
 		setCurrentAttackType(null);
 	}
@@ -194,6 +298,17 @@ public abstract class AbstractWeapon extends AbstractComponent implements Update
 			}
 			
 		}
+		else if (currentAttackType == AttackType.PART)
+		{
+			assert joint != null;
+			
+			collisionBody.setTransform(character.getPosition(), collisionBody.getAngle());
+			collisionBody.setLinearVelocity(character.getBody().getLinearVelocity());
+		}
+		else if (currentAttackType == AttackType.STAB)
+		{
+			assert joint != null;
+		}
 	}
 	
 	private void setEnabled(boolean enabled)
@@ -205,5 +320,10 @@ public abstract class AbstractWeapon extends AbstractComponent implements Update
 	{
 		currentAttackType = attackType;
 		character.setCurrentAttackType(attackType);
+	}
+	
+	public AbstractCharacter getCharacter()
+	{
+		return character;
 	}
 }

@@ -27,6 +27,7 @@ public class WeaponFixture implements AdvancedCollidable
 		if (contactedFixture.getFilterData().categoryBits == CollisionFilters.WEAPON)
 		{
 			AbstractWeapon opponentWeapon = ((WeaponFixture) contactedFixture.getUserData()).weapon;
+			weapon.notifyCollision(opponentWeapon.getCharacter());
 		}
 		else if (contactedFixture.getFilterData().categoryBits == CollisionFilters.CHARACTER)
 		{

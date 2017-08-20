@@ -6,7 +6,6 @@ import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.InputProcessor;
 import com.badlogic.gdx.controllers.Controller;
 import com.badlogic.gdx.controllers.ControllerListener;
-import com.badlogic.gdx.controllers.Controllers;
 import com.badlogic.gdx.controllers.PovDirection;
 import com.badlogic.gdx.controllers.mappings.Xbox;
 import com.badlogic.gdx.math.Vector3;
@@ -75,7 +74,7 @@ public class InputManager implements InputProcessor, ControllerListener
 	InputManager()
 	{
 		Gdx.input.setInputProcessor(this);
-		Controllers.addListener(this);
+		//Controllers.addListener(this);todo
 		enabled = true;
 		
 		listeners = new Array<>(16);

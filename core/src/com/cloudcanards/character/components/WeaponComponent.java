@@ -20,7 +20,7 @@ public class WeaponComponent extends AbstractComponent implements Updateable
 	{
 		super(character);
 		
-		weapon = new AbstractWeapon(character, world, 3.5f, 0.2f, 0.2f, 4f) {};
+		weapon = new AbstractWeapon(character, world, 3.5f, 2f, 0.2f, 4f) {};
 	}
 	
 	public void attack(AttackType attackType)
