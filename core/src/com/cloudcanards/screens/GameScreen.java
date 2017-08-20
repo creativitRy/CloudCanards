@@ -16,6 +16,7 @@ import com.cloudcanards.input.ControllerManager;
 import com.cloudcanards.loading.AbstractLoadAssetTask;
 import com.cloudcanards.loading.AbstractTask;
 import com.cloudcanards.loading.ResourceManager;
+import com.cloudcanards.map.SpawnPointFinderTask;
 import com.cloudcanards.map.SpecialTilesBuilderTask;
 import com.cloudcanards.ui.FpsCounter;
 import com.cloudcanards.ui.LogUI;
@@ -74,6 +75,7 @@ public class GameScreen extends AbstractScreen
 	private OrthogonalTiledMapRenderer mapRenderer;
 	private KDTree<Targetable> staticGrappleTargets;
 	private Array<Targetable> dynamicGrappleTargets;
+	private final Array<Vector2> spawnPoints;
 	
 	//box2d
 	private World world;
@@ -102,6 +104,7 @@ public class GameScreen extends AbstractScreen
 			}
 		};
 		dynamicGrappleTargets = new Array<>();
+		spawnPoints = new Array<>();
 		
 		batch = new SpriteBatch();
 		camera = new OrthographicCamera();
@@ -112,7 +115,7 @@ public class GameScreen extends AbstractScreen
 		viewport = new FitViewport(48, 27, camera);
 		renderableManager = new RenderableManager();
 		
-		box2DDebugRenderer = new Box2DDebugRenderer();
+		box2DDebugRenderer = new Box2DDebugRenderer(false, false, false, false, false, false);
 		
 		uiStage = new Stage(new FitViewport(SCREEN_WIDTH, SCREEN_HEIGHT));
 	}
@@ -168,6 +171,12 @@ public class GameScreen extends AbstractScreen
 				if (specialLayer != null)
 				{
 					resourceManager.addTask(new SpecialTilesBuilderTask(tileSize, specialLayer, world));
+				}
+				
+				MapLayer spawnLayer = map.getLayers().get("spawnPoints");
+				if (specialLayer != null)
+				{
+					resourceManager.addTask(new SpawnPointFinderTask(tileSize, specialLayer, spawnPoints));
 				}
 			}
 		});
@@ -369,5 +378,10 @@ public class GameScreen extends AbstractScreen
 	public OrthographicCamera getCamera()
 	{
 		return camera;
+	}
+	
+	public Array<Vector2> getSpawnPoints()
+	{
+		return spawnPoints;
 	}
 }

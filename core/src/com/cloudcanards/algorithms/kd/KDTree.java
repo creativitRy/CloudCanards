@@ -8,7 +8,7 @@ import java.util.Comparator;
 
 /**
  * Efficient data structure for querying static 2 dimentional coordinates for all points within a box
- *
+ * todo: this breaks in cases when there are no elements within the tree :(
  * @author creativitRy
  */
 public abstract class KDTree<E>

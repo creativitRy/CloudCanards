@@ -45,7 +45,7 @@ public class SpecialTilesBuilderTask extends AbstractTask
 			{
 				//todo: change this to reflections calling method by the tile id if the id is part of an array
 				if (layer.getCell(w, h) != null && layer.getCell(w, h).getTile() != null &&
-					layer.getCell(w, h).getTile().getId() == 209)
+					layer.getCell(w, h).getTile().getId() == 157)
 				{
 					onGrappleTile(w, h, layer.getCell(w, h));
 				}

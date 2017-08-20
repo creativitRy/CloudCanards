@@ -95,7 +95,7 @@ public class CloudCanards extends Game
 		//todo: move to starting game
 		Box2D.init();
 		
-		setScreen(new LoadingScreen(new GameScreen("dev/steampunk.tmx")));
+		setScreen(new LoadingScreen(new GameScreen("combatMap/combatMap.tmx"/*"dev/steampunk.tmx"*/)));
 	}
 	
 	public ResourceManager getResourceManager()

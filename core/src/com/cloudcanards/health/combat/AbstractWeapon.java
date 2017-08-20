@@ -3,11 +3,14 @@ package com.cloudcanards.health.combat;
 import com.cloudcanards.behavior.Updateable;
 import com.cloudcanards.box2d.CollisionFilters;
 import com.cloudcanards.character.AbstractCharacter;
+import com.cloudcanards.graphics.Renderable;
 import com.cloudcanards.health.Damageable;
+import com.cloudcanards.util.DebugRenderUtil;
 import com.cloudcanards.util.Logger;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
+import com.badlogic.gdx.graphics.g2d.SpriteBatch;
 import com.badlogic.gdx.math.MathUtils;
 import com.badlogic.gdx.math.Vector2;
 import com.badlogic.gdx.physics.box2d.*;
@@ -22,7 +25,7 @@ import com.badlogic.gdx.utils.Timer;
  *
  * @author GahwonLee
  */
-public abstract class AbstractWeapon implements Updateable, Attackable
+public abstract class AbstractWeapon implements Updateable, Attackable, Renderable
 {
 	private final AbstractCharacter character;
 	
@@ -49,6 +52,8 @@ public abstract class AbstractWeapon implements Updateable, Attackable
 		
 		this.frontLength = frontLength;
 		this.backLength = backLength;
+		temp1 = new Vector2(frontLength, 0);
+		temp2 = new Vector2(-backLength, 0);
 		
 		createCollisionBody(world, character.getPosition(), frontLength, backLength, thickness, density);
 		
@@ -308,6 +313,21 @@ public abstract class AbstractWeapon implements Updateable, Attackable
 		else if (currentAttackType == AttackType.STAB)
 		{
 			assert joint != null;
+		}
+	}
+	
+	private Vector2 temp1;
+	private Vector2 temp2;
+	private Vector2 temp3 = new Vector2();
+	
+	@Override
+	public void render(SpriteBatch batch, float delta)
+	{
+		batch.flush();
+		if (currentAttackType != null)
+		{
+			temp3.set(collisionBody.getWorldPoint(temp1));
+			DebugRenderUtil.getInstance().drawLine(temp3, collisionBody.getWorldPoint(temp2));
 		}
 	}
 	
