@@ -2,6 +2,8 @@
 Source code for the old version of CloudCanards, an action metroidvania RPG.
 Unlike the current build, this version is built with Java and libgdx.
 
+Test tileset by KnoblePersona
+
 ### Requirements
 JDK8
 
