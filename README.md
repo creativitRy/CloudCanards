@@ -4,6 +4,8 @@ Unlike the current build, this version is built with Java and libgdx.
 
 Test tileset by KnoblePersona
 
+Xbox controller script by brokenbeach
+
 ### Requirements
 JDK8
 
